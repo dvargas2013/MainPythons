@@ -1,0 +1,5 @@
+#!/bin/bash
+dir="$( cd "$(dirname "${BASH_SOURCE[0]}")" && pwd )"$"/"
+aim="/Library/Frameworks/Python.framework/Versions/3.4/lib/python3.4/done"
+rm $aim/*
+ln -s $dir$'done/'*  $aim
