@@ -148,8 +148,7 @@ class BitString():
         self.data +=  num
         self.length += 1
     def get(self,i):
-        while i >= self.length: i-=self.length
-        while i < 0:            i+=self.length
+        if i >= self.length or i < 0: i%=self.length
         return (self.data >> (4* (self.length - i - 1))) % 16
     def __iter__(self):
         for i in hex(self.data)[2:].strip('L'):

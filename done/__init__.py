@@ -5,7 +5,7 @@ __all__ = ['AllInfo', 'showInfo',
 
 from . import File,Game,List,Math,Number,Solver,String,Time
 
-AllInfo = '\n\n'.join([eval(i).Info for i in __all__[2:]])
+AllInfo = '\n\n'.join(eval(i).Info for i in __all__[2:])
 def showInfo(): String.smartPrint(AllInfo)
 
 '''

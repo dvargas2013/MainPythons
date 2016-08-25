@@ -146,14 +146,13 @@ noChange=lambda f,n: print("Change function did not change: "+f)):
         except: return False
     if type(files)==str: files = [files]
     for f in files:
-        n = change(f)
-        if not same(f,n):
-            if exists(f):
-                if not exists(n):
-                    try:
-                        renames(f,n)
-                        success(f,n)
-                    except: error(f,n)
+        n = change(f) # apply change function
+        if not same(f,n): # might point to same file
+            if exists(f): # old name might not exist
+                if not exists(n): # new name might exist
+                    try: renames(f,n) # renames might fail
+                    except: error(f,n) # if failed to rename
+                    else: success(f,n) # it succeded the rename
                 else: alreadyExists(f,n)
             else: doesNotExist(f,n)
         else: noChange(f,n)
