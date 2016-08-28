@@ -1,86 +1,83 @@
-Info = '''
----String---
-Deals with anything string
-
-String Manipulations 
-lisp(string) - makes Ss into THs
-switch(mainstring,string1,string2) - simultaneous .replace()
-findListInStr(string,str[]) - return 1st str in string or False
-reverse(String) - it reverses the string...
-dyslexia(string) - jumbles the letters yay
-backwards(String) - it writes the letters backwards
-font(String) - Changes font to a bigger looking thing
-updown(String) - makes the string letters upside down
-halfwidth(String) - makes halfwords
-smartPrint(str, int) - prints whilst keeping int max chars per line
-similarity(str,str) - gives a similarity score between 0-1
-safePrint(str,int) - print int chars on both ends with ... between
-findOccurance(str, sub, n) - find the nth occurance of the sub in str
-isRep(str,str) - sees is 2nd repeated enough makes 1st
-endRepFind(str) - finds repetitions at end of string
-showInfo(obj=None,sub='') - if blank: print Info
-    - if iterable: print elements containing search
-    - if function: print args
-    - else showInfo(dir(thing), search) #dir is iterable
-Input(output=None,end='') - accept multiple input lines until end
-anagram(jumble) - unjumbles input. Prints words from dictionary.
-SequenceAlignment(s1,s2) - look it up
-'''
+'''Deals with anything string and cute string manipulations'''
 
 def Input(s=None,end=''):
-    "Accepts multiple input lines yields line by line"
+    """"Accept multiple input lines yields line by line
+    
+    Usage:
+        
+        # read across newlines passed in but end once the end string is on it's own line
+        # if empty will end once an empty line is passed in
+        for line in Input("Input statement","<end>"):
+            <block>
+    """
     if not s:
         for i in iter(input, end): yield i
     else: 
         for i in iter(lambda: input(s), end): yield i
 
 def lisp(string):
-    "Makes your string have a lisp"
+    """Make your string have a lisp by replacing letter combinations with th"""
     return string.replace('sh','th').replace('st','th').replace('s','th').replace('Sh','Th').replace('St','Th').replace('S','Th')
 def switch(mainstring,string1,string2,switch=' <(°•‹˚˚›•°)> '):
-    "_('10101011','1','0') = '01010100'"
+    """Swap every occurance of {string1} and {string2} in {mainstring} with each other
+    
+    Usage:
+        switch('10101011','1','0') = '01010100'
+    """
     return mainstring.replace(string1,switch).replace(string2,string1).replace(switch,string2)
 def findListInStr(string,lis):
-    "_('hello world word', ['word', 'world']) = 'word'"
+    """Find the first string in a list that is a substring in {string}
+    
+    Usage:
+        findListInStr('hello world word', ['word', 'world']) -> 'word'
+    """
     for i in lis:
         if i in string: return i
     return False
-def reverse(str_): return ''.join(reversed(str_))
+def reverse(str_):
+    """Reverse the String"""
+    return ''.join(reversed(str_))
 def backwards(str_):
+    """Reverse the String as well as horizontally rotate the characters"""
     from random import randrange
     def get(c):
         n=ord(c)-ord('A')
         if n<20 and not n<0:
             return "ɒdɔbɘᖷGʜIႱʞ⅃mnoqpЯƨƚ"[n] if randrange(2) else "AᙠƆᗡƎᖷGʜIႱʞ⅃MИOꟼỌЯƧT"[n]
         return c
-    return ''.join(get(c) for c in reverse(str_.upper()))
-shifts = {'halfwidth':ord('Ａ')-ord('A'), 'uptiny':ord('ᴬ')-ord('A')}
-def charShift(c,p=shifts['halfwidth']):
-    c = ord(c)
-    if ord('A')<c and c<ord('z'): return chr(c+p)
-    return chr(c)
-def font(s): 
-    return ''.join(charShift(c,shifts['halfwidth']) for c in s.title())
-def uptiny(s): #not working
-    return ''.join(charShift(c,shifts['uptiny']) for c in s.title())
+    return ''.join(get(c) for c in reversed(str_.upper()))
+def charShift(c,p):
+    """Shifts the character's ord by {p} if it is an alphabetical character"""
+    if c.isalpha(): return chr(ord(c)+p)
+    return c
+def font(s):
+    """Changes the alaphabetical characters with their full-width-romaji equivalent"""
+    return ''.join(charShift(c,ord('Ａ')-ord('A')) for c in s.title())
+# TODO uptiny not working properly
+def uptiny(s): return ''.join(charShift(c,ord('ᴬ')-ord('A')) for c in s.title())
 def updown(str_):
+    """Reverse the String as well as vertically rotate the characters"""
     def get(c):
         n=ord(c)-ord('a')
         if n<26 and not n<0: return 'ɐqɔpǝɟƃɥᴉɾʞlɯuodbɹsʇnʌʍxʎz'[n]
         return c
-    return ''.join(get(c) for c in reverse(str_.lower()))
+    return ''.join(get(c) for c in reversed(str_.lower()))
 def strShuffle(str_):
+    """Shuffle a whole string. Just shuffle it."""
     from random import shuffle
     a = list(str_)
     shuffle(a)
     return ''.join(a)
 def _dyslexia1(str_):
+    """Take a word and shuffle the letters not on the ends"""
     if len(str_)<4: return str_
     return str_[0] + strShuffle(str_[1:-1]) + str_[-1]
 def dyslexia(str_):
+    """Takes the words in string and shuffles their middles"""
     return ' '.join( _dyslexia1(i) for i in str_.split() )
 
 def smartPrint(str_,num=79):
+    """Wraps the text to stay to a max line width of {num}"""
     newStr = ''
     lis = [i for i in str_.replace('\n',' \n ').split(' ') if len(i)!=0]
     line = ''
@@ -96,6 +93,11 @@ def smartPrint(str_,num=79):
             line=' '+word
     print(newStr)
 def safePrint(str_,size=79,around=None):
+    """Prints out the ends of the string with '...' if anything was removed
+    
+    If {around} is defined, will try to find the substring.
+    If substring is found, it will show the center around the substring and will delete before and after the window instead
+    """
     if len(str_)>2*size: 
         if around:
             i = str_.find(around)
@@ -109,6 +111,7 @@ def safePrint(str_,size=79,around=None):
         print(str_[:size]+' ... '+str_[-size:])
     else: print(str_)
 def score(sA,sB):
+    """Compare the two strings and give it a score between 0 and 1"""
     sA, sB = sA.lower(), sB.lower()
     aa, bb = len(sA), len(sB)
     if not aa and not bb: return 0
@@ -138,7 +141,11 @@ def score(sA,sB):
     return ( common/aa + common/bb + (common-trans)/common ) / 3 
 
 def findOccurance(string,sub,i):
-    "_('bla bla di bla','la',3) = 12"
+    """"Find the {i}-th occurance of the substring in the string
+    
+    Usage:
+        findOccurange('bla bla di bla','la',3) -> 12
+    """
     ind = -1
     while i>0:
         ind = string.find(sub,ind+1)
@@ -146,15 +153,22 @@ def findOccurance(string,sub,i):
         if ind==-1: return -1
     return ind
 def isRep(a,b):
-        "-('44554455445','4455') = True"
-        mult = len(a)//len(b)
-        if mult < 2: return False
-        b = b*(mult+1)
-        return a[:len(b)]==b[:len(a)]
+    """"Figure out if the string is just the second string repeated a bunch
+    
+    Usage:
+        isRep('44554455445','4455') -> True"""
+    mult = len(a)//len(b)
+    if mult < 2: return False
+    b = b*(mult+1)
+    return a[:len(b)]==b[:len(a)]
 def endRepFind(str_):
-    "_('123445544554455') = '4455'"
+    """Find the last bit of the string that is a repetition
+    
+    Usage: 
+        endRepFind('123445544554455') = '4455'
+    """
     def find(s):
-        "Takes first symbol and goes through all occurances until it finds repeating section"
+        """Takes first symbol and goes through all occurances until it finds repeating section"""
         found = s.find(s[0],1)
         while found != -1:
             section = s[:found]
@@ -167,133 +181,29 @@ def endRepFind(str_):
         if stop: return stop
     return ''
 
-def showInfo(thing=None,search=''):
-    if thing==None: print(Info)
-    else:
-        try: #If iterable
-            for i in thing:
-                if search in str(i): print(i)
-        except:
-            from inspect import getargspec
-            try: print(getargspec(thing)) #If function
-            except: showInfo(dir(thing),search) #Dir is always iterable
+def showInfo(thing,search=''):
+    """Shows some information about the object passed in
+    
+    - if iterable: print elements containing search
+    - if function: print args
+    - else showInfo(dir(thing), search) #dir is iterable
+    """
+    try: #If iterable
+        for i in thing:
+            if search in str(i): print(i)
+    except:
+        from inspect import getargspec
+        try: print(getargspec(thing)) #If function
+        except: showInfo(dir(thing),search) #Dir is always iterable
 
-Info+='''
-Codes
-binary(str) - changes letters to 8bitBinary
-eggnog(str) - it sorta reverses the string in a special way
-crosc(string) - subsitition: (a:y, b:z, c:x, d:w, e:u, ...)
-crazyness(str_,inverse=True) - subsition: also called option code 
-piglatin(str,inverse=False) - piglatin and its inverse
-morse(string) & antimorse(string) - morse code and its inverse {.,-}
-numword(string,inverse=False) - (a:1, b:2, c:3,...) and its inverse
-bobulate(string) & unbobulate(string) - adds A&Bs and repeats letters.
-    Informally uncoded by looking at every 3rd letter. Has other logic 
-cypher(string,num) - moves letters in a circle depending on num.
-    inverse: cypher(string,-num)
-chemistry(str) - changes string into chemistry symbols
-'''
-
-def binary(s,toBin=True):
-    "Change string into binary bytes (actually still a string)"
-    if toBin: ' '.join( '{:0<8}'.format(bin(ord(i)).lstrip('0b')) for i in s )
-    else: return ''.join(chr(int(i,2)) for i in s.split())
-def eggnog(str_):
-    "_('daniel is cool') -> 'lo oc sileinad'"
-    s = str_.split()
-    return ''.join(reversed(s[0]+''.join('%s %s'%(word[:2],word[2:]) for word in s[1:]))).strip()
-def crosc(string):
-    "_('daniel') = 'wymoup'"
-    dicti={'a':'y','b':'z','c':'x','d':'w','e':'u','f':'v','g':'t','h':'s',
-           'i':'o','j':'r','k':'q','l':'p','m':'n','n':'m','o':'i','p':'l',
-           'q':'k','r':'j','s':'h','t':'g','u':'e','v':'f','w':'d','x':'c',
-           'y':'a','z':'b','A':'Y','B':'Z','C':'X','D':'W','E':'U','F':'V',
-           'G':'T','H':'S','I':'O','J':'R','K':'Q','L':'P','M':'N','N':'M',
-           'O':'I','P':'L','Q':'K','R':'J','S':'H','T':'G','U':'E','V':'F',
-           'W':'D','X':'C','Y':'A','Z':'B',' ':' '}
-    return ''.join(dicti.get(i,i) for i in string)
-def crazyness(string, inverse=True):
-    "_('daniel') = '∂å˜ˆ´¬'"
-    dicti={'a':'å','b':'∫','c':'ç','d':'∂','e':'´','f':'ƒ','g':'©','h':'˙',
-           'i':'ˆ','j':'∆','k':'˚','l':'¬','m':'µ','n':'˜','o':'ø','p':'π',
-           'q':'œ','r':'®','s':'ß','t':'†','u':'¨','v':'√','w':'∑','x':'≈',
-           'y':'¥','z':'Ω','A':'Å','B':'ı','C':'Ç','D':'Î','E':'´','F':'Ï',
-           'G':'˝','H':'Ó','I':'ˆ','J':'Ô','K':'','L':'Ò','M':'Â','N':'˜',
-           'O':'Ø','P':'∏','Q':'Œ','R':'‰','S':'Í','T':'ˇ','U':'¨','V':'◊',
-           'W':'„','X':'˛','Y':'Á','Z':'ı',' ':' '}
-    back = {j:i for i,j in dicti.items()}
-    if inverse: return ''.join(back.get(i,i) for i in string)
-    return ''.join(dicti.get(i,i) for i in string)
-def piglatin(str_,inverse=False):
-    "_('You are an apple') = 'ouyay reaay naay ppleaay'"
-    if inverse: return ' '.join(i[-3]+i[:-3] for i in str_.split())
-    return ' '.join("%s%say"%(i[1:],i[0]) for i in str_.split())
-def morse(string):
-    "_('dan') = '-..  .-  -.'"
-    dicti={'a':'.-','b':'-...','c':'-.-.','d':'-..','e':'.','f':'..-.',
-           'g':'--.','h':'....','i':'..','j':'.---','k':'-.-','l':'.-..',
-           'm':'--','n':'-.','o':'---','p':'.--.','q':'--.-','r':'.-.',
-           's':'...','t':'-','u':'..-','v':'...-','w':'.--','x':'-..-',
-           'y':'-.--','z':'--..',' ':'/'}
-    return '  '.join(dicti.get(i,i) for i in string.lower())
-def antimorse(string):
-    "_('-..  .-  -.') = 'dan'"
-    string=string.replace('…','...').replace('—','--')
-    dicti,new={'-..':'d', '-.-.':'c', '...':'s', '..-':'u', '-.--':'y',
-       '-...':'b', '-..-':'x', '...-':'v', '-.':'n', '--.-':'q',
-       '--..':'z', '-':'t', '/': ' ', '.': 'e', '--': 'm', '.-..': 'l',
-       '.-.': 'r', '.---': 'j', '.--.': 'p', '.--': 'w', '....': 'h',
-       '.-': 'a', '..': 'i', '..-.': 'f', '---': 'o', '--.': 'g', '-.-': 'k'},''
-    for i in string.split():
-        try: new+=dicti.get(i,i)
-        except: new+='%'
-    return new
-def numword(string,inverse=False):
-    "numword('daniel') --> '4.1.14.9.5.12'"
-    if inverse: return ' '.join(''.join(chr(96+int(a)) for a in i.split('.')) for i in string.split('....'))
-    return '....'.join('.'.join(str(ord(a)-96) for a in i) for i in string.split(' '))
-def bobulate(string):
-    "_('daniel') = 'dabadanabinaebileb'"
-    def iso(string):
-        if string in 'aeiouy': return 'b'
-        return 'a'
-    ret=''
-    for stry in string.lower().split(' '):
-        ret+=stry[0]+iso(stry[0])+iso(iso(stry[0]))
-        for i in range(1,len(stry)):
-            ret+=stry[i]
-            if iso(stry[i])==iso(stry[i-1]): ret+=iso(stry[i-1])+stry[i-1]
-            else: ret+=stry[i-1]+iso(stry[i-1])
-        ret+=' '
-    return ret[:-1]
-def unbobulate(string):
-    "_('dabadanab') = ('dan', True)"
-    out=''
-    for stry in string.split():
-        for i in range(len(stry)//3):
-            out+=stry[0]
-            stry=stry[3:]
-        out+=' '
-    return out[:-1],bobulate(out[:-1])==string
-def cypher(string,num):
-    "_('daniel',1) = 'ebojfm'"
-    def change(a):
-        if a.islower(): c=97
-        elif a.isupper(): c=65
-        else: return a
-        return chr((ord(a)-c+num)%26+c)
-    return ''.join(change(a) for a in string)
-
-
-Info+='''
-Random
-chain(words,letters) - makes random pronounzable letter combos
-'''
 def chain(words,letters):
-    "_(5,5) = 5 allcaps five-letter words seperated with spaces"
+    """Create pronounceable words
+    
+    Usage:
+        chain(5,5) = 5 allcaps five-letter words seperated with spaces
+    """
     from random import randrange
-    word=''
-    #          A   B  C  D  E    F  G  H  I  J K L    M  N  O  P     Q R  S  T   U      V W  X Y  Z
+    #          A   B  C  D  E    F  G  H  I  J K L    M  N  O  P     Q R  S  T   U     V W  X Y  Z
     matr={' ':[116,47,35,26,20 , 38,20,72,63,6,6,27 , 43,24,63,25  , 2,17,78,167,15  , 6,67,1,16,1],
           'A':[1,32,39,15,1    , 10,18,1,16,1,10,77 , 18,172,2,31  , 1,101,67,124,12 , 24,7,1,27,1],
           'B':[8,0,0,0,58      , 0,0,0,6,2,0,21     , 1,0,1,0      , 0,6,5,0,5       , 0,0,0,19,0],
@@ -325,14 +235,16 @@ def chain(words,letters):
     def findlet(lis,num): #Return index of where num lands
         for k in range(26): 
             if sum(lis[:k+1]) > num: return chr(k+65)
+    word=''
     for i in range(words*(letters+1)):
         if i%(letters+1)==0: word+=' '
         else: word+=findlet(matr[word[i-1]],randrange(sum(matr[word[i-1]])))
     return word[1:].title()
 def chemistry(longString="Hello World",showall=False):
-    "Given a sentence will try to recreate string with chemistry symbols"
+    """Given a sentence will try to recreate string with chemistry symbols"""
+    # without j and q the algorithm would get stuck
     Gems = ['j*','q*','H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 'K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 'Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I', 'Xe', 'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 'Ac', 'Th', 'Pa', 'U', 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr', 'Rf', 'Db', 'Sg', 'Bh', 'Hs', 'Mt', 'Ds', 'Rg', 'Cn', 'Uut', 'Fl', 'Uup', 'Lv', 'Uus', 'Uuo']
-    UseGems = dict()
+    UseGems = dict() # grab the gems that are possible to use
     for i in range(ord('a'),ord('z')+1):
         i = chr(i)
         lis = UseGems.get(i,list())
@@ -381,23 +293,32 @@ def chemistry(longString="Hello World",showall=False):
         return list(save[0]),save[-1]
     from random import randrange
     string = ''
-    for i in longString.lower().split():
-        i = ''.join(c for c in i if ord('a')<=ord(c) and ord(c)<=ord('z'))
-        chem,num = chems(i)
+    for word in longString.lower().split():
+        word = ''.join(c for c in word if c.isalpha())
+        chem,num = chems(word)
         if showall: print(num, chem)
         chem = chem[randrange(len(chem))]
         string += chem + ' '
     return string
 def anagram(jumbledWord,dictionaryFile = '/usr/share/dict/web2'):
+    """Unshuffles the word given by comparing it to words in a file with words inside"""
     import re
     jumbledWord = jumbledWord.lower()
+    wordset = set(jumbledWord)
     with open(dictionaryFile) as f: dictionary = set(f.read().lower().split())
-    hbl=re.compile("[%s]"%''.join(set('abcdefghijklmnopqrtsuvwxyz').difference(set(jumbledWord))))
-    count=dict((i,jumbledWord.count(i)) for i in set(jumbledWord))
+    # letters that are not allowed
+    hbl=re.compile("[%s]"%''.join(set('abcdefghijklmnopqrtsuvwxyz').difference(wordset)))
+    # count the letters that are allowed
+    count=dict((i,jumbledWord.count(i)) for i in wordset)
     dictionary = sorted(sorted([x for x in dictionary if not hbl.search(x) and len(x)>2 and all(x.count(i)<=count.get(i,0) for i in set(x))]),key=lambda x:len(x))
     for i in dictionary: print(i)
 
 def clues22(pairs,dictionaryFile = '/usr/share/dict/web2'):
+    """rearrange substrings to create a word in the dictionary file
+    
+    Usage:
+        clues22(['he','ll','be','o']) -> list containing "hello" and "bell"
+    """
     def assemble(word,pairs):
         if len(word)==0: return True
         possible = [i for i in pairs if word.startswith(i)]
@@ -426,6 +347,17 @@ class Node():
     def str(self,ln): return (('+   '*(ln-1) + '+---') if ln>0 else '') + self.name +('\n' if len(self.children) else '')+ '\n'.join(i.str(ln+1) for i in self.children)
     def __str__(self): return self.str(0)
 def tree(raw='{0 of 1 of 2, -1 of 0 of 1 of 2}'):
+    """Parses Applescript's 'entire contents' text to show what is contained in what
+    
+    Example:
+        tree("{list of page of window of screen, text of list of page of window of screen}") -> Node
+        print(_) ->
+            screen
+            +---window
+            +   +---page
+            +   +   +---list
+            +   +   +   +---text
+    """
     def splitYield(st):
         a,b = 0,1
         com = 0
@@ -456,6 +388,7 @@ def tree(raw='{0 of 1 of 2, -1 of 0 of 1 of 2}'):
     return bigDic['']
 
 class Markov():
+    """Create a Markov Chain of words linked in triplets"""
     from random import randint,choice
     def __init__(self, words):
         self.cache = {}
@@ -486,6 +419,7 @@ class Markov():
         return ' '.join(gen_words)
 
 def pretty(width=80,height=20):
+    """Prints a rectangle of stars in the Terminal"""
     from time import sleep
     width = 3*width//8
     stars = '． . ☆ . ＋ . 。 . ． . . ． 。 ﾟ 。 , ☆ ﾟ . ＋ 。 ﾟ , 。 . 。 , . 。 ﾟ 。 ﾟ . + 。 ﾟ * 。 . , 。 ﾟ + . 。 * 。 ﾟ . . . ． … , 。 ＋ ﾟ 。 。 ﾟ . ﾟ 。 , ☆ * 。 ﾟ . o , 。 . ＋ ﾟ 。 。 ﾟ . ﾟ 。 , ☆ * 。 ﾟ .'
@@ -496,6 +430,7 @@ def pretty(width=80,height=20):
         print("\033[F"*height,end="\r")
         sleep(.32)
 def SequenceAlignment(s1,s2,DownSigma=0,RightSigma=0,Match=1,MisMatch=0):
+    """Preforms Global Sequence Alignment on the two strings"""
     n,m = len(s1),len(s2); S = [[0 for j in range(m+1)] for i in range(n+1)]; S[0][0] = (0,0)
     for j in range(1,m+1): S[0][j] = (S[0][j-1][0] + RightSigma,2) #Right Sigma
     for i in range(1,n+1): S[i][0] = (S[i-1][0][0] + DownSigma,1) #Down  Sigma

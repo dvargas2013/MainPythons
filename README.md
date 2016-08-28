@@ -2,33 +2,127 @@
 ##__init__.py
 just import everything from everywhere
 ##Number.py
-its about making numerical things more human readable.
-pythagorean triplets are there.
-prime number stuff.
-factorizations.
-nice function to convert numbers (53) to words (fifty three). goes to just under 1000 - I would go more but I'm not sure if I should use british standard or american. fifteen hundred vs one thousand five hundred. i was thinking maybe a randomised thing. idk a lot of these are really old programs.
+**simplifyRadical** - simplifies radicals
+**pythagoreanTriplets** - gets pythagorean triplet integer
+**isPrime** - returns True if n is prime
+**nextPrime** - returns prime >= to number given
+**primeFactorize** - prime factorizes a number
+**theFactorsOf** - human readable list of factors of a integer
+**changeBase** - convert to new base
+**numToStr** - gives name of number
+**piecewiseMaker** - makes a piecewise function
 ##List.py
-if the input is a list or it returns list type information it is most likely here.
-things like poisson distribution and other probability stuff. from when i was in psychology mean median mode that kind of stuff. actually not mode that wasnt important i guess. gcd lcm. mine are different cause u can find gcd and lcm of multiple numbers at once. owowow. a show function. I should probably move that to done.File. hmm. nah. its mostly for printing and done.File.write has similar code by now. im pasting the docstring cause its exactly what it does perfectly summerized. good work past me. 
-show(lis, fast=True, File=None, openType='w'): "Display content of List, File=False returns String, Fast=None Pauses
-you can tell its an old program cause thats not a good way to open files. also there is a cross function that i realized some time ago could be done using a creative zip()
-recently i added dct and idct. i was proud. im not sure how to use them tho but i know they work XD.
+**poisson** - finds poisson probability (mean rate & successes)  
+**Dev** - finds sample or population Deviation  
+**freqDev** - same as Dev but freq increases size  
+**probDev** - same as freq Dev  
+**hypergeometric** - stats stuff  
+**mean** - average of all elements in list  
+**median** - center of list when ordered  
+**gcd** - finds gratest common factor of many numbers  
+**lcm** - finds least common multiple of many numbers  
+**show** - prints a line for every element of the list given - (move to done.File?)  
+**cross** - combines 2 list (compressing 2d to 1d)  
+**combine** - combines many lists (compression nd to 1d)  
+**dct** - frequencies yay  
+**idct** - amplitudal yay  
 ##Time.py
-Wow my Time class has gotten big over the ages. initially it wasnt a class. it was just a function when given 2 times can find when the second hand is next going to be halfway between the minute and hour hand. oh wait look that code is still there. it doesnt even use the time class. 
-lol u can tell its old code cause i dont noe how to raise exceptions so i just divide by 0 XD
-wow that time class is beautiful. u can add times according to their second values. hr, mn and sc from degrees. wow. pft my set functions are lazy AF. makes the code shorter though so im not complaining. definition of dividing by a time. 8 o clock divided by 2 o clock is 4 o clock didnt u noe. oh shit. u can divide Time/Time and Time/int and Time/float all within the same 4 lines of code. past daniel is incredible. i put a lot of work on this class. it shows that it was not one of those write it up in 1 day things. 
-Okay moving on. There is a day of the week calculator. given a date (even one that doesnt exist) it will give monday friday etc. aw cute. even if u pass in a string for the month it accepts it. i have a thing for short code cause its done in like 2 lines. can u imagine writing a program to do THAT many remainders and divisions in 1 line. the first line is the string conversion. 
-Aw yes the stopwatch and countdown class. when I get to explaining my bash_profile u'll hear all about these.
-omfg my fave. the timer contextmanager. with timer("Execute"): run.something() and it gives you how long that thing took. thats it. just import the fuck out of it and it just gives you how long things took to run. i can write this in fewer lines but it's code i found in stackoverflow and modified a bit. damn i love this one. i use it all the time.
-i spent too long fangirling on my Time() class
+**Time Class** - internally has basically the time since midnight and will perform calculations based on that number.  
+**bisectHrMnHands** - will bisect the hour and minute hands with the second hand (there are two solutions no matter where hr and mn are set so the sc parameter can't just always be set to 0)  
+**DayOfTheWeek** - will give you Monday,Tuesday, ... etc, according to month, day, year given  
+**timer** - context manager that will time how much the block runs  
+*Usage:*  
+```with timer("Message"):
+   <block>```
 ##Solver.py
-Basically if u are tempted to use a brute force algorithm for something it's probably in here. my pride and joys are the sudoku solver and the 24 game solver. there are others but they are really obscure problems and puzzles.
+**solve** - using 4 basic operations {*-+/} makes numbers into lookup
+**sudoku** - solves sudoku problems for you
+**numRemainders** - finds number with divisor:remainder pairs
+**respart** - finds how many of each in list to make num
+**addOrSub** - adds +/- between #s to make num
 ##Math.py
-Yes I have a .Number and a .Math. quadratics (complete the square and that kind of stuff), factorials, combinations, and bitstrings. BitStrings is actually a newer one when I found out that integers convert to long in python 3. It's a base 16 bitstring thing which I was going to use with my Stack Machine but I decided not to torture myself for speed and just do it pythonically. More when I talk about my Stack Machines.
-polynom and nomial. did you know that you can divide polynomials using matrices. I dont know if that is a mathematical fact but when we did things like x3-2x2+4x-5 / x-5 in school using that magic long division type thing I generalized it to division by all polynomials. nomial contains the real hard work and polynom is just a string wrapper for it. it does wat u expect from polynomials. u can add subtract multiply divide. all that good stuff. I would fangirl all over those classes but i summerized it and its good. i worked hard on it but in retrospect there are better tools. i learned a lot of pythonic matrix manipulation in this one.
+**distanceFormula** - distance formula  
+**angle** - together with distance gives polar coord  
+**angleForStar** - gets number of spokes and gives angle needed  
+**discriminant** - calculates discriminant  
+**quadraticVertex** - finds Vertex or turning point  
+**sumAndProduct** - finds sum and product of roots  
+**quadraticRoots** - finds roots of quadratic  
+**polynom** - object representing algebraic functions in string form  
+**nomial** - object representing algebraic functions in list form  
+**BitString** - class that is a long. word = len(4bits). init to 0.  
+**fact** - factorial (n!)  
+**perm** - permutation (nPr)  
+**comb** - combination (nCr)  
 ##File.py
-my pride and joy of all the done. scripts. if u need to manipulate files its all in here. explore the contents of zip files without unzipping them. or if you want unzip the files out one by one (used for when you need to unzip a corrupted zip file). rename files, read and write files (those are used always and are incredible and can transform dict,lists, tuples, and sets into a beautiful files) also they can pickle and unpickle if u need. Oh look it's siteRead and siteLook. get image sizes and resize images [i think these are mac dependent]. aw. look its the hideInMaze code that crashed my computer one day by making recursive folders within folders and absorbing my whole memory of 400gb. nah it was like 250gb that it stole. that was a good day. i still haven't learned my lesson when running recursive algorithms. i am too comfortable with recursion to be safe with it. oh yeah and a recursive turned iterative file and folder search. (it uses os.walk which is recursive but i turn it iterative by yielding it. its fake iterative but from the outside u'll never be able to tell. especially if u store it in a list. hoho)
+**getHome** - returns the environment $HOME  
+Desktop - path to Desktop = join(getHome(), 'Desktop')  
+from os import chdir, renames, getcwd, remove, walk  
+from os.path import exists, join, splitext, split, relpath  
+from glob import glob  
+
+**files** - walks through place; yields relative path to files  
+**folders** - walks through place; yields relative path to folders  
+**listFormats** - walks through place; outputs extensions found  
+**hideInMaze** - hides file in a directory maze  
+**linkDirectory** - Copies directories, symlinks replace files  
+**smartBackup** - Update files in backup  
+**renamer** - using change function renames f in files  
+**delPyCache** - deletes all pycache directories and pyc files.   
+**getSizes** - make dictionary with file dimensions  
+**resize** - scales down images with a dimension bigger than 1200   
+**siteLook** - Give url and will try to save and open html file  
+**siteRead** - Give it a http and you get a byte  string.  
+**read** - reads file and returns string  
+**write** - writes to a file return boolean saying is successful  
+**reImport** - reimport a module for if you modify the module and dont want to close and reopen  
+**dARename** - renames files in a special way  
+**exploreZip** - allows cd, ls inside a Zipfile as directory  
+**unzip** - Unzips files 1 at a time. (used for when you need to unzip a corrupted zip file)  
 ##Game.py
-I have cute games but they are not impressive. haha i made one to help me practice physics problems once. that a fun one. omfg. the mindread one is so old i had written it in my calculator. and the zombie one. i think i deleted the zombie one from my calculator by now cause it was so big. ultimate rock paper scissors always fun. ooh murder game. im actually adapting that one into a visual java game at this very moment. all of these are text games if i havent said yet. cause i dont want to TK inside these base files. TK is unreliable in my opinion. 
+**matrix** - will randomly print numbers between nums  
+**multgame** - will repeatedly ask you to multiply numbers  
+**pattgame** - will make a pattern to figure out  
+**physics** - Will ask motion physics question to answer.  
+**thinker** - Will ask you which number has the divisor:remainder pairs  
+**mindread** - Will guess a number between 1-25 if you tell it location  
+**zombie** - Choose your own adventure time. (I'm very proud of this. Especially since it was first programmed in my calculator.)  
+**ultrps** - Ultimate Rock Paper Scissors  
+**murdergame** - Murder happens; figure out who did what  
 ##String.py
-I am going to need to split this one up one day without breaking code that dependent on it. Actually that shouldnt be too hard just put it in a folder add a nice init file. python is cool like that sometimes. it has string manipulations and transformation, codes, and general fun stuff. ill try to highlight the cool ones. i have one that uses replace to replace strings in both directions. like if u wanted to switch two names for each other. lol i have a lisp text generator. that must be from when i read fanfictions. ooh given a list and a string will find the first word in the list that appears in the string. i noe that is needed by the murder game to figure out what commands u meant. reverse strings, ooh and type text backwards. shift characters up and down the unicode markers. uptiny isnt working aw. but halfwidth shifts are yay. upside down text oooh. wow the things u can do with unicode. shuffle text. actually i noe for a fact i have an anagram solver down there i could test it using the strShuffle. smart and safe Print. safePrint makes sure u only have that number of characters per line by deleteting center characters and smart print wraps the lines as needed. i think those were cmp things. ooh word distance scores. its not simple edit distance i actually forget wat algorithm i implemented but its a good one believe me. its a similarity score. i cant imagine its that dissimilar to wat spell check uses. ill need to check how that happens. find the nth occurance of a substring. strip non repeating section. i have no idea wat that is useful for but its there. it find the repeating sections of a string.  oooh codes. turn characters to 8bit binary and back. eggnog. if u noe eggnog u noe its fun its basically its own inverse. substitution code (which i call crosc cause thats wat i called it when i was smaller). i want to say that i thought i was a genius when i was small cause i discovered stuff that already existed before. like when i derived algebra stuff and proved proofs n stuff. lol option code. morse code. pig latin. num to letter and back. bobulate to decode u take every 3rd letter but u can tell if the sender doesnt noe how to bobulate cause its a very distinct rule set. (its super simple dont listen to me). lololol look at the docstring ( bobulate(string) & unbobulate(string) - adds A&Bs and repeats letters. Informally uncoded by looking at every 3rd letter. Has other logic. ) all i said was has other logic. im the best. ooh a rotation cypher. i never had a decoder ring so i programmed one XD. chemistry. that one is relatively new. actually it shouldnt be a part of the codes section. it writes words as closely as u can get them using chemistry symbols. its one of the reasons i needed the string score thing i explained. i like how i kept the debugging functions in the chemistry one. thats cute. too many sub-functions tho. its longer than my sudoku solver. there must be better way for this. Ooh look a random pronounceable word generator. I remember when I first learned about markov chains. i looked up the probability of two letters coming next to each other and programed the matrix (space is a letter in the algorithm so). it makes really pronounceable words. i love it. i already said i have an anagram solver in there which could be in done.solver but meh. it operates on strings so. i have a tree and node generator for when ur given things like "0 of 1 of 2, -1 of 0 of 1 of 2" i could just make a nice tree and not have duplicate info. Oh yeah and i have a text parser tranform into markov chains of length node length 3. space separated. using that i have a pretty() function that draws stars on a terminal. its cute. also it was testing my escaping skills to backspace and line return properly. finally i have a global sequence alignment code from a biological computation course that i decided would be a nice addition to my string classes. aligns text really good. i didnt have use for the local alignment one. or one that uses matrices for the scores. i just needed as many letters to match up to where they went.
+**Input** - Accept multiple lines of input until the end string is on it's own line  
+**lisp** - make the string read like it has a lisp by swapping certain letters with 'TH'  
+**switch** - swap the strings in the main string. almost like a simultaneous double replace statement.  
+**findListInStr** - finds first item in list that occurs in string  
+**reverse** - reverse a string's characters  
+**charShift** - changes the character given by applying the character shift if its an alpha char  
+**font** - changes all the alpha characters to full-width  
+**backwards** - uses unicode characters for 'rotated-horizontally' characters and preforms reverse  
+**updown** - uses the unicode characters for 'rotated-vertically' characters and preforms reverse  
+**strShuffle** - shuffles the whole string  
+**dyslexia** - shuffles the center portions of the words  
+**smartPrint** - Text Wrapper  
+**safePrint** - deletes center of text  
+**score** - compares the two strings giving a score between 0 and 1  
+**findOccurance** - find the nth occurance of a substring  
+**isRep** - figures out if a string is composed of the substring given  
+**endRepFind** - finds repetitions at end of string  
+**showInfo** - gives a bit of info on the thing  
+**chain** - makes random pronounceable 'words'  
+**chemistry** - will try to recreate sentence using only the symbols of the periodic table  
+**anagram** - un-shuffles word to match a word in dictionary file  
+**clues22** - plays that clues 22 game. given substrings that combine to make words will try to combine the substrings  
+**tree** - created to parse Applescript's 'entire content' dictionaries  
+**Markov Class** - sliding window over string to get triplets of words to markov chain with  
+**pretty** - displays stars to the Terminal  
+**SequenceAlignment** - aligns strings so that the most letters fall into the same place  
+##Codes.py
+**binary** - changes letters to 8bitBinary  
+**eggnog** - it sorta reverses the string in a special way  
+**crosc** - subsitition: (a:y, b:z, c:x, d:w, e:u, ...)  
+**crazyness** - subsition: also called option code  
+**piglatin** - piglatin and its inverse  
+**morse** & **antimorse** - morse code and its inverse using '.', '-', and ' ' (dot, dash, space)  
+**numword** - (a:1, b:2, c:3,...) and its inverse  
+**bobulate** & **unbobulate** - adds A&Bs and repeats letters. Informally uncoded by looking at every 3rd letter. Has other logic  
+**cypher** - moves letters in a circle depending on num.  

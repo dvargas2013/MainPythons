@@ -1,63 +1,26 @@
 #!/usr/bin/env python3
-
-Info ='''
----File---
-If I made it and it has to do with files it is here
-
-files(place) - walks through place; yields relative path to files
-folders(place) - walks through place; yields relative path to folders 
-listFormats(place) - walks through place; outputs extensions found
-hideInMaze(file,root,depth,size) - hides file in a directory maze
-symlinkDirectory(dir1,dir2) - Copies directories, symlinks replace files
-smartBackup(location,backup) - Update files in backup
-renamer(files, change) - using change function renames f in files
-getSizes(place) - make dictionary with file dimensions
-resize(fileDict) - scales down images with a dimension bigger than 1200 
-siteLook() - Give url and will try to save and open html file
-siteRead(url) - Give it a http and you get a byte  string.
-read(file) - reads file and returns string
-write(s,file,tag='w') - writes(tag='a': append) s(or '\\n'.join(s))
-dARename(files*) - renames files in a special way
-exploreZip(file) - allows cd, ls inside a Zipfile as directory
-unzip(zipfile, directory, ...) - Unzips files 1 at a time. 
-delPyCache() - deletes all __pycache__ directories. 
-
-getHome() - returns the environment $HOME
-Desktop - path to Desktop = join(getHome(), 'Desktop')
-from os import chdir, renames, getcwd, remove
-from os.path import exists, join, splitext, split
+'''If I made it and it has to do with files it is here'''
+from os import chdir, renames, getcwd, remove, walk
+from os.path import exists, join, splitext, split, relpath
 from glob import glob
-'''
-def showInfo():
-    from done.String import smartPrint
-    smartPrint(Info)
-
-from os import chdir, renames, getcwd, remove
-from os.path import exists, join, splitext, split
-from glob import glob
-
 def getHome():
     from os import environ
     return environ['HOME']
 Desktop = join(getHome(),'Desktop')
 
 def files(DIR,relative=True):
-    "Yield all files in Directory, relative to the Directory"
-    from os import walk
-    from os.path import relpath
+    """Yield all files in Directory, relative to the Directory"""
     for rt,ds,fs in walk(DIR):
         if relative: yield from (relpath(join(rt,f),DIR) for f in fs)
         else: yield from (join(rt,f) for f in fs)
 def folders(DIR,relative=True):
-    "Yield all folders in Directory (including self), relative to the Directory"
-    from os import walk
-    from os.path import relpath
+    """Yield all folders in Directory (including self), relative to the Directory"""
     yield relpath(DIR,DIR) if relative else DIR
     for rt,ds,fs in walk(DIR):
         if relative: yield from (relpath(join(rt,d),DIR) for d in ds)
         else: yield from (join(rt,d) for d in ds)
 def listFormats(place):
-    "_(directory location) = iterator of types of files"
+    """iterator with the extensions of all files under"""
     lis=set()
     for name in files(place):
         name,ext=splitext(name)
@@ -65,12 +28,12 @@ def listFormats(place):
             lis.add(ext)
             yield ext
 def hideInMaze(file,mazeRoot,depth,size,dirNameLen=7):
-    "hide('/Users/.../file.txt','/Users/.../Maze',4,4) --> 340 folder maze"
+    """Hides a file inside {size} directories in each directory for {depth} levels"""
     from done.String import chain
     from os import makedirs
     from os.path import basename
     from random import randrange
-    if input('this will make '+str(sum(size**i for i in range(depth+1)))+' folders; are you sure? ')[0] in 'Yy':
+    if input('are you sure you want to make '+str(sum(size**i for i in range(depth+1)))+' folders')[0] in 'Yy':
         paths=[mazeRoot]
         for d in range(depth):
             newpaths=[]
@@ -83,9 +46,9 @@ def hideInMaze(file,mazeRoot,depth,size,dirNameLen=7):
         for dirs in paths: makedirs(dirs)
         mazeRoot=paths[randrange(len(paths))]
         renames(file,join(mazeRoot,basename(file)))
-    return mazeRoot
+        return mazeRoot
 def linkDirectory(src, dest, symlink=True):
-    "Walks through files in src and symlinks to dest. Making directories as needed."
+    """Walks through files in src and symlinks to dest. Making directories as needed."""
     from os import mkdir
     if symlink: from os import symlink as link
     else: from os import link
@@ -99,7 +62,8 @@ def linkDirectory(src, dest, symlink=True):
         except: print('cannot:',f)
       
 def smartBackup(orig, copy, hardlink=False):
-    from os.path import relpath,abspath,getmtime as modT
+    """Checks if a file has been modified and transfers it over as needed"""
+    from os.path import abspath,getmtime as modT
     from os import makedirs
     if hardlink: from os import link as copyfile
     else: 
@@ -140,6 +104,15 @@ error=lambda f,n: print("Renaming Error: "+f+'\n\t'+n+'\n'),
 alreadyExists=lambda f,n: print("Existence Error: "+n+' already exists'),
 doesNotExist=lambda f,n: print("Existence Error: "+f+' does not exist'),
 noChange=lambda f,n: print("Change function did not change: "+f)):
+    """changes file strings in {files} using the {change} function
+    
+    for each of the files:
+        if {change} doesnt change location, {noChange} is called
+        if file doesnt exist, {doesNotExist} is called
+        if what {change} changes it to already exists, {alreadyExists} is called
+        if there is an error trying to rename, {error} is called
+        if renaming succeeds, {success} is called
+    """
     from os.path import samefile
     def same(a,b):
         try: return samefile(a,b)
@@ -158,7 +131,7 @@ noChange=lambda f,n: print("Change function did not change: "+f)):
         else: noChange(f,n)
         
 def delPyCache(place='/Library/Frameworks/Python.framework/Versions/3.4/lib/python3.4/'):
-    from os import walk
+    """removes __pycache__ and .pyc recursively"""
     from shutil import rmtree
     for root,directories,files in walk(place):
         for directory in directories:
@@ -167,9 +140,8 @@ def delPyCache(place='/Library/Frameworks/Python.framework/Versions/3.4/lib/pyth
             if file.endswith('.pyc'): remove(join(root,file))
             
 def getSizes(DIR,dicti=dict(),gloob='*.*p*g'):
-    "Get dimension of images in directory (recursively)"
+    """Get dimension of images in directory (recursively) -- Depends on sips being on computer"""
     from os import system
-    from os.path import relpath
     from subprocess import check_output
     for d in folders(DIR,relative=False):
         if not glob(join(d,gloob)): continue
@@ -184,7 +156,7 @@ def getSizes(DIR,dicti=dict(),gloob='*.*p*g'):
             except: pass
     return dicti
 def resize(fileDict,types=set(['.jpeg','.jpg','.png']),shrink=1200):
-    "Resize .png, .jpg, and .jpeg files in fileDict so biggest dimension is 1200"
+    """Resize .png, .jpg, and .jpeg files in fileDict so biggest dimension is 1200 -- sips dependant"""
     from os import system
     while len(fileDict)>0:
         name,hw = fileDict.popitem()
@@ -193,6 +165,7 @@ def resize(fileDict,types=set(['.jpeg','.jpg','.png']),shrink=1200):
             if ext in types: system('sips -Z %s "%s"'%(shrink,name))
             
 def siteLook(url='',temp=join(Desktop,'file.html'),browser='Google Chrome'):
+    """Save html to desktop and open it with a browser from url given - Moderately safer than directly going to a site"""
     from subprocess import call
     if not url: url=input()
     while url:
@@ -202,6 +175,7 @@ def siteLook(url='',temp=join(Desktop,'file.html'),browser='Google Chrome'):
         url = input()
     if exists(temp): remove(temp)
 def siteRead(url,tries=17):
+    """Read a url and return string contents"""
     if not url.startswith('http'): url='http://'+url
     try: 
         from urllib.request import urlopen
@@ -214,6 +188,7 @@ def siteRead(url,tries=17):
             sleep(1)
             print('Retrying: '+url)
 def read(file, tag='r', pickled=False):
+    """read a file and return its contents"""
     if pickled and 'b' not in tag: tag+='b'
     try: 
         with open(file,tag) as f:
@@ -224,6 +199,7 @@ def read(file, tag='r', pickled=False):
     except: 
         with open(file,tag,encoding='latin_1') as f: return f.read()
 def write(s, file, tag='w', encoding="utf", onerror=['strict','replace','ignore','xmlcharrefreplace','backslashreplace'][3], pickled=False):
+    """write to a file"""
     if pickled:
         from pickle import dumps
         s = dumps(s)
@@ -249,10 +225,12 @@ def write(s, file, tag='w', encoding="utf", onerror=['strict','replace','ignore'
     return False
 
 def reImport(module="done.File",value="File"):
+    """import a {module} and overwrite the global {value}"""
     from importlib import import_module 
     globals()[value] = import_module(module)
 
 def dARename(*files):
+    """rename files in a specific way to make deviantart downloaded content filenames better"""
     def newName(f):
         f,e=splitext(f) #extension
         b,f=split(f) #base folders
@@ -266,6 +244,7 @@ def dARename(*files):
         if exists(f) and not exists(new): renames(f,new)
 
 def exploreZip(Zip):
+    """create a terminal for moving around zip files"""
     from zipfile import ZipFile
     from random import sample
     def subset(place): return set(name.replace(place,'') for name in ZipFiles if name.startswith(place))
@@ -313,6 +292,7 @@ def exploreZip(Zip):
         inGET = input().split()
         
 def unzip(file, aim, files=None):
+    """unzip a file file by file. return a set of files that were unable to be extracted"""
     from zipfile import ZipFile
     from random import shuffle
     ZIP = ZipFile(file)

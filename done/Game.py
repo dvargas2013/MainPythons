@@ -1,28 +1,16 @@
-Info='''
----Game---
-Contains fun stuff you can do with my computer 'cause of skills
-
-matrix(minimum,maximum) - will randomly print numbers between nums
-multgame(first,second) - will repeatedly ask you to multiply numbers
-pattgame(start,times,plus,hints) - will make a pattern to figure out
-physics() - Will ask motion physics question to answer.
-thinker() - Will ask you which number has the divisor:remainder pairs
-mindread() - Will guess a number between 1-25 if you tell it location
-zombie() - Choose your own adventure time
-ultrps(rounds) - Ultimate Rock Paper Scissors
-murdergame(num=4) - Murder happens; figure out who did what
-'''
-def showInfo():
-    from done.String import smartPrint
-    smartPrint(Info)
+'''Contains fun stuff you can do with my computer 'cause of skills'''
 
 def matrix(mini,maxi):
-    "_(-1,1) prints 11-1-1-1-11-11001-10-10-1011010-1..."
+    """print random integers between min and max... never stops"""
     from random import randint
     while 1: print(randint(mini,maxi),end='')
 
 def multgame(digitAmount1,digitAmount2):
-    "_(2,3) = 2 digit number * 3 digit number = ?"
+    """Give will ask you to multiply number of digit
+    
+    Usage:
+        _(2,3) = 2 digit number * 3 digit number = ?
+    """
     from random import randrange
     while 1:
         x,y=randrange(10**(digitAmount1-1),10**digitAmount1),randrange(10**(digitAmount2-1),10**digitAmount2)
@@ -34,7 +22,7 @@ def multgame(digitAmount1,digitAmount2):
 
 
 def pattgame(multiplicand,multiplier,addend,hintamount):
-    "Pattern multiplies by a num then adds by another num"
+    """Gives a pattern that multiplies by a num then adds by another num repeatedly"""
     from random import randint
     if hintamount<3: hintamount=3
     lis=list(range(hintamount+1))
@@ -53,7 +41,8 @@ def pattgame(multiplicand,multiplier,addend,hintamount):
             else: print(q,'is wrong')
 
 def physics():
-    "Asks newtonian physics questions on acceleration, time, velocity and distance"
+    """Asks newtonian physics questions on acceleration, time, velocity and distance"""
+    # TODO I think I messed this up one day
     from random import randrange, randint
     X='{} {}\n{} {}\n{} {}'
     A,VI,T,D,VF='Acceleration:','Initial Speed:','Time:','Distance:','Final Speed:'
@@ -73,7 +62,7 @@ def physics():
         else: problem(VF,vf,VI,vi,A,a,info=T+' ',aim=(vf-vi)/a)
 
 def thinker():
-    "Game with remainders"
+    """Logic game with remainders"""
     from random import sample, randint
     from done.List import lcm
     while 1:
@@ -90,7 +79,7 @@ def thinker():
             else: print(n, "is Incorrect")
 
 def mindread():
-    "Pick a number between 1-25 and pick row numbers"
+    """Pick a number between 1-25 and pick row numbers. Prepare to have your 'mind' 'read'"""
     print('row1: 06 11 01 21 16\nrow2: 12 07 02 22 17\nrow3: 23 13 08 18 03\nrow4: 19 14 09 04 24\nrow5: 10 05 20 15 25')
     a=eval(input('row number of location of your number: '))
     print('row1: 05 02 04 03 01\nrow2: 09 07 08 06 10\nrow3: 13 12 11 15 14\nrow4: 20 17 19 16 18\nrow5: 22 25 21 24 23')
@@ -99,7 +88,7 @@ def mindread():
     return a-5+b*5
 
 def zombie():
-    "Survive the zombieapocalypse"
+    """Survive the zombieapocalypse"""
     print('In order to choose a path use keyboard then click enter')
     name=input("What is your partner's name? ")
     #Scene 1:
@@ -170,7 +159,11 @@ You and %s kill all the zombies in the world. Yay!'''%name)
 
 
 def ultrps(rounds):
-    "ultrps(5) --> 5 rounds of ultimate rock paper scissors"
+    """Play of game of ultimate rock paper scissors
+    
+    Usage:
+        ultrps(5) --> 5 rounds of ultimate rock paper scissors
+    """
     from random import randrange
     armytable=[[ 0, 1,-1, 1,-1],
                [-1, 0, 1,-1, 1],
@@ -226,7 +219,7 @@ def ultrps(rounds):
     return "You won {:.1%} of the games".format(wins/rounds)
 
 def murdergame(num=4):
-    "Play this logic game of muhda (murder)"
+    """Play this logic game of muhda (murder)"""
     from random import randrange
     class R:
         _all = ['ppl','wps','rms']

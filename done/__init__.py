@@ -1,12 +1,8 @@
 #!/usr/bin/env python3
 
-__all__ = ['AllInfo', 'showInfo',
-           'File', 'Game', 'List', 'Math', 'Number', 'Solver', 'String', 'Time']
+__all__ = ['File', 'Game', 'List', 'Math', 'Number', 'Solver', 'String', 'Codes', 'Time']
 
-from . import File,Game,List,Math,Number,Solver,String,Time
-
-AllInfo = '\n\n'.join(eval(i).Info for i in __all__[2:])
-def showInfo(): String.smartPrint(AllInfo)
+from . import File,Game,List,Math,Number,Solver,String,Codes,Time
 
 '''
 from sys import version_info

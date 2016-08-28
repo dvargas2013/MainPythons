@@ -1,29 +1,35 @@
-Info ='''---Time---
-Deals with anything with the human concept of time and dates
+#!/usr/bin/env python3
+'''Deals with anything with the human concept of time and dates'''
 
-Time(timeStr) - Object to deal with the object of time
-bisectHrMnHands(hr,mn,sc) - bisect the hr & mn hands using sc hand
-DayOfTheWeek(month,date,year) - Calculates the day of the week
-countdown(keyTilQuit=10) - shows amount of time passed on keypress
-stopwatch(totalIters=10,secsTilNext=1) - prints time left
-timer(str) - Contextual timer called using a with statement
-from time import time
-'''
-def showInfo():
-    from done.String import smartPrint
-    smartPrint(Info)
+from time import *
+from datetime import datetime
 
 class Time:
     def __init__(self, *time):
-        "Time(8,0,0)=Time(8,0)=Time(8)=Time('8')=Time('8:0')=Time('8:0:0')"
+        """Instance of time can do many Timely things.
+        
+        Keeps track of total seconds from midnite to time.
+        
+        Initialization:
+            
+            All of these are equavilent and will initialize with 8 o'clock AM
+            
+            Time(8,0,0) - set hours, minutes, seconds
+            Time(8,0) - set hours, minutes
+            Time(8) - set hours
+            Time('8') - set hours from string
+            Time('8:0') - set hours, minutes from string
+            Time('8:0:0') - set hours, minutes, seconds from string
+        
+        If initialization fails will return a Time() instance with time of creation
+        """
         try:
             if len(time)==1:
                 if type(time[0])==str: new = time[0].split(":")
                 else: new = [self.run(time[0],0),0,0]
             elif len(time)>1: new = [self.run(i,0) for i in time[:3]]
-            else: 1/0
+            else: raise Exception()
         except:
-            from datetime import datetime
             a=datetime.now()
             new=[a.hour,a.minute,a.second+a.microsecond/1e6]
         while len(new)<3: new=list(new)+[0]
@@ -34,25 +40,43 @@ class Time:
         self.sc=round(self.sc%60,9) #Reduce seconds
         #That's the best way I thought of at the moment
     #Some numbers associated with the time
-    def totalSc(self): return 60*(60*self.hr+self.mn)+self.sc
-    def hrHandDeg(self): return (60*(60*self.hr+self.mn)+self.sc)/120%360
-    def mnHandDeg(self): return (60*self.mn+self.sc)/10%360
-    def scHandDeg(self): return self.sc*6%360
+    def totalSc(self):
+        """Calculate and return the total amount of seconds from midnite to time"""
+        return 60*(60*self.hr+self.mn)+self.sc
+    def hrHandDeg(self):
+        """Calculate and return angle between the 12 and position of the hour hand"""
+        return (60*(60*self.hr+self.mn)+self.sc)/120%360
+    def mnHandDeg(self):
+        """Calculate and return angle between the 12 and position of the minute hand"""
+        return (60*self.mn+self.sc)/10%360
+    def scHandDeg(self):
+        """Calculate and return angle between the 12 and position of the second hand"""
+        return self.sc*6%360
     #Some setting functions
     def fromS(self,secs):
+        """Set the time according to how many seconds from midnite the time should be"""
         self.hr,self.mn,self.sc = int((secs/120%360))//30,int((secs/10%360))//6,(secs*6%360)/6
         if abs(self.sc%1) < 1e-9: self.sc=int(self.sc)+.0
         return self
-    def hrFromD(self,deg): self.hr=deg//30
-    def mnFromD(self,deg): self.mn=deg//6
-    def scFromD(self,deg): self.sc=deg/6
+    def hrFromD(self,deg):
+        """Set the hour hand of time to where it should be according to the angle given in degrees"""
+        self.hr=deg//30
+    def mnFromD(self,deg):
+        """Set the minute hand of time to where it should be according to the angle given in degrees"""
+        self.mn=deg//6
+    def scFromD(self,deg):
+        """Set the second hand of time to where it should be according to the angle given in degrees"""
+        self.sc=deg/6
     def setHr(self, num):
+        """Set the hours of time"""
         new = Time(num,self.mn,self.sc)
         self.hr,self.mn,self.sc = new.hr,new.mn,new.sc
     def setMn(self, num):
+        """Set the minutes of time"""
         new = Time(self.hr,num,self.sc)
         self.hr,self.mn,self.sc = new.hr,new.mn,new.sc
     def setSc(self, num):
+        """Set the seconds of time"""
         new = Time(self.hr,self.mn,num)
         self.hr,self.mn,self.sc = new.hr,new.mn,new.sc
     #Some math operations for time
@@ -77,18 +101,23 @@ class Time:
     #Show the time in a cool way
     def __repr__(self): return '{:0>2}:{:0>2}:{:0>2}'.format(self.hr if self.hr!=0 else 0,self.mn,self.sc)
     def __str__(self): return self.__repr__()
-    def run(self,num,default):
+    def run(self,num,default=1):
+        """Convert parameter sent into the total amount of seconds.
+        
+        Can accept int, float, and Time. Anything else and default is returned"""
         if type(num)==type(self): return num.totalSc()
         if type(num) in [int, float]: return num
         return default
 
 def bisectHrMnHands(hr,mn,sc):
-    "_(12,30,00) = 12:30:16.39"
+    """Calculate the time at which the second hand will bisect the hour and minute hands."""
+    # estimation of answer. always decreases distance to true answer
     def xpct(hr,mn,sc):
         ans1=((30*hr+6.5*mn+13*sc/120)%360)/2
         ans2=ans1+180
         if abs(sc*6%360-ans1)>abs(sc*6%360-ans2): return ans2
         return ans1
+    # continuously walk towards the true answer
     while round(xpct(hr,mn,sc),9)!=round(sc*6%360,9):
         while xpct(hr,mn,sc)<sc*6%360: sc-=(sc*6%360-xpct(hr,mn,sc))/6
         while xpct(hr,mn,sc)>sc*6%360: sc+=(xpct(hr,mn,sc)-sc*6%360)/6
@@ -96,6 +125,7 @@ def bisectHrMnHands(hr,mn,sc):
     hr=int((secs/120%360)//30)
     mn=int((secs/10%360)//6)
     sc=(secs*6%360)/6
+    # output
     out=''
     if hr==0: hr=12
     if hr<10: out+='0'
@@ -106,30 +136,34 @@ def bisectHrMnHands(hr,mn,sc):
     return out+str(sc)
 
 def DayOfTheWeek(month,date,year):
-    "_(12, 25, 1995) = 'Sunday'"
+    """"Calculate the Day of the Week according to month, day, year given."""
     if type(month)==str: month = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].index(month.lower()[:3])+1
     return ['Thrusday','Friday','Saturday','Sunday','Monday','Tuesday','Wednesday'][int((23*month//9+date+year+(year-(1-abs(month-2.5)/(month-2.5))//2)//4-(year-(1-abs(month-2.5)/(month-2.5))//2)//100+(year-(1-abs(month-2.5)/(month-2.5))//2)//400)-abs(month-2.5)/(month-2.5)-1)%7]
 
-def stopwatch(n=10):
-    from datetime import datetime
-    from os import system
-    a = datetime.now()
-    for i in range(n):
-        system('read -s -n 1')
-        print(datetime.now() - a)
-def countdown(n=10,count=1):
-    from os import system
-    from time import sleep
-    a = Time()+Time(0,0,n*count)
-    while a>Time():
-        print(a-Time(),end="\r")
-        sleep(count)
 from contextlib import contextmanager
-from time import time
 @contextmanager
 def timer(msg):
-    "with timer('Message'): #do something"
+    """Give time taken by the block within context.
+    
+    Usage:
+    
+        with timer('<Message>'):
+            <block>
+    """
     start = time()
     yield
     end = time()
     print("%s: %.02fms" % (msg, (end-start)*1000))
+
+def stopwatch(n=10):
+    """Give time since call for {n} Enter Key presses."""
+    a = datetime.now()
+    for i in range(n):
+        input()
+        print(datetime.now() - a)
+def countdown(n=10,count=1):
+    """Show a countdown on the Terminal starting at {n} counting down by {count}"""
+    a = Time()+Time(0,0,n*count)
+    while a>Time():
+        print(a-Time(),end="\r")
+        sleep(count)

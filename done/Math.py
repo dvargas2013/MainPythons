@@ -1,46 +1,43 @@
-Info ='''
----Math---
-Formulaic, singular number functions are stored here
+'''Formulaic, singular number functions are stored here'''
 
-distanceFormula(x1,y1,x2,y2) - distance formula
-angle - together with distance gives polar coord
-angleForStar(spokes) - gets number of spokes and gives angle needed
-
-discriminant(a,b,c) - calculates discriminant
-quadraticVertex(a,b,c) - finds Vertex or turning point
-sumAndProduct(a,b,c) - finds sum and product of roots
-quadraticRoots(a,b,c) - finds roots of quadratic
-
-polynom - object representing algebraic functions in string form
-nomial - object representing algebraic functions in list form
-BitString() - class that is a long. word = len(4bits). init to 0.
-
-fact(num) - factorial (n!)
-perm(n,r) - permuation (nPr)
-comb(n,r) - combination (nCr)
-'''
-def showInfo():
-    from done.String import smartPrint
-    smartPrint(Info)
 import math
-def angle(x1,y1,x2,y2): return math.atan2(y2-y1,x2-x1)
+def angle(x1,y1,x2,y2):
+    """Calculate the angle made by the two points according to x axis"""
+    return math.atan2(y2-y1,x2-x1)
 def distanceFormula(x1,y1,x2,y2):
-    "_(0, 0, 3, 4) = 5.0"
+    "Calculate the distance between the two points"
     return math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1))
 def angleForStar(spokes):
-    "_(5) = 72.0"
+    """Calculate angle to create a star
+    
+    Starts working best for {spokes} > 9.
+    
+    Example Usage:
+        def f(n):
+            "draw a star using a turtle"
+            import turtle
+            # Turtle set up
+            s = turtle.Screen()
+            t = turtle.Turtle()
+            # set angle needed to rotate
+            a = angleForStar(n)
+            # preform
+            for i in range(n*2):
+                t.fd(100)
+                t.rt(a)
+    """
     return round(180*(spokes-2-spokes%2)/spokes,9)
 def discriminant(a,b,c):
-    "_(1, 2, 1) = 0"
+    "Get the discriminant of quadratic"
     return b*b-4*a*c
 def quadraticVertex(a,b,c):
-    "_(1, 2, 1) = [-1.0, 0.0]"
+    "Get the vertex of a quadratic"
     return [-b/2/a,c-b*b/4/a]
 def sumAndProduct(a,b,c):
-    "_(1, 2, 1) = [-2.0, 1.0]"
+    "Get the sum and product of the roots of quadratic"
     return [-b/a,c/a]
 def quadraticRoots(a,b,c):
-    "_(1, 2, 1) = {-1.0}"
+    "Get the roots of quadratic"
     d=math.sqrt(b*b-4*a*c)
     return {(d-b)/2/a,-(d+b)/2/a}
 
@@ -119,25 +116,6 @@ class polynom:
         "_([4, 0, 3]) = '4x2+3'"
         ret='+'.join(str(nomial.tryInt(Lis[i]))+Sym+str(len(Lis)-i-1) for i in range(len(Lis)))
         return ret.replace(Sym+'0','').replace(Sym+'1+',Sym+'+').replace('+1'+Sym,'+'+Sym).replace('-1'+Sym,'+'+Sym).replace('+-','-')
-    
-def fact(num):
-    "_(4) = 24"
-    if type(num)!=int or num<0: return 0
-    ret=1
-    for i in range(num): ret*=i+1
-    return int(ret)
-def perm(n,r):
-    "_(4,2) = 12"
-    if type(n*r)!=int or n*r<0 or r>n: return 0
-    ret=1
-    for i in range(n-r,n): ret*=i+1
-    return int(ret)
-def comb(n,r):
-    "_(4,2) = 6"
-    if type(n*r)!=int or n*r<0 or r>n: return 0
-    r = min(r, n-r)
-    return int(perm(n,r)//fact(r))
-
 class BitString():
     def __init__(self):
         self.data = 0
@@ -156,3 +134,24 @@ class BitString():
     def __str__(self): return hex(self.data)[2:].strip('L')
     def __repr__(self):
         return '.'.join(str(i) if i>9 else "0%s"%i for i in self)
+
+def factorial(num):
+    "Calculate factorial"
+    if type(num)!=int or num<0: return 0
+    ret=1
+    for i in range(num): ret*=i+1
+    return int(ret)
+fact = factorial
+def permutation(n,r):
+    "Calculate Permutation"
+    if type(n*r)!=int or n*r<0 or r>n: return 0
+    ret=1
+    for i in range(n-r,n): ret*=i+1
+    return int(ret)
+perm = permutation
+def combination(n,r):
+    "Calculate Combination"
+    if type(n*r)!=int or n*r<0 or r>n: return 0
+    r = min(r, n-r)
+    return int(perm(n,r)//fact(r))
+comb = combination

@@ -1,21 +1,4 @@
-Info ='''
----Number---
-Searching functions dealing with singular number space
-Prioritized for human readability
-
-simplifyRadical(index,radicand) - simplifies radicals
-pythagoreanTriplets(integer) - gets pythagorean triplet integer
-isPrime(n) - returns True if n is prime
-nextPrime(integer) - returns prime >= to number given
-primeFactorize(integer) - prime factorizes a number
-theFactorsOf(integer) - human readable list of factors of a integer
-changeBase(int[],oldbase,newbase) - convert to new base
-numToStr(num) - gives name of number
-piecewiseMaker(funcstr,slicer) - makes a piecewise function
-'''
-def showInfo():
-    from done.String import smartPrint
-    smartPrint(Info)
+'''Searching functions dealing with singular number space - Prioritized for human readability'''
 
 def simplifyRadical(index,radicand):
     "_(2, 18) = 3*√(2)"

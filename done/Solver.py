@@ -1,16 +1,9 @@
-Info = '''
----Solver---
-Deals with the things that need solving in the world
+'''Deals with the things that need solving in the world
 
-solve(*nums,[lookup]) - using {*-+/} makes numbers into lookup
-sudoku(grid) - solves sudoku problems for you
-numRemainders(dictionary) - finds number with divisor:remainder pairs
-respart(num,list) - finds how many of each in list to make num
-addOrSub(stringOfNums,num) - adds +/- between #s to make num
+Basically if you are tempted to use a brute force algorithm for something it's probably in here.
+my pride and joys are the sudoku solver and the 24 game solver.
+there are others but they are really obscure problems and puzzles.
 '''
-def showInfo():
-    from done.String import smartPrint
-    smartPrint(Info)
 
 def solve(*Nums,lookup=24):
     "_(1,2,3,4,lookup=30) yields '3*(2*(4+1))'"
