@@ -42,16 +42,17 @@ def pattgame(multiplicand,multiplier,addend,hintamount):
 
 def physics():
     """Asks newtonian physics questions on acceleration, time, velocity and distance"""
-    # TODO I think I messed this up one day
     from random import randrange, randint
-    X='{} {}\n{} {}\n{} {}'
+    X='\n{} {}\n{} {}\n{} {}'
     A,VI,T,D,VF='Acceleration:','Initial Speed:','Time:','Distance:','Final Speed:'
     def problem(*stuff,info='',aim=0):
         loop=aim+1
-        while loop!=aim:
-            print(X.format(stuff))
+        while 1:
+            print(X.format(*stuff))
             loop=eval(input(info))
-        print(loop+"is Correct\n=====NewProblem=====")
+            if loop!=aim: print("{} is Incorrect".format(loop))
+            else: break
+        print("{} is Correct\n=====NewProblem=====".format(loop))
     while 1:
         a,vi,t,d,c=randint(1,6),randrange(10),randint(1,8),5*randrange(13),randrange(5)
         vf=randint(vi,10)
@@ -71,7 +72,7 @@ def thinker():
         for i in range(3): lis[i+3]=deta%lis[i]
         n=lcm(lis[:3])
         print("A number between 9 and {} divided by {} {} and {} gives remainders {} {} and {}".format(n if n<100 else 100,lis[0],lis[1],lis[2],lis[3],lis[4],lis[5]))
-        deta=deta%n
+        deta%=n
         n=0
         while n!=deta:
             n=eval(input("What is the number? "))

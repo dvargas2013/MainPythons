@@ -240,6 +240,12 @@ def chain(words,letters):
         if i%(letters+1)==0: word+=' '
         else: word+=findlet(matr[word[i-1]],randrange(sum(matr[word[i-1]])))
     return word[1:].title()
+
+def loremIpsum(n=60,a=2,b=12):
+    """Makes random words from length {a} to {b} until {n} are made"""
+    from random import randint
+    return ' '.join(chain(1,random.randint(a,b)) for i in range(n))
+
 def chemistry(longString="Hello World",showall=False):
     """Given a sentence will try to recreate string with chemistry symbols"""
     # without j and q the algorithm would get stuck
