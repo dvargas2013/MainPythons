@@ -5,7 +5,7 @@ def binary(s,toBin=True):
     
     If you change toBin to false it will turn a binary string (actually a string with the chars '1' and '0' in it) into a string again
     """
-    if toBin: ' '.join( '{:0<8}'.format(bin(ord(i)).lstrip('0b')) for i in s )
+    if toBin: return ' '.join( '{:0<8}'.format(bin(ord(i)).lstrip('0b')) for i in s )
     else: return ''.join(chr(int(i,2)) for i in s.split())
 def eggnog(str_):
     """Reverses string and adds spaces at the second last letter of words
