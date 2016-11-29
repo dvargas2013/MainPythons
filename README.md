@@ -2,15 +2,15 @@
 ##__init__.py
 just import everything from everywhere
 ##Number.py
-**simplifyRadical** - simplifies radicals
-**pythagoreanTriplets** - gets pythagorean triplet integer
-**isPrime** - returns True if n is prime
-**nextPrime** - returns prime >= to number given
-**primeFactorize** - prime factorizes a number
-**theFactorsOf** - human readable list of factors of a integer
-**changeBase** - convert to new base
-**numToStr** - gives name of number
-**piecewiseMaker** - makes a piecewise function
+**simplifyRadical** - simplifies radicals  
+**pythagoreanTriplets** - gets pythagorean triplet integer  
+**isPrime** - returns True if n is prime  
+**nextPrime** - returns prime >= to number given  
+**primeFactorize** - prime factorizes a number  
+**theFactorsOf** - human readable list of factors of a integer  
+**changeBase** - convert to new base  
+**numToStr** - gives name of number  
+**piecewiseMaker** - makes a piecewise function  
 ##List.py
 **poisson** - finds poisson probability (mean rate & successes)  
 **Dev** - finds sample or population Deviation  
@@ -108,7 +108,8 @@ from glob import glob
 **isRep** - figures out if a string is composed of the substring given  
 **endRepFind** - finds repetitions at end of string  
 **showInfo** - gives a bit of info on the thing  
-**chain** - makes random pronounceable 'words'  
+**chain** - makes random pronounceable 'words'
+**loremIpsum** - uses chain() to make sentences  
 **chemistry** - will try to recreate sentence using only the symbols of the periodic table  
 **anagram** - un-shuffles word to match a word in dictionary file  
 **clues22** - plays that clues 22 game. given substrings that combine to make words will try to combine the substrings  
