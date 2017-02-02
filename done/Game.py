@@ -142,10 +142,11 @@ def zombie():
         return
     else: #Fight
         print("\nIn the weapon place you find new weapons")
-        if input("What weapon do you want? (1-Katana)(2-Automatic Weapons)(3-Soda Cans): ")[0] in '1kK': #Katana
+        wep2 = input("What weapon do you want? (1-Katana)(2-Automatic Weapons)(3-Soda Cans): ")[0]
+        if wep2 in '1kK': #Katana
             print("\nSeems like you forgot that the zombies would learn to use chainsaws. chainsaws>swords")
             return
-        elif wep2[0] in '2aA': #Guns
+        elif wep2 in '2aA': #Guns
             print("\nYou take your guns and like always guns ran out of bullets and there is no escape")
             return
         else: #Soda
