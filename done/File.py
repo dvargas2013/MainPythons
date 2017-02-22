@@ -243,62 +243,87 @@ def dARename(*files):
         new = newName(f)
         if exists(f) and not exists(new): renames(f,new)
 
-def exploreZip(Zip):
-    """create a terminal for moving around zip files"""
+def ZipGui():
+    from tkinter import Tk,Listbox,filedialog,Menu
     from zipfile import ZipFile
-    from random import sample
-    def subset(place): return set(name.replace(place,'') for name in ZipFiles if name.startswith(place))
-    def show(place):
+    from os.path import abspath
+    from os import pardir
+    def subset(place,ZipFiles): return set(name.replace(place,'') for name in ZipFiles if name.startswith(place))
+    def show(place,ZipFiles):
         scan = set()
-        for name in subset(place):
+        for name in subset(place,ZipFiles):
             a = name.find('/')+1
             if a>0: scan.add(name[:a])
             elif name!='': scan.add(name)
         return scan
-    def goto(place,newPlace):
-        if newPlace == ''  : return './'
-        if newPlace == '..': return place.replace( place.split('/')[-2]+'/' , '')
-        newPlace = newPlace.lower()
-        LIS = [i for i in show(place) if not i.startswith('._')]
-        lis = [i.lower() for i in LIS]
-        if newPlace in lis:
-            newPlace = LIS[lis.index(newPlace)]
-            print(join(place,newPlace))
-            return join(place,newPlace)
-        newLis = [i for i in lis if i.startswith(newPlace)]
-        if len(newLis)!=0:
-            newPlace = LIS[lis.index(sample(newLis,1)[0])]
-            print(newPlace)
-            return join(place,newPlace)
-        print(LIS)
-        return place
+    class App(Tk):
+        def __init__(self):
+            Tk.__init__(self)
+            self.bind("<Escape>", lambda e: self.destroy())
+            self.bind("<Command-w>", lambda e: self.destroy())
+            self.bind("<Command-o>", lambda e: self.openDocument())
+            self.menu = Menu(self, tearoff=0)
+            self.menu.add_command(label="unzip", command=self.unzip)
+            self.lists = []
+            self.lift()
+            self.attributes('-topmost', True)
+            self.openDocument()
+        def unzip(self):
+            l = self.lists[-1]
+            if not l.curselection(): l = self.lists[-2]
+            f = join(l.pwd,l.get(l.curselection()))
+            if f.endswith('/'):
+                for name in self.files:
+                    if name.startswith(f) and not name.endswith('/'): self.zipfile.extract(name[2:],self.aim)
+            else: self.zipfile.extract(f[2:],self.aim)
+        def openDocument(self):
+            self.document = filedialog.askopenfilename(initialdir = "~",title = "Select ZIP")
+            if not self.document: return
+            try: self.zipfile = ZipFile(self.document)
+            except Exception as e:return self.wm_title(e)
+            self.aim = abspath(join(self.document,pardir))
+            self.files = set('./'+i for i in self.zipfile.namelist())
+            self.popDownTo(0)
+            self.wm_title(self.document)
+            FileList(self)
+        def popDownTo(self,to):
+            n = len(self.lists)-to-1
+            for i in range(n): self.pop()
+        def pop(self):
+            if len(self.lists) < 1: return
+            self.lists.pop().destroy()
+            self.columnconfigure(len(self.lists),weight=0)
+    class FileList(Listbox):
+        def __init__(self,master,place='./'):
+            Listbox.__init__(self, master,selectmode="SINGLE")
+            self.grid(row=0,column=len(master.lists),sticky="NSWE")
+            master.columnconfigure(len(master.lists),weight=1)
+            master.rowconfigure(0,weight=1)
+            self.master = master
+            self.pwd = place
+            master.lists.append(self)
+            for i in sorted(show(place,master.files),key=lambda z: '!'+z if z.endswith('/') else z): self.insert("end",i)
+            self.bind("<Button-1>",lambda e: self.click())
+            self.bind("<Button-2>",lambda e: self.master.menu.post(e.x_root,e.y_root))
+        def click(self,retry=1):
+            if retry: return self.after(20,lambda: self.click(retry-1))
+            sel = self.curselection()
+            self.master.popDownTo(int(self.grid_info().get('column',0)))
+            FileList(self.master,self.pwd+self.get(sel))
+    app = App()
+    app.mainloop()
 
-    ZIP = ZipFile(Zip)
-    ZipFiles = set(i.replace('__MACOSX/','./') for i in ZIP.namelist() if i.startswith('__MACOSX/'))
-    place = './'
-    print('You can use goto, show, and pwd')
-    print('goto can take 1 argument, no argument goes to HOME, .. to backtrack 1')
-    print('q to quit')
-    inGET=['']
-    while inGET[0] not in ['q','quit']:
-        if inGET[0] in ['show','ls']:
-            thing = show(place)
-            if len(thing)>0: print(thing)
-        elif inGET[0]=='pwd': print(place)
-        elif inGET[0] in ['goto','cd']:
-            if len(inGET)>1: thing = inGET[1]
-            else: thing = ''
-            place = goto(place,thing)
-        inGET = input().split()
-        
-def unzip(file, aim, files=None):
+def unzip(file, aim='', files=None):
     """unzip a file file by file. return a set of files that were unable to be extracted"""
     from zipfile import ZipFile
     from random import shuffle
     ZIP = ZipFile(file)
+    if not aim:
+        import os.path
+        import os
+        aim = os.path.abspath(join(file, os.pardir))
     if not files: files = ZIP.namelist()
     shuffle(files)
-
     failed = set()
     while len(files) != 0:
         extract = files.pop()

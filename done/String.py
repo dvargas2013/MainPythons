@@ -36,7 +36,7 @@ def findListInStr(string,lis):
     return False
 def reverse(str_):
     """Reverse the String"""
-    return ''.join(reversed(str_))
+    return str_[::-1] #''.join(reversed(str_))
 def backwards(str_):
     """Reverse the String as well as horizontally rotate the characters"""
     from random import randrange
