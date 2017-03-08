@@ -13,6 +13,7 @@ def pythagoreanTriplets(integer):
     if integer%2==1: return [integer,(integer*integer-1)//2,(integer*integer+1)//2]
     else: return [integer,(integer*integer//4-1),(integer*integer//4+1)]
 def isPrime(n):
+    if int(n) != n: return False
     if n==2 or n==3: return True
     if n<2 or n%2==0: return False
     if n<9: return True
@@ -21,12 +22,14 @@ def isPrime(n):
         if n%f == 0: return False
         if n%(f+2) == 0: return False
     return True
+from math import ceil
 def nextPrime(integer):
     "_(5) = 5, _(15) = 17"
     if integer<2: return 2
-    while not isPrime(integer):
-        if integer%2: integer+=2
-        else: integer+=1
+    if integer<3: return 3
+    integer=int(ceil(integer))
+    if integer%2==0: integer+=1
+    while not isPrime(integer): integer+=2
     return integer
 def primeFactorize(integer):
     "_(15) = ['3^1', '5^1']"
