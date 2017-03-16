@@ -17,7 +17,6 @@ just import everything from everywhere
 **freqDev** - same as Dev but freq increases size  
 **probDev** - same as freq Dev  
 **hypergeometric** - stats stuff  
-**mean** - average of all elements in list  
 **median** - center of list when ordered  
 **gcd** - finds gratest common factor of many numbers  
 **lcm** - finds least common multiple of many numbers  
@@ -41,13 +40,8 @@ just import everything from everywhere
 **respart** - finds how many of each in list to make num
 **addOrSub** - adds +/- between #s to make num
 ##Math.py
-**distanceFormula** - distance formula  
 **angle** - together with distance gives polar coord  
 **angleForStar** - gets number of spokes and gives angle needed  
-**discriminant** - calculates discriminant  
-**quadraticVertex** - finds Vertex or turning point  
-**sumAndProduct** - finds sum and product of roots  
-**quadraticRoots** - finds roots of quadratic  
 **polynom** - object representing algebraic functions in string form  
 **nomial** - object representing algebraic functions in list form  
 **BitString** - class that is a long. word = len(4bits). init to 0.  
@@ -57,9 +51,6 @@ just import everything from everywhere
 ##File.py
 **getHome** - returns the environment $HOME  
 Desktop - path to Desktop = join(getHome(), 'Desktop')  
-from os import chdir, renames, getcwd, remove, walk  
-from os.path import exists, join, splitext, split, relpath  
-from glob import glob  
 
 **files** - walks through place; yields relative path to files  
 **folders** - walks through place; yields relative path to folders  
@@ -77,7 +68,7 @@ from glob import glob
 **write** - writes to a file return boolean saying is successful  
 **reImport** - reimport a module for if you modify the module and dont want to close and reopen  
 **dARename** - renames files in a special way  
-**exploreZip** - allows cd, ls inside a Zipfile as directory  
+**ZipGui** - creates a GUI to explore a Zipfile
 **unzip** - Unzips files 1 at a time. (used for when you need to unzip a corrupted zip file)  
 ##Game.py
 **matrix** - will randomly print numbers between nums  
@@ -101,8 +92,8 @@ from glob import glob
 **updown** - uses the unicode characters for 'rotated-vertically' characters and preforms reverse  
 **strShuffle** - shuffles the whole string  
 **dyslexia** - shuffles the center portions of the words  
-**smartPrint** - Text Wrapper  
-**safePrint** - deletes center of text  
+**wrapPrint** - Text Wrapper  
+**removePrint** - deletes center of text  
 **score** - compares the two strings giving a score between 0 and 1  
 **findOccurance** - find the nth occurance of a substring  
 **isRep** - figures out if a string is composed of the substring given  
@@ -117,6 +108,7 @@ from glob import glob
 **Markov Class** - sliding window over string to get triplets of words to markov chain with  
 **pretty** - displays stars to the Terminal  
 **SequenceAlignment** - aligns strings so that the most letters fall into the same place  
+**DeBruijn** - gives a DeBruijn Sequence given an alphabet and the substring length  
 ##Codes.py
 **binary** - changes letters to 8bitBinary  
 **eggnog** - it sorta reverses the string in a special way  

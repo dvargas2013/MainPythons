@@ -120,13 +120,8 @@ def unbobulate(string):
     Example:
         unbobulate('dabadanab') = ('dan', True)
     """
-    out=''
-    for stry in string.split():
-        for i in range(len(stry)//3):
-            out+=stry[0]
-            stry=stry[3:]
-        out+=' '
-    return out[:-1],bobulate(out[:-1])==string
+    out=' '.join(stry[::3] for stry in string.split())
+    return out,bobulate(out)==string
 def cypher(string,num):
     """Ceaser cypher
     

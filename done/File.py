@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 '''If I made it and it has to do with files it is here'''
-from os import chdir, renames, getcwd, remove, walk
-from os.path import exists, join, splitext, split, relpath
+from os import chdir, renames, getcwd, remove, walk, makedirs
+from os.path import exists, join, splitext, split, relpath, abspath
 from glob import glob
 def getHome():
     from os import environ
@@ -30,7 +30,6 @@ def listFormats(place):
 def hideInMaze(file,mazeRoot,depth,size,dirNameLen=7):
     """Hides a file inside {size} directories in each directory for {depth} levels"""
     from done.String import chain
-    from os import makedirs
     from os.path import basename
     from random import randrange
     if input('are you sure you want to make '+str(sum(size**i for i in range(depth+1)))+' folders')[0] in 'Yy':
@@ -60,11 +59,21 @@ def linkDirectory(src, dest, symlink=True):
         print('f:',join(src,f),join(dest,f))
         try: link(join(src,f),join(dest,f))
         except: print('cannot:',f)
-      
+
+
+
+def Delete(copy,file):
+    out = join('CopyTrash',relpath(file,copy))
+    if exists(file): 
+        try:
+            renames(file, out)
+            print('Delete: %s => %s'%(file,out))
+        except OSError: #On drives I cant use renames. so hard removes take place. srry
+            remove(file)
+            print('HardRemove: %s => the pit'%file)
 def smartBackup(orig, copy, hardlink=False):
     """Checks if a file has been modified and transfers it over as needed"""
-    from os.path import abspath,getmtime as modT
-    from os import makedirs
+    from os.path import getmtime as modT
     if hardlink: from os import link as copyfile
     else: 
         from shutil import copy2
@@ -76,16 +85,8 @@ def smartBackup(orig, copy, hardlink=False):
         Delete(copy,new)
         copyfile(old,new)
         print('Copy: %s => %s'%(old,new))
-        #except OSError: print('CannotCopy: %s => %s'%(old,new)) 
-    def Delete(copy,file):
-        out = join('CopyTrash',relpath(file,copy))
-        if exists(file): 
-            try:
-                renames(file, out)
-                print('Delete: %s => %s'%(file,out))
-            except OSError: #On drives I cant use renames. so hard removes take place. srry
-                remove(file)
-                print('HardRemove: %s => the pit'%file)
+        #except OSError: print('CannotCopy: %s => %s'%(old,new))
+    
     for file in files(copy,relative=True): 
         file,origFile = join(copy,file), join(orig,file)
         try:
@@ -97,6 +98,8 @@ def smartBackup(orig, copy, hardlink=False):
     for file in files(orig): 
         copyFile,file = join(copy,file), join(orig,file)
         if not exists(copyFile): Copy(file,copyFile)
+
+
 
 def renamer(files, change, 
 success=lambda f,n: print("Renamed: "+f+'\n\t'+n+'\n'),
@@ -243,19 +246,19 @@ def dARename(*files):
         new = newName(f)
         if exists(f) and not exists(new): renames(f,new)
 
+
+def subset(place,ZipFiles): return set(name.replace(place,'') for name in ZipFiles if name.startswith(place))
+def show(place,ZipFiles):
+    scan = set()
+    for name in subset(place,ZipFiles):
+        a = name.find('/')+1
+        if a>0: scan.add(name[:a])
+        elif name!='': scan.add(name)
+    return scan
 def ZipGui():
     from tkinter import Tk,Listbox,filedialog,Menu
     from zipfile import ZipFile
-    from os.path import abspath
     from os import pardir
-    def subset(place,ZipFiles): return set(name.replace(place,'') for name in ZipFiles if name.startswith(place))
-    def show(place,ZipFiles):
-        scan = set()
-        for name in subset(place,ZipFiles):
-            a = name.find('/')+1
-            if a>0: scan.add(name[:a])
-            elif name!='': scan.add(name)
-        return scan
     class App(Tk):
         def __init__(self):
             Tk.__init__(self)
@@ -313,15 +316,16 @@ def ZipGui():
     app = App()
     app.mainloop()
 
+
+
 def unzip(file, aim='', files=None):
     """unzip a file file by file. return a set of files that were unable to be extracted"""
     from zipfile import ZipFile
     from random import shuffle
     ZIP = ZipFile(file)
     if not aim:
-        import os.path
-        import os
-        aim = os.path.abspath(join(file, os.pardir))
+        from os import pardir
+        aim = abspath(join(file, pardir))
     if not files: files = ZIP.namelist()
     shuffle(files)
     failed = set()

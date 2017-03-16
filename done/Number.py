@@ -18,9 +18,9 @@ def isPrime(n):
     if n<2 or n%2==0: return False
     if n<9: return True
     if n%3==0: return False
-    for f in range(5,int(n**.5)+6,6):
-        if n%f == 0: return False
-        if n%(f+2) == 0: return False
+    e = int(n**.5)+6
+    for f in range(5,e,6):
+        if n%f == 0 or n%(f+2) == 0: return False
     return True
 from math import ceil
 def nextPrime(integer):
@@ -33,15 +33,17 @@ def nextPrime(integer):
     return integer
 def primeFactorize(integer):
     "_(15) = ['3^1', '5^1']"
+    integer = int(integer)
     primes,lis=1,[]
     while integer!=1:
         primes=nextPrime(primes+1)
         if integer**.5<primes: primes=integer
+        primes = int(primes)
         power=0
         while integer%primes==0:
             power+=1
             integer//=primes
-        if power>0: lis+=['%s^%s'%(int(primes),power)]
+        if power>0: lis+=['%s^%s'%(primes,power)]
     return lis
 def theFactorsOf(integer):
     "_(15) = ['1+15=16', '3+5=8']"
@@ -50,18 +52,18 @@ def theFactorsOf(integer):
         if integer%loop==0: lis+=['%s+%s=%s'%(loop,integer//loop,loop+integer//loop)]
         loop+=1
     return lis
+from math import log
 def changeBase(lists,oldbase,newbase):
-    "_([1,0,1],2,10) = ([5], 'base', 10)"
-    from math import log
+    "_([1,0,1],2,10) = [5]"
     n=len(lists)-1
     summ=sum(lists[loop]*oldbase**(n-loop) for loop in range(n+1))
     stop=int(log(summ,newbase))+1
-    list_=[i for i in range(stop)]
+    list_=list(range(stop))
     for loop in range(stop):
         n=newbase**(stop-loop-1)
         list_[loop]=summ//n
         summ-=list_[loop]*n
-    return list_,'base',newbase
+    return list_
 def numToStr(num):
     "valid: 0 to 999"
     def ones(num): return ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine'][num%10]

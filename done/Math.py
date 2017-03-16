@@ -4,9 +4,6 @@ import math
 def angle(x1,y1,x2,y2):
     """Calculate the angle made by the two points according to x axis"""
     return math.atan2(y2-y1,x2-x1)
-def distanceFormula(x1,y1,x2,y2):
-    "Calculate the distance between the two points"
-    return math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1))
 def angleForStar(spokes):
     """Calculate angle to create a star
     
@@ -27,19 +24,6 @@ def angleForStar(spokes):
                 t.rt(a)
     """
     return round(180*(spokes-2-spokes%2)/spokes,9)
-def discriminant(a,b,c):
-    "Get the discriminant of quadratic"
-    return b*b-4*a*c
-def quadraticVertex(a,b,c):
-    "Get the vertex of a quadratic"
-    return [-b/2/a,c-b*b/4/a]
-def sumAndProduct(a,b,c):
-    "Get the sum and product of the roots of quadratic"
-    return [-b/a,c/a]
-def quadraticRoots(a,b,c):
-    "Get the roots of quadratic"
-    d=math.sqrt(b*b-4*a*c)
-    return {(d-b)/2/a,-(d+b)/2/a}
 
 class nomial:
     "polynomial list class: add, substract, multiply, divide"

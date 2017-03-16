@@ -1,8 +1,9 @@
 '''Contains fun stuff you can do with my computer 'cause of skills'''
+from random import randint,randrange,sample
+from done.List import lcm
 
 def matrix(mini,maxi):
     """print random integers between min and max... never stops"""
-    from random import randint
     while 1: print(randint(mini,maxi),end='')
 
 def multgame(digitAmount1,digitAmount2):
@@ -11,7 +12,6 @@ def multgame(digitAmount1,digitAmount2):
     Usage:
         _(2,3) = 2 digit number * 3 digit number = ?
     """
-    from random import randrange
     while 1:
         x,y=randrange(10**(digitAmount1-1),10**digitAmount1),randrange(10**(digitAmount2-1),10**digitAmount2)
         c=x*y-1
@@ -23,7 +23,6 @@ def multgame(digitAmount1,digitAmount2):
 
 def pattgame(multiplicand,multiplier,addend,hintamount):
     """Gives a pattern that multiplies by a num then adds by another num repeatedly"""
-    from random import randint
     if hintamount<3: hintamount=3
     lis=list(range(hintamount+1))
     while 1:
@@ -40,19 +39,20 @@ def pattgame(multiplicand,multiplier,addend,hintamount):
             if q==ri: print(q,'is correct')
             else: print(q,'is wrong')
 
+
+
+def problem(*stuff,info='',aim=0):
+    loop=aim+1
+    while 1:
+        print(X.format(*stuff))
+        loop=eval(input(info))
+        if loop!=aim: print("{} is Incorrect".format(loop))
+        else: break
+    print("{} is Correct\n=====NewProblem=====".format(loop))
 def physics():
     """Asks newtonian physics questions on acceleration, time, velocity and distance"""
-    from random import randrange, randint
     X='\n{} {}\n{} {}\n{} {}'
     A,VI,T,D,VF='Acceleration:','Initial Speed:','Time:','Distance:','Final Speed:'
-    def problem(*stuff,info='',aim=0):
-        loop=aim+1
-        while 1:
-            print(X.format(*stuff))
-            loop=eval(input(info))
-            if loop!=aim: print("{} is Incorrect".format(loop))
-            else: break
-        print("{} is Correct\n=====NewProblem=====".format(loop))
     while 1:
         a,vi,t,d,c=randint(1,6),randrange(10),randint(1,8),5*randrange(13),randrange(5)
         vf=randint(vi,10)
@@ -62,10 +62,10 @@ def physics():
         elif c==3: problem(VI,vi,A,a,T,t,info=VF+' ',aim=vi+a*t)
         else: problem(VF,vf,VI,vi,A,a,info=T+' ',aim=(vf-vi)/a)
 
+
+
 def thinker():
     """Logic game with remainders"""
-    from random import sample, randint
-    from done.List import lcm
     while 1:
         deta,lis=randint(10,99),list(range(2,10))
         lis=sample(lis,3); lis.sort(); lis*=2
@@ -166,7 +166,6 @@ def ultrps(rounds):
     Usage:
         ultrps(5) --> 5 rounds of ultimate rock paper scissors
     """
-    from random import randrange
     armytable=[[ 0, 1,-1, 1,-1],
                [-1, 0, 1,-1, 1],
                [ 1,-1, 0, 1,-1],
@@ -220,108 +219,109 @@ def ultrps(rounds):
             else: print("Let's try again")
     return "You won {:.1%} of the games".format(wins/rounds)
 
-def murdergame(num=4):
-    """Play this logic game of muhda (murder)"""
-    from random import randrange
-    class R:
-        _all = ['ppl','wps','rms']
-        num = 22
-        ppl = ['alex','ann','bill','bob','cindy','cris','eve','eric','flora','gary','joe','jane','jesus','kim','liza','ned','pat','ryan','robin','sam','scott','ted']
-        wps = ['allergy','axe','bag','banana','bat','bible','dart','gun','hands','knife','pillow','poison','rope','scissors','shoe','sword','syringe','vase']
-        rms = ['attic','basement','bathroom','bedroom','cellar','diningroom','garage','guestroom','hallway','kitchen','laundry','library','livingroom','playroom','shed','wardrobe','yard']
-        def __init__(self,num):
-            from random import sample
-            R.num = num
-            R.ppl = sample(R.ppl,num)
-            R.wps = sample(R.wps,num)
-            R.rms = sample(R.rms,num)
-        def get(s):
-            if s in R._all: return eval('R.'+s)
-            return False
-        def items():
-            for i in R._all: yield i,R.get(i)
-        def randPpl(): return R.ppl[randrange(R.num)]
-        def randWps(): return R.wps[randrange(R.num)]
-        def randRms(): return R.rms[randrange(R.num)]
-        def search(s):
-            for i,j in R.items():
-                for ss in j:
-                    if s[:4]==ss[:4]: return i,ss
-    def info():
-        "Print all the good junk"
-        print('''There are XxX Dead People
+
+
+class R:
+    _all = ['ppl','wps','rms']
+    num = 22
+    ppl = ['alex','ann','bill','bob','cindy','cris','eve','eric','flora','gary','joe','jane','jesus','kim','liza','ned','pat','ryan','robin','sam','scott','ted']
+    wps = ['allergy','axe','bag','banana','bat','bible','dart','gun','hands','knife','pillow','poison','rope','scissors','shoe','sword','syringe','vase']
+    rms = ['attic','basement','bathroom','bedroom','cellar','diningroom','garage','guestroom','hallway','kitchen','laundry','library','livingroom','playroom','shed','wardrobe','yard']
+    def __init__(self,num):
+        from random import sample
+        R.num = num
+        R.ppl = sample(R.ppl,num)
+        R.wps = sample(R.wps,num)
+        R.rms = sample(R.rms,num)
+    def get(s):
+        if s in R._all: return eval('R.'+s)
+        return False
+    def items():
+        for i in R._all: yield i,R.get(i)
+    def randPpl(): return R.ppl[randrange(R.num)]
+    def randWps(): return R.wps[randrange(R.num)]
+    def randRms(): return R.rms[randrange(R.num)]
+    def search(s):
+        for i,j in R.items():
+            for ss in j:
+                if s[:4]==ss[:4]: return i,ss
+def info():
+    "Print all the good junk"
+    print('''There are XxX Dead People
 All you know is they only had XxX rooms and XxX weapons available
 Make theories about the bodies, weapons, and rooms to get hints.
 Ex: Bedroom Bob Eve Vase means you are looking at the Bedroom
 For clues about if Bob was killed by Eve with a Vase there.
 All people are victims. Not all rooms and weapons are used. 
 '''.replace('XxX',str(R.num)))
-        for s in ['People','Weapons','Rooms']: print((s+":").ljust(20),end=' ')
-        for n in range(R.num):
-            print('')
-            for i,j in R.items(): print(j[n].ljust(20).title(),end=' ')
+    for s in ['People','Weapons','Rooms']: print((s+":").ljust(20),end=' ')
+    for n in range(R.num):
         print('')
-    #A little input thing that lets you write thing and it'll translate into 4 vars
-    def parse():
-        "Analyses what you input according to the stuff you gave returns parsed input"
-        def firstTag(tag,counter):
-            for i in range(len(counter)):
-                if tag==counter[i][0]:
-                    counter[i] = counter[i][1]
-                    return counter[i]
-        print('='*25+' Theory '+'='*25) 
-        counter = []
-        while len(counter)==0:
-            state=input('General statement: ').lower().strip()
-            for i in state.split():
-                parsed = R.search(i)
-                if parsed: counter.append(parsed)   
-            if len(counter)==0: print('BadInput')
-        first = counter[0]
-        a = firstTag('ppl',counter) or R.randPpl();b = firstTag('ppl',counter) or a
-        c = firstTag('wps',counter) or R.randWps();d = firstTag('rms',counter) or R.randRms()
-        if first[0]=='ppl'  : print('Theory While Looking @%s: killed by %s with %s in %s'%(first[-1].title(),b.title(),c.title(),d.title()))
-        elif first[0]=='rms': print('Theory While Looking @%s: %s killed by %s with %s'%(first[-1].title(),a.title(),b.title(),c.title()))
-        elif first[0]=='wps': print('Theory While Looking @%s: %s killed by %s in %s'%(first[-1].title(),a.title(),b.title(),d.title()))
-        return a,b,c,d,first
-    def contain(first,answers):
-        "gives one of answers containing the element given"
-        try:
-            where = R._all.index(first[0])+1
-            if where<2: where-=1
-        except: return [((None,None,None,None),-1)]
-        ind = 0
-        out = list()
-        for i in answers:
-            if i[where]==first[-1]: out.append((i,ind))
-            ind += 1
-        if len(out)==0: return [((None,None,None,None),-1)]
-        return out
-    def hint(Ans,choice):
-        "Returns dic of wrong ones"
-        ans = Ans[0][0]
-        if all(i==None for i in ans):
-            try: print('%s is clean. No murder happened %s.'%(choice[-1][-1].title(),{'wps': 'with it', 'rms': 'here'}[choice[-1][0]]))
-            except KeyError: print('You already figured out what happened to %s.'%choice[-1][-1].title()) #If on ppl that means you did it already
-            return 0,((None,None),)
-        types = {'wps': [0,1,3], 'rms': [0,1,2], 'ppl': [1,2,3]}
-        correct = 0
-        wrongs = []
-        for i in types[choice[-1][0]]:
-            if ans[i] == choice[i]: correct += 1
-            else: wrongs.append((ans[i],i,choice[i]))
-        if correct==3:
-            print('='*23+' You got it '+'='*23)
-            print('%s killed by %s with %s in %s'%tuple(i.title() for i in ans))
-        else:
-            if len(Ans)>1: print('%s murders happened %s. The more obvious one makes your theory have'%(len(Ans),{'wps': 'with this', 'rms': 'in here'}[choice[-1][0]]))
-            print('%s of them are correct'%correct,end=' ')
-            if correct!=0:
-                from random import randrange
-                a = randrange(len(wrongs))
-                print('and %s is wrong as %s'%(wrongs[a][-1].title(),['Victim','Killer','Weapon','Room'][wrongs[a][1]]))
-            else: print()
-        return correct,wrongs
+        for i,j in R.items(): print(j[n].ljust(20).title(),end=' ')
+    print('')
+#A little input thing that lets you write thing and it'll translate into 4 vars
+def parse():
+    "Analyses what you input according to the stuff you gave returns parsed input"
+    def firstTag(tag,counter):
+        for i in range(len(counter)):
+            if tag==counter[i][0]:
+                counter[i] = counter[i][1]
+                return counter[i]
+    print('='*25+' Theory '+'='*25) 
+    counter = []
+    while len(counter)==0:
+        state=input('General statement: ').lower().strip()
+        for i in state.split():
+            parsed = R.search(i)
+            if parsed: counter.append(parsed)   
+        if len(counter)==0: print('BadInput')
+    first = counter[0]
+    a = firstTag('ppl',counter) or R.randPpl();b = firstTag('ppl',counter) or a
+    c = firstTag('wps',counter) or R.randWps();d = firstTag('rms',counter) or R.randRms()
+    if first[0]=='ppl'  : print('Theory While Looking @%s: killed by %s with %s in %s'%(first[-1].title(),b.title(),c.title(),d.title()))
+    elif first[0]=='rms': print('Theory While Looking @%s: %s killed by %s with %s'%(first[-1].title(),a.title(),b.title(),c.title()))
+    elif first[0]=='wps': print('Theory While Looking @%s: %s killed by %s in %s'%(first[-1].title(),a.title(),b.title(),d.title()))
+    return a,b,c,d,first
+def contain(first,answers):
+    "gives one of answers containing the element given"
+    try:
+        where = R._all.index(first[0])+1
+        if where<2: where-=1
+    except: return [((None,None,None,None),-1)]
+    ind = 0
+    out = list()
+    for i in answers:
+        if i[where]==first[-1]: out.append((i,ind))
+        ind += 1
+    if len(out)==0: return [((None,None,None,None),-1)]
+    return out
+def hint(Ans,choice):
+    "Returns dic of wrong ones"
+    ans = Ans[0][0]
+    if all(i==None for i in ans):
+        try: print('%s is clean. No murder happened %s.'%(choice[-1][-1].title(),{'wps': 'with it', 'rms': 'here'}[choice[-1][0]]))
+        except KeyError: print('You already figured out what happened to %s.'%choice[-1][-1].title()) #If on ppl that means you did it already
+        return 0,((None,None),)
+    types = {'wps': [0,1,3], 'rms': [0,1,2], 'ppl': [1,2,3]}
+    correct = 0
+    wrongs = []
+    for i in types[choice[-1][0]]:
+        if ans[i] == choice[i]: correct += 1
+        else: wrongs.append((ans[i],i,choice[i]))
+    if correct==3:
+        print('='*23+' You got it '+'='*23)
+        print('%s killed by %s with %s in %s'%tuple(i.title() for i in ans))
+    else:
+        if len(Ans)>1: print('%s murders happened %s. The more obvious one makes your theory have'%(len(Ans),{'wps': 'with this', 'rms': 'in here'}[choice[-1][0]]))
+        print('%s of them are correct'%correct,end=' ')
+        if correct!=0:
+            from random import randrange
+            a = randrange(len(wrongs))
+            print('and %s is wrong as %s'%(wrongs[a][-1].title(),['Victim','Killer','Weapon','Room'][wrongs[a][1]]))
+        else: print()
+    return correct,wrongs
+def murdergame(num=4):
+    """Play this logic game of muhda (murder)"""
     R(num)
     answers = list((i,R.randPpl(),R.randWps(),R.randRms()) for i in set(R.ppl))
     saved = []

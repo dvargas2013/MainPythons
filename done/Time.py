@@ -99,7 +99,7 @@ class Time:
     def __gt__(self,new): return not self<=new
     def __ge__(self,new): return not self<new
     #Show the time in a cool way
-    def __repr__(self): return '{:0>2}:{:0>2}:{:0>2}'.format(self.hr if self.hr!=0 else 0,self.mn,self.sc)
+    def __repr__(self): return '{:0>2}:{:0>2}:{:0>2}'.format(self.hr,self.mn,self.sc)
     def __str__(self): return self.__repr__()
     def run(self,num,default=1):
         """Convert parameter sent into the total amount of seconds.
@@ -134,6 +134,7 @@ def bisectHrMnHands(hr,mn,sc):
     out+=str(mn)+' : '
     if sc<10: out+='0'
     return out+str(sc)
+# TODO can redo bisectHrMnHands to do a binary search of sorts
 
 def DayOfTheWeek(month,date,year):
     """"Calculate the Day of the Week according to month, day, year given."""

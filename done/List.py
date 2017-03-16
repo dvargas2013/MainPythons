@@ -1,9 +1,9 @@
 '''Deals with lists of information. Many probability things are found here.'''
 
+from done.Math import fact as F,comb as C
+from math import e,cos,pi
 def poisson(y, x):
     """calculate the poisson probability given mean rate and successes"""
-    from done.Math import fact as F
-    from math import e
     if type(x)==list:
         return round(sum(poisson(y,i) for i in x),4)
     return round(e**-y * y**x / F(x),4)
@@ -39,14 +39,10 @@ def probDev(x_px):
     return dev
 def hypergeometric(k, N, n, x):
     "Hypergeometric probability given starting choice total, total, tests to run, and successes"
-    from done.Math import comb as C
     if k<=N and n<=N:
         if type(x)==list: return round(sum(hypergeometric(k,N,n,i) for i in x),5)
         elif x<=k and x<=n and x<=N: return round(C(k,x) * C(N-k,n-x) / C(N,n),5)
     return 0
-def mean(lis):
-    "Calculate the mean of the list given"
-    return sum(lis)/len(lis)
 def median(lis):
     "Calculate the median of the list given"
     a=(len(lis)+1)//2
@@ -70,7 +66,7 @@ def show(lis, fast=True, File=None, openType='w'):
     if File == None:
         if fast == True: print(show(lis, File=False))
         elif fast==None:
-            for i in lis: (print(i),input())
+            for i in lis: input(i)
         else:
             for i in lis: print(i)
     elif File == False: return '\n'.join(str(i) for i in lis)
@@ -88,10 +84,8 @@ def combine(*lists, tupled=False):
     return oldlis
 
 def dct(X):
-    from math import cos,pi
     new = [];    N = len(X);    pin = pi/N;    N2 = 2/N
     return [ round(N2*sum( X[i]*cos( pin*(i+.5)*k ) for i in range(N) ), 9) for k in range(N) ]
 def idct(X):
-    from math import cos,pi
     new = [];    N = len(X);    pin = pi/N;    org = .5*X[0]
     return [ int(round( org + sum( X[i]*cos( pin*i*(k+.5) ) for i in range(1,N) ), 0)) for k in range(N) ]

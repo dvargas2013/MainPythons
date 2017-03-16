@@ -24,6 +24,7 @@ def switch(mainstring,string1,string2,switch=' <(°•‹˚˚›•°)> '):
     Usage:
         switch('10101011','1','0') = '01010100'
     """
+    if switch in mainstring: raise Exception("switch %s was in the mainstring. Please adjust switch so that it does not appear in mainstring"%switch)
     return mainstring.replace(string1,switch).replace(string2,string1).replace(switch,string2)
 def findListInStr(string,lis):
     """Find the first string in a list that is a substring in {string}
@@ -76,7 +77,7 @@ def dyslexia(str_):
     """Takes the words in string and shuffles their middles"""
     return ' '.join( _dyslexia1(i) for i in str_.split() )
 
-def smartPrint(str_,num=79):
+def wrapPrint(str_,num=79):
     """Wraps the text to stay to a max line width of {num}"""
     newStr = ''
     lis = [i for i in str_.replace('\n',' \n ').split(' ') if len(i)!=0]
@@ -92,7 +93,9 @@ def smartPrint(str_,num=79):
             newStr+='\n'+line
             line=' '+word
     print(newStr)
-def safePrint(str_,size=79,around=None):
+smartPrint = wrapPrint
+
+def removePrint(str_,size=79,around=None):
     """Prints out the ends of the string with '...' if anything was removed
     
     If {around} is defined, will try to find the substring.
@@ -110,6 +113,8 @@ def safePrint(str_,size=79,around=None):
                 return
         print(str_[:size]+' ... '+str_[-size:])
     else: print(str_)
+safePrint = removePrint
+
 def score(sA,sB):
     """Compare the two strings and give it a score between 0 and 1"""
     sA, sB = sA.lower(), sB.lower()
@@ -246,6 +251,50 @@ def loremIpsum(n=60,a=2,b=12):
     from random import randint
     return ' '.join(chain(1,random.randint(a,b)) for i in range(n))
 
+
+
+def splitTarget(target,word):
+    target,word = target.lower(),word.lower()
+    grow = ''
+    for c in word:
+        if target[:1]==c: 
+            grow += target[:1]
+            target = target[1:]
+    return grow,target
+def perfLvl(gem,gemAim):
+    if len(gem) == 1: return 2
+    for i in range(len(gem),0,-1):
+        if gem[:i].lower() == gemAim[:i].lower(): return 2*i-1
+    return 0
+def expandWord(word,target):
+    first,last = splitTarget(target,word)
+    tLetter = last[:1]
+    if not tLetter: return
+    save = dict( ( word+i , perfLvl(i,last) ) for i in UseGems[tLetter] )
+    M = 1 if 2 in save.values() else 0
+    return [ i for i in save if save[i] > M ]
+def yieldMaximums(words,target,M=.5,show=0): 
+    returnable = dict()
+    for w in list(words): #For every word in that list
+        if show: print("\t"*(show-1)+"LOOP "+repr(w))
+        words = expandWord(w,target) #Add symbols if you can
+        if show and words: print("\t"*(show-1)+str(words))
+        if words: #If words have been added go deeper
+            words,M = yieldMaximums(words,target,M, 0 if not show else show+1 ) 
+            returnable.update( dict( (word , words[word]) for word in words if words[word]>=M) )
+        else: 
+            s = score(target,w)
+            if s>=M:
+                M = s
+                returnable.update( { w : s } )
+                if show: print("\t"*(show-1)+str({w:s}))
+    for w in list(returnable.keys()):
+        if returnable[w]!=M: returnable.pop(w)
+    if show and returnable: print("\t"*(show-1)+"RETURN "+str(returnable))
+    return returnable,M
+def chems(target,debug=0):
+    save = yieldMaximums([''],target,show=debug)
+    return list(save[0]),save[-1]
 def chemistry(longString="Hello World",showall=False):
     """Given a sentence will try to recreate string with chemistry symbols"""
     # without j and q the algorithm would get stuck
@@ -255,48 +304,6 @@ def chemistry(longString="Hello World",showall=False):
         i = chr(i)
         lis = UseGems.get(i,list())
         if not lis: UseGems[i] = [g for g in Gems if i in g[:1].lower()]
-    def splitTarget(target,word):
-        target,word = target.lower(),word.lower()
-        grow = ''
-        for c in word:
-            if target[:1]==c: 
-                grow += target[:1]
-                target = target[1:]
-        return grow,target
-    def perfLvl(gem,gemAim):
-        if len(gem) == 1: return 2
-        for i in range(len(gem),0,-1):
-            if gem[:i].lower() == gemAim[:i].lower(): return 2*i-1
-        return 0
-    def expandWord(word,target):
-        first,last = splitTarget(target,word)
-        tLetter = last[:1]
-        if not tLetter: return
-        save = dict( ( word+i , perfLvl(i,last) ) for i in UseGems[tLetter] )
-        M = 1 if 2 in save.values() else 0
-        return [ i for i in save if save[i] > M ]
-    def yieldMaximums(words,target,M=.5,show=0): 
-        returnable = dict()
-        for w in list(words): #For every word in that list
-            if show: print("\t"*(show-1)+"LOOP "+repr(w))
-            words = expandWord(w,target) #Add symbols if you can
-            if show and words: print("\t"*(show-1)+str(words))
-            if words: #If words have been added go deeper
-                words,M = yieldMaximums(words,target,M, 0 if not show else show+1 ) 
-                returnable.update( dict( (word , words[word]) for word in words if words[word]>=M) )
-            else: 
-                s = score(target,w)
-                if s>=M:
-                    M = s
-                    returnable.update( { w : s } )
-                    if show: print("\t"*(show-1)+str({w:s}))
-        for w in list(returnable.keys()):
-            if returnable[w]!=M: returnable.pop(w)
-        if show and returnable: print("\t"*(show-1)+"RETURN "+str(returnable))
-        return returnable,M
-    def chems(target,debug=0):
-        save = yieldMaximums([''],target,show=debug)
-        return list(save[0]),save[-1]
     from random import randrange
     string = ''
     for word in longString.lower().split():
@@ -306,6 +313,9 @@ def chemistry(longString="Hello World",showall=False):
         chem = chem[randrange(len(chem))]
         string += chem + ' '
     return string
+
+
+
 def anagram(jumbledWord,dictionaryFile = '/usr/share/dict/web2'):
     """Unshuffles the word given by comparing it to words in a file with words inside"""
     import re
@@ -454,3 +464,41 @@ def SequenceAlignment(s1,s2,DownSigma=0,RightSigma=0,Match=1,MisMatch=0):
             ss1=s1[i-1]+ss1; ss2=s2[j-1]+ss2; i -= 1; j -= 1
         score,direction = S[i][j]
     return ss1,ss2
+
+
+
+def db():
+    visited = list(False for i in range(allen*wordx))
+    for i in range(allen*wordx):
+        if visited[i]: continue # If a cycle has visited this node then it is not the lexicographic minimum of its rotations
+        lyndon = word(i)
+        j = mapper(i)
+        while j!=i:
+            visited[j] = True
+            lyndon += word(j)
+            j = mapper(j)
+        yield lyndon
+def db_test():
+    al = 'acbef'
+    l = 5
+    seq = DeBruijn(al,l)
+    seqseq = seq+seq
+    store = set()
+    for i in range(len(seq)):
+        word = seqseq[i:i+l]
+        if word in store: break
+        store.add(word)
+    assert len(store) == len(set(al))**l # Check that all possible arrangements of length l were added
+    print("Assertion Passed")
+def DeBruijn(alphabet, length):
+    ''' Given an alphabet and substring length construct a DeBruijn Sequence '''
+    alphabet = ''.join(sorted(set(alphabet)))
+    allen = len(alphabet)
+
+    wordx = int(allen**(length-1)) #calculate the multiplier for the alphabet
+    word = lambda i: alphabet[i//wordx] # 111222333
+
+    # maps corresponding items into lyndon cycles
+    mapper = lambda n: n//wordx+(n%wordx)*allen
+
+    return ''.join(db())
