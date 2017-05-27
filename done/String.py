@@ -467,17 +467,6 @@ def SequenceAlignment(s1,s2,DownSigma=0,RightSigma=0,Match=1,MisMatch=0):
 
 
 
-def db():
-    visited = list(False for i in range(allen*wordx))
-    for i in range(allen*wordx):
-        if visited[i]: continue # If a cycle has visited this node then it is not the lexicographic minimum of its rotations
-        lyndon = word(i)
-        j = mapper(i)
-        while j!=i:
-            visited[j] = True
-            lyndon += word(j)
-            j = mapper(j)
-        yield lyndon
 def db_test():
     al = 'acbef'
     l = 5
@@ -501,4 +490,15 @@ def DeBruijn(alphabet, length):
     # maps corresponding items into lyndon cycles
     mapper = lambda n: n//wordx+(n%wordx)*allen
 
+    def db():
+        visited = list(False for i in range(allen*wordx))
+        for i in range(allen*wordx):
+            if visited[i]: continue # If a cycle has visited this node then it is not the lexicographic minimum of its rotations
+            lyndon = word(i)
+            j = mapper(i)
+            while j!=i:
+                visited[j] = True
+                lyndon += word(j)
+                j = mapper(j)
+            yield lyndon
     return ''.join(db())
