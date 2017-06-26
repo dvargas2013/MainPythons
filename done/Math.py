@@ -23,6 +23,7 @@ def angleForStar(spokes):
                 t.fd(100)
                 t.rt(a)
     """
+    # TODO the formula doesnt really work. You need to base it on coprimes
     return round(180*(spokes-2-spokes%2)/spokes,9)
 
 class nomial:

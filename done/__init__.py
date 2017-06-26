@@ -1,8 +1,18 @@
 #!/usr/bin/env python3
 
+# These can be accessed using
+## from done import *
 __all__ = ['File', 'Game', 'List', 'Math', 'Number', 'Solver', 'String', 'Codes', 'Time']
 
+# These can be accessed using
+## import done
+# and then calling
+## done.*
 from . import File,Game,List,Math,Number,Solver,String,Codes,Time
+
+def TEST():
+    from . import test
+    test.main()
 
 '''
 from sys import version_info

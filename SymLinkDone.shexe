@@ -3,8 +3,10 @@ dir="$( cd "$(dirname "${BASH_SOURCE[0]}")" && pwd )"$"/"
 aim="/Library/Frameworks/Python.framework/Versions/3.4/lib/python3.4/done"
 
 if [ -d "$aim" ]; then
+ echo "Directory Already Exists: Clearing and Refreshing Links"
  rm $aim/*
 else
+ echo "Creating Directory from Scratch"
  mkdir "$aim";
 fi
 

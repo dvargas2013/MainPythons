@@ -253,53 +253,54 @@ def loremIpsum(n=60,a=2,b=12):
 
 
 
-def splitTarget(target,word):
-    target,word = target.lower(),word.lower()
-    grow = ''
-    for c in word:
-        if target[:1]==c: 
-            grow += target[:1]
-            target = target[1:]
-    return grow,target
-def perfLvl(gem,gemAim):
-    if len(gem) == 1: return 2
-    for i in range(len(gem),0,-1):
-        if gem[:i].lower() == gemAim[:i].lower(): return 2*i-1
-    return 0
-def expandWord(word,target):
-    first,last = splitTarget(target,word)
-    tLetter = last[:1]
-    if not tLetter: return
-    save = dict( ( word+i , perfLvl(i,last) ) for i in UseGems[tLetter] )
-    M = 1 if 2 in save.values() else 0
-    return [ i for i in save if save[i] > M ]
-def yieldMaximums(words,target,M=.5,show=0): 
-    returnable = dict()
-    for w in list(words): #For every word in that list
-        if show: print("\t"*(show-1)+"LOOP "+repr(w))
-        words = expandWord(w,target) #Add symbols if you can
-        if show and words: print("\t"*(show-1)+str(words))
-        if words: #If words have been added go deeper
-            words,M = yieldMaximums(words,target,M, 0 if not show else show+1 ) 
-            returnable.update( dict( (word , words[word]) for word in words if words[word]>=M) )
-        else: 
-            s = score(target,w)
-            if s>=M:
-                M = s
-                returnable.update( { w : s } )
-                if show: print("\t"*(show-1)+str({w:s}))
-    for w in list(returnable.keys()):
-        if returnable[w]!=M: returnable.pop(w)
-    if show and returnable: print("\t"*(show-1)+"RETURN "+str(returnable))
-    return returnable,M
-def chems(target,debug=0):
-    save = yieldMaximums([''],target,show=debug)
-    return list(save[0]),save[-1]
 def chemistry(longString="Hello World",showall=False):
     """Given a sentence will try to recreate string with chemistry symbols"""
     # without j and q the algorithm would get stuck
+    def splitTarget(target,word):
+        target,word = target.lower(),word.lower()
+        grow = ''
+        for c in word:
+            if target[:1]==c: 
+                grow += target[:1]
+                target = target[1:]
+        return grow,target
+    def perfLvl(gem,gemAim):
+        if len(gem) == 1: return 2
+        for i in range(len(gem),0,-1):
+            if gem[:i].lower() == gemAim[:i].lower(): return 2*i-1
+        return 0
     Gems = ['j*','q*','H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 'K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 'Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I', 'Xe', 'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 'Ac', 'Th', 'Pa', 'U', 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr', 'Rf', 'Db', 'Sg', 'Bh', 'Hs', 'Mt', 'Ds', 'Rg', 'Cn', 'Uut', 'Fl', 'Uup', 'Lv', 'Uus', 'Uuo']
     UseGems = dict() # grab the gems that are possible to use
+    def expandWord(word,target):
+        first,last = splitTarget(target,word)
+        tLetter = last[:1]
+        if not tLetter: return
+        save = dict( ( word+i , perfLvl(i,last) ) for i in UseGems[tLetter] )
+        M = 1 if 2 in save.values() else 0
+        return [ i for i in save if save[i] > M ]
+    def yieldMaximums(words,target,M=.5,show=0): 
+        returnable = dict()
+        for w in list(words): #For every word in that list
+            if show: print("\t"*(show-1)+"LOOP "+repr(w))
+            words = expandWord(w,target) #Add symbols if you can
+            if show and words: print("\t"*(show-1)+str(words))
+            if words: #If words have been added go deeper
+                words,M = yieldMaximums(words,target,M, 0 if not show else show+1 ) 
+                returnable.update( dict( (word , words[word]) for word in words if words[word]>=M) )
+            else: 
+                s = score(target,w)
+                if s>=M:
+                    M = s
+                    returnable.update( { w : s } )
+                    if show: print("\t"*(show-1)+str({w:s}))
+        for w in list(returnable.keys()):
+            if returnable[w]!=M: returnable.pop(w)
+        if show and returnable: print("\t"*(show-1)+"RETURN "+str(returnable))
+        return returnable,M
+    def chems(target,debug=0):
+        save = yieldMaximums([''],target,show=debug)
+        return list(save[0]),save[-1]
+    
     for i in range(ord('a'),ord('z')+1):
         i = chr(i)
         lis = UseGems.get(i,list())

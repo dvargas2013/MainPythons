@@ -5,7 +5,7 @@ def binary(s,toBin=True):
     
     If you change toBin to false it will turn a binary string (actually a string with the chars '1' and '0' in it) into a string again
     """
-    if toBin: return ' '.join( '{:0<8}'.format(bin(ord(i)).lstrip('0b')) for i in s )
+    if toBin: return ' '.join( '{:0>8}'.format(bin(ord(i)).lstrip('0b')) for i in s )
     else: return ''.join(chr(int(i,2)) for i in s.split())
 def eggnog(str_):
     """Reverses string and adds spaces at the second last letter of words
@@ -94,7 +94,7 @@ def numword(string,inverse=False):
         numword('daniel') --> '4.1.14.9.5.12'
         numword('4.1.14.9.5.12', inverse=True) = 'daniel'
     """
-    if inverse: return ' '.join(''.join(chr(96+int(a)) for a in i.split('.')) for i in string.split('....'))
+    if inverse: return ' '.join(''.join(chr(96+int(a or '-64')) for a in i.split('.')) for i in string.split('....'))
     return '....'.join('.'.join(str(ord(a)-96) for a in i) for i in string.split(' '))
 def bobulate(string):
     """Adds 'a' and 'b' and the previous letter for each character in string
