@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 '''Searching functions dealing with singular number space - Prioritized for human readability'''
 
 from math import ceil
@@ -119,6 +121,121 @@ def fromBaseTen(num,newbase):
         num-=lis[i]*n
         n=int(n//newbase)
     return lis
+def radToFrac(D):
+    """Turns √D into continued fraction
+    in the form [a0; a1, a2, ..., ar] where a1 to ar is the period of the Fraction
+    
+    _(2) = [1,2]
+    _(3) = [1,1,2]
+    """
+    D = int(D)
+    a = [int(D**.5)]
+    if a[0]*a[0] == D: return a # length of period is 0 since its a square
+    P = [0,a[0]]
+    Q = [1,D-a[0]*a[0]]
+    a.append( int( (2*a[0]) // Q[-1] ) )
+    while a[0]*2 != a[-1]:
+        P.append( a[-1]*Q[-1]-P[-1] )
+        Q.append( int( (D-P[-1]*P[-1]) // Q[-1] ) )
+        a.append( int( (a[0]+P[-1]) // Q[-1] ) )
+        P.pop(0); Q.pop(0)
+    return a
+def convergentSqrt(D):
+    """Yields incresingly accurate numerator and denominator of the number √D
+    
+    Uses the Convergants of the Continued Fraction representation of √D
+    
+    Usage:
+        def F(D):
+            for i in _(D):
+                if sufficientCondition(i): return i
+        def F(D):
+            a=_(D)
+            for i in range(100): a.send(None)
+            return a.send(None)
+    
+    Note: be careful when D is a square number; the iteration will stop
+    """
+    D = int(D)
+    a0=int(D**.5)
+    yield a0,1
+    if a0*a0 == D: return
+    a = [a0]
+    P = [0,a0]
+    Q = [1,D-a0*a0]
+    a.append( int((2*a0)/Q[-1]) )
+    p = [a0,a0*a[1]+1]
+    q = [1,a[1]]
+    while 1:
+        yield p[-1],q[-1]
+        P.append( a[-1]*Q[-1]-P[-1] )
+        Q.append( int( (D-P[-1]*P[-1]) // Q[-1] ) )
+        a.append( int( (a0+P[-1]) // Q[-1] ) )
+        p.append( a[-1]*p[-1] + p[-2] )
+        q.append( a[-1]*q[-1] + q[-2] )
+        # Some cool properties
+        # p[n]*q[n-1] - p[n-1]*q[n] = (-1)**(n+1)
+        # p[n]*p[n] - D*q[n]*q[n] = (-1)**(n+1)*Q[n+1]
+        P.pop(0);Q.pop(0);a.pop(0);p.pop(0);q.pop(0)
+
+#### This will lead to an infinate loop because they are literally the same
+#>>> a=convergants(1,radToFrac(5))
+#>>> b=convergantSqrt(5)
+#>>> while a.send(None) == b.send(None): pass
+#### Note: though they are equivalent convergantSqrt does it all directly so it is faster
+#### But only marginally!!!
+
+def convergents(a,b):
+    """Yields the numerator and denominator of the convergants of the Continued Fraction
+given by the two sequences of numbers passed in
+    
+    Yield 1: b(0)
+    Yield 2: b(0) + a(0)/b(1)
+    Yield 3: b(0)+a(0)/(b(1) + a(1)/(b(2) ))
+    
+    Passing in a int will repeat that digit for the portion of the sequence
+        _(1,2) becomes 2+1/(2+1/(2+1/(2 ...
+    
+    Passing a list will start the sequence with the 0th item and repeat the last n-1 items
+        _(1,[3,2]) becomes 3+1/(2+1/(2+1/(2 ...
+        
+    Passing a function will query the function for the n-th item which it should return without fail
+        _(1,lambda x: x*x) becomes 0+1/(1+1/(4+1/(9 ...
+    
+    Usage:
+        _(1,[1,2]) will converge to the √2
+        _(1,1) will converge on golden ratio
+    """
+    def number(s):
+        if callable(s): return s
+        if type(s) == list:
+            k = s[0]
+            s = s[1:]
+            l = len(s)
+            return lambda n: k if n==0 else s[(n-1)%l]
+        S = int(s)
+        return lambda n: S
+    a=number(a); b=number(b)
+    A = [1,b(0)]; B = [0,1]
+    i = 1
+    while 1:
+        ai = a(i)
+        bi = b(i)
+        yield A[-1],B[-1]
+        A.append( bi*A[-1] + ai*A[-2] )
+        B.append( bi*B[-1] + ai*B[-2] )
+        A.pop(0); B.pop(0)
+        i += 1
+def convergentsE():
+    def b(i):
+        """e = [2; 1,2,1, 1,4,1, 1,2k,1, ...]"""
+        if i==0: return 2
+        if (i-1)%3 != 1: return 1
+        return 2*(i+1)//3
+    yield from iterateContinuedFraction(1,b)
+
+
+
 def numToStr(num):
     "valid: 0 to 999"
     def ones(num): return ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine'][num%10]
