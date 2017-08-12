@@ -195,11 +195,21 @@ def showInfo(thing,search=''):
     """
     try: #If iterable
         for i in thing:
-            if search in str(i): print(i)
-    except:
-        from inspect import getargspec
-        try: print(getargspec(thing)) #If function
-        except: showInfo(dir(thing),search) #Dir is always iterable
+            if search in str(i):
+                print(i)
+        return
+    except: pass
+    # Not Iterable
+    from inspect import getargspec
+    try:
+        print(getargspec(thing)) #If function
+        return
+    except: pass
+    #Not Callable
+    for i in dir(thing): #Dir is always iterable
+        try:
+            if search in i: print("%s : %s"%(i,getattr(thing,i)))
+        except: pass # IDK what kind of errors getattr can throw but just dont
 
 def chain(words,letters):
     """Create pronounceable words

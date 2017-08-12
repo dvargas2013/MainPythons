@@ -86,6 +86,7 @@ class Time:
     def __truediv__(self,new): return Time(0).fromS(self.totalSc()/self.run(new,1))
     def __floordiv__(self,new): return Time(0).fromS(self.totalSc()//self.run(new,1))
     def __mod__(self,new): return Time(0).fromS(self.totalSc()%self.run(new,self.totalSc()+1))
+    def __round__(self,n): return Time(self.hr,self.mn,round(self.sc,n))
     #Comparisons
     def __lt__(self,new):
         if type(new)==type(self): return self.totalSc()<new.totalSc()
@@ -109,32 +110,19 @@ class Time:
         if type(num) in [int, float]: return num
         return default
 
-def bisectHrMnHands(hr,mn,sc):
-    """Calculate the time at which the second hand will bisect the hour and minute hands."""
-    # estimation of answer. always decreases distance to true answer
-    def xpct(hr,mn,sc):
-        ans1=((30*hr+6.5*mn+13*sc/120)%360)/2
-        ans2=ans1+180
-        if abs(sc*6%360-ans1)>abs(sc*6%360-ans2): return ans2
-        return ans1
-    # continuously walk towards the true answer
-    while round(xpct(hr,mn,sc),9)!=round(sc*6%360,9):
-        while xpct(hr,mn,sc)<sc*6%360: sc-=(sc*6%360-xpct(hr,mn,sc))/6
-        while xpct(hr,mn,sc)>sc*6%360: sc+=(xpct(hr,mn,sc)-sc*6%360)/6
-    secs=60*(60*hr+mn)+sc
-    hr=int((secs/120%360)//30)
-    mn=int((secs/10%360)//6)
-    sc=(secs*6%360)/6
-    # output
-    out=''
-    if hr==0: hr=12
-    if hr<10: out+='0'
-    out+=str(hr)+' : '
-    if mn<10: out+='0'
-    out+=str(mn)+' : '
-    if sc<10: out+='0'
-    return out+str(sc)
-# TODO can redo bisectHrMnHands to do a binary search of sorts
+def bisectHrMnHands(hr,mn):
+    """Calculate the time at which the second hand will bisect the hour and minute hands"""
+    h = int(hr) 
+    m = int(mn)
+    sDegMin = (60*h+m)/2
+    sDegMax = 6*m
+    while 1:
+        sDeg = (sDegMin+sDegMax)/2
+        hDeg = (60*h+m)/2 + sDeg/6/120
+        mDeg = 6*m + sDeg/60
+        if   2*sDeg== hDeg+mDeg : return '{:0>2}:{:0>2}:{:0>2}'.format(h,m,(sDeg%360)/6)
+        elif 2*sDeg < hDeg+mDeg : sDegMin = sDeg
+        else                    : sDegMax = sDeg
 
 def DayOfTheWeek(month,date,year):
     """"Calculate the Day of the Week according to month, day, year given."""
@@ -157,14 +145,22 @@ def timer(msg):
     print("%s: %.02fms" % (msg, (end-start)*1000))
 
 def stopwatch(n=10):
-    """Give time since call for {n} Enter Key presses."""
+    """Give time SINCE call for {n} Enter Key presses."""
     a = datetime.now()
     for i in range(n):
         input()
         print(datetime.now() - a)
+countUp = stopwatch
+def countBetween(n=10):
+    """Give time BETWEEN key presses for {n*2} Enter Key presses."""
+    for i in range(n):
+        input("[Start]")
+        a = datetime.now()
+        input("Counting...")
+        print(datetime.now()-a)
 def countdown(n=10,count=1):
     """Show a countdown on the Terminal starting at {n} counting down by {count}"""
     a = Time()+Time(0,0,n*count)
     while a>Time():
-        print(a-Time(),end="\r")
+        print(round((a-Time())/count,0),end="\r")
         sleep(count)

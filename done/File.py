@@ -199,8 +199,8 @@ def read(file, tag='r', pickled=False):
                 from pickle import load
                 return load(f)
             else: return f.read()
-    except: 
-        with open(file,tag,encoding='latin_1') as f: return f.read()
+    except: pass
+    with open(file,tag,encoding='latin_1') as f: return f.read()
 def write(s, file, tag='w', encoding="utf", onerror=['strict','replace','ignore','xmlcharrefreplace','backslashreplace'][3], pickled=False):
     """write to a file"""
     if pickled:
@@ -227,10 +227,10 @@ def write(s, file, tag='w', encoding="utf", onerror=['strict','replace','ignore'
             return True
     return False
 
-def reImport(module="done.File",value="File"):
-    """import a {module} and overwrite the global {value}"""
-    from importlib import import_module 
-    globals()[value] = import_module(module)
+def reImport(module):
+    """imports and returns a {module} object. Automatically save itself in the global"""
+    import importlib
+    return importlib.reload(module) 
 
 def dARename(*files):
     """rename files in a specific way to make deviantart downloaded content filenames better"""
