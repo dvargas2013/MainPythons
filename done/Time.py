@@ -164,3 +164,9 @@ def countdown(n=10,count=1):
     while a>Time():
         print(round((a-Time())/count,0),end="\r")
         sleep(count)
+
+def QuickThread(f):
+    from threading import Thread
+    t = Thread(target = f, daemon=True)
+    t.start()
+    return t
