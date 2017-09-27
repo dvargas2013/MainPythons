@@ -57,7 +57,7 @@ def nextPrime(i):
 def primeFactorize(i):
     "_(15) = ['3^1', '5^1']"
     i = int(i)
-    prime,lis=1,[]
+    prime,lis=0,[]
     while i!=1:
         prime=nextPrime(prime+1)
         if i**.5<prime: prime=i
@@ -68,6 +68,27 @@ def primeFactorize(i):
         i = int(i)
         if power>0: lis.append( '%s^%s'%(prime,power) )
     return lis
+def distinctPrimeFactorsOf(i):
+    "_(15) = [3,5]"
+    i = int(i)
+    prime,lis=0,[]
+    while i!=1:
+        prime=nextPrime(prime+1)
+        if i<prime*prime: prime=i
+        power=0
+        while i%prime==0:
+            power+=1
+            i//=prime
+        i = int(i)
+        if power>0: lis.append( prime )
+    return lis
+def totient(i):
+    from functools import reduce
+    import operator
+    p = distinctPrimeFactorsOf(i)
+    y=i/reduce(operator.mul,p,1)
+    return int(y*reduce(operator.mul, (x-1 for x in p), 1))
+
 def theFactorsOf(integer):
     "_(15) = ['1+15=16', '3+5=8']"
     for j,k in factorsOf(integer): lis.append( '%s+%s=%s'%(j,k,j+k) )

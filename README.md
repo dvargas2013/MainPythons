@@ -8,6 +8,8 @@ just import everything from everywhere
 **nextPrime** - returns prime >= to number given  
 **primeFactorize** - prime factorizes a number  
 **theFactorsOf** - human readable list of factors of a integer  
+**distinctPrimeFactorsOf** - list of prime factors  
+**totient** - Evaluates Euler's totient function as best I know  
 **changeBase** - convert to new base (comes with helper functions fromBaseTen and toBaseTen)  
 **convergentSqrt** - yield numerator and denominator of closer approximations to the sqrt
 **radToFrac** - converts the sqrt into a continued fraction (the period will always be the last n-1 terms and the last term is always 2x the first) 
