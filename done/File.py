@@ -200,7 +200,10 @@ def read(file, tag='r', pickled=False):
                 return load(f)
             else: return f.read()
     except: pass
-    with open(file,tag,encoding='latin_1') as f: return f.read()
+    if "b" in tag:
+        with open(file,tag) as f: return f.read()
+    else:
+        with open(file,tag,encoding='latin_1') as f: return f.read()
 def write(s, file, tag='w', encoding="utf", onerror=['strict','replace','ignore','xmlcharrefreplace','backslashreplace'][3], pickled=False):
     """write to a file"""
     if pickled:
