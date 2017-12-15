@@ -1,6 +1,8 @@
-# MainPythons#
-##__init__.py##
-just import everything from everywhere
+# MainPythons#  
+
+##__init__.py##  
+just import everything from everywhere  
+
 ##Number.py##
 **simplifyRadical** - simplifies radicals  
 **pythagoreanTriplets** - gets pythagorean triplet integer (comes with helper function pyTrip)  
