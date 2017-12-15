@@ -363,7 +363,28 @@ def clues22(pairs,dictionaryFile = '/usr/share/dict/web2'):
     count=dict((i,allletters.count(i)) for i in set(allletters))
     dictionary = sorted(sorted([x for x in dictionary if not hbl.search(x) and len(x)>2 and all(x.count(i)<=count.get(i,0) for i in set(x)) and assemble(x,pairs)]),key=lambda x:len(x))
     for i in dictionary: print(i)
+def oneLetterFromEach(listring,dictionaryFile = '/usr/share/dict/web2'):
+    """picks one letter from each string and rearranges it to make words
     
+    Usage:
+        oneLetterFromEach(["t","hx","ea"]) -> ["the","het","hat","tax",...]
+    """
+    import re
+    import itertools
+    
+    with open(dictionaryFile) as f: dictionary = set(i for i in f.read().lower().split() if len(i) == len(listring))
+    def Anagram(jmbl, d = dictionary):
+        jmbl = jmbl.lower()
+        letters = set(jmbl)
+        # letters that are not allowed
+        hbl=re.compile("[%s]"%''.join(set('abcdefghijklmnopqrtsuvwxyz').difference(letters)))
+        # count the letters that are allowed
+        count=dict((i,jmbl.count(i)) for i in letters)
+        yield from sorted(sorted([x for x in dictionary if not hbl.search(x) and len(x)>2 and all(x.count(i)<=count.get(i,0) for i in set(x))]),key=lambda x:len(x))
+    for p in itertools.product(*listring):
+        ngrm = "".join(p)
+        yield from Anagram(ngrm)
+
 class Node():
     def __init__(self, name, parent):
         super(Node, self).__init__()
