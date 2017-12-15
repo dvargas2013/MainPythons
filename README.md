@@ -1,7 +1,7 @@
-# MainPythons
-##__init__.py
+# MainPythons#
+##__init__.py##
 just import everything from everywhere
-##Number.py
+##Number.py##
 **simplifyRadical** - simplifies radicals  
 **pythagoreanTriplets** - gets pythagorean triplet integer (comes with helper function pyTrip)  
 **isPrime** - returns True if n is prime  
@@ -16,7 +16,7 @@ just import everything from everywhere
 **convergentsE** - yield numerator and denominator of closer approximations to the number e (comes with helper function convergents which can be used to emulate convergentsSqrt if used in conjunction with radToFrac)
 **numToStr** - gives name of number  
 **piecewiseMaker** - makes a piecewise function  
-##List.py
+##List.py##
 **poisson** - finds poisson probability (mean rate & successes)  
 **Dev** - finds sample or population Deviation  
 **freqDev** - same as Dev but freq increases size  
@@ -30,21 +30,24 @@ just import everything from everywhere
 **combine** - combines many lists (compression nd to 1d)  
 **dct** - frequencies yay  
 **idct** - amplitudal yay  
-##Time.py
+##Time.py##
 **Time Class** - internally has basically the time since midnight and will perform calculations based on that number.  
 **bisectHrMnHands** - will bisect the hour and minute hands with the second hand (there are two solutions no matter where hr and mn are set so the sc parameter can't just always be set to 0)  
 **DayOfTheWeek** - will give you Monday,Tuesday, ... etc, according to month, day, year given  
 **timer** - context manager that will time how much the block runs  
 *Usage:*  
-```with timer("Message"):
-   <block>```
-##Solver.py
+```
+with timer("Message"):
+   <block>
+```
+**QuickThread** - starts a thread with the function you pass on. returns the thread running the function  
+##Solver.py##
 **solve** - using 4 basic operations {*-+/} makes numbers into lookup
 **sudoku** - solves sudoku problems for you
 **numRemainders** - finds number with divisor:remainder pairs
 **respart** - finds how many of each in list to make num
 **addOrSub** - adds +/- between #s to make num
-##Math.py
+##Math.py##
 **angle** - together with distance gives polar coord  
 **angleForStar** - gets number of spokes and gives angle needed  
 **polynom** - object representing algebraic functions in string form  
@@ -53,7 +56,7 @@ just import everything from everywhere
 **fact** - factorial (n!)  
 **perm** - permutation (nPr)  
 **comb** - combination (nCr)  
-##File.py
+##File.py##
 **getHome** - returns the environment $HOME  
 Desktop - path to Desktop = join(getHome(), 'Desktop')  
 
@@ -85,7 +88,7 @@ Desktop - path to Desktop = join(getHome(), 'Desktop')
 **zombie** - Choose your own adventure time. (I'm very proud of this. Especially since it was first programmed in my calculator.)  
 **ultrps** - Ultimate Rock Paper Scissors  
 **murdergame** - Murder happens; figure out who did what  
-##String.py
+##String.py##
 **Input** - Accept multiple lines of input until the end string is on it's own line  
 **lisp** - make the string read like it has a lisp by swapping certain letters with 'TH'  
 **switch** - swap the strings in the main string. almost like a simultaneous double replace statement.  
@@ -109,12 +112,13 @@ Desktop - path to Desktop = join(getHome(), 'Desktop')
 **chemistry** - will try to recreate sentence using only the symbols of the periodic table  
 **anagram** - un-shuffles word to match a word in dictionary file  
 **clues22** - plays that clues 22 game. given substrings that combine to make words will try to combine the substrings  
+**oneLetterFromEach** - an anagram solver with specific letters. given a list of strings will take a letter from each string  
 **tree** - created to parse Applescript's 'entire content' dictionaries  
 **Markov Class** - sliding window over string to get triplets of words to markov chain with  
 **pretty** - displays stars to the Terminal  
 **SequenceAlignment** - aligns strings so that the most letters fall into the same place  
 **DeBruijn** - gives a DeBruijn Sequence given an alphabet and the substring length  
-##Codes.py
+##Codes.py##
 **binary** - changes letters to 8bitBinary  
 **eggnog** - it sorta reverses the string in a special way  
 **crosc** - subsitition: (a:y, b:z, c:x, d:w, e:u, ...)  
