@@ -46,7 +46,7 @@ def solve(*Nums,lookup=24):
             for i in set(mather(len(nums))):
                 s = change(list(nums),list(ops),i)
                 try:
-                    if eval(s)==lookup and s not in save:
+                    if abs(lookup - eval(s)) < 1e-12 and s not in save:
                         yield s
                         save.add(s)
                 except ZeroDivisionError: pass
