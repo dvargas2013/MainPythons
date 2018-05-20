@@ -384,6 +384,38 @@ def oneLetterFromEach(listring,dictionaryFile = '/usr/share/dict/web2'):
     for p in itertools.product(*listring):
         ngrm = "".join(p)
         yield from Anagram(ngrm)
+def connectWords(word1,word2,dictionaryFile='/usr/share/dict/web2'):
+    """changes 1 letter at a time until word1 becomes word2"""
+    if len(word1) != len(word2): return
+    l = len(word1)
+    word1 = word1.lower()
+    word2 = word2.lower()
+    from heapq import heappop, heappush
+    def offByOne(w1,w2):
+        # n measures how many letters are off
+        n = abs(len(w1)-len(w2))
+        for i in range(min(len(w1),len(w2))):
+            if n > 1: return False
+            if w1[i] != w2[i]: n += 1
+        return n == 1
+    def getNeighbors(word,dictionarySet,remove=0):
+        for w in list(dictionarySet):
+            if offByOne(w,word):
+                if remove: dictionarySet.remove(w)
+                yield w
+    with open(dictionaryFile) as f: unvisited = set(i for i in f.read().lower().split() if len(i) == l)
+    queue = [(1,w,[word1]) for w in getNeighbors(word1,unvisited,remove=1)]
+    goals = set(getNeighbors(word2,unvisited))
+    m = len(unvisited)
+    if not len(queue) or not len(goals): return
+    while len(unvisited) != 0 and len(queue) != 0:
+        dist,word,rest = heappop(queue)
+        if dist > m: continue
+        if word in goals:
+            yield rest+[word,word2]
+            m = dist
+        else:
+            for neigh in getNeighbors(word,unvisited,remove=1): heappush(queue,(dist+1,neigh,rest+[word]))
 
 class Node():
     def __init__(self, name, parent):

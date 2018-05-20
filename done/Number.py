@@ -33,7 +33,7 @@ def pythagoreanTriplets(i):
         if (i/k-k) % 2 == 0: yield pyTrip((i/k+k)/2,(i/k-k)/2)
 def factorsOf(i):
     "Finds the factors of i"
-    for k in range(1,ceil(i**.5)):
+    for k in range(1,int(i**.5)+1):
         if i%k == 0: yield k,int(i//k)
 def isPrime(n):
     if int(n) != n: return False
@@ -54,6 +54,11 @@ def nextPrime(i):
     if i%2==0: i+=1
     while not isPrime(i): i+=2
     return i
+def primeGen(a,b):
+    "_(2,11) = 3, 5, 7, 11"
+    while a<b:
+        a = nextPrime(a+1)
+        yield a
 def primeFactorize(i):
     "_(15) = ['3^1', '5^1']"
     i = int(i)

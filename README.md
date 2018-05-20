@@ -113,7 +113,8 @@ Desktop - path to Desktop = join(getHome(), 'Desktop')
 **chemistry** - will try to recreate sentence using only the symbols of the periodic table  
 **anagram** - un-shuffles word to match a word in dictionary file  
 **clues22** - plays that clues 22 game. given substrings that combine to make words will try to combine the substrings  
-**oneLetterFromEach** - an anagram solver with specific letters. given a list of strings will take a letter from each string  
+**oneLetterFromEach** - an anagram solver with specific letters. given a list of strings will take a letter from each string **connectWords** - a Word Ladder solver. given two words it finds how they're connected by changing 1 letter at a time. each step also being a word
+
 **tree** - created to parse Applescript's 'entire content' dictionaries  
 **Markov Class** - sliding window over string to get triplets of words to markov chain with  
 **pretty** - displays stars to the Terminal  
