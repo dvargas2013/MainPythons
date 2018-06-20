@@ -49,8 +49,6 @@ def pattgame(multiplicand=10,multiplier=4,addend=4,hintamount=3):
             else: print(q,'is wrong')
 
 
-
-
 def physics():
     """Asks newtonian physics questions on acceleration, time, velocity and distance"""
     def problem(*stuff,info='',giveup=0):
@@ -75,7 +73,6 @@ def physics():
         if c==-1: return
 
 
-
 def thinker():
     """Logic game with remainders"""
     while 1:
@@ -93,13 +90,32 @@ def thinker():
             else: print(n, "is Incorrect")
 
 def mindread():
-    """Pick a number between 1-25 and pick row numbers. Prepare to have your 'mind' 'read'"""
+    print("Pick a number between 1-25 and pick row numbers.\nPrepare to have your 'mind' 'read'\n")
     print('row1: 06 11 01 21 16\nrow2: 12 07 02 22 17\nrow3: 23 13 08 18 03\nrow4: 19 14 09 04 24\nrow5: 10 05 20 15 25')
     a=eval(input('row number of location of your number: '))
     print('row1: 05 02 04 03 01\nrow2: 09 07 08 06 10\nrow3: 13 12 11 15 14\nrow4: 20 17 19 16 18\nrow5: 22 25 21 24 23')
     b=eval(input('new row number of location of your number: '))
     print('{0} and {2} were your rows. \n{0}-5={1}; {2}*5={3}; \n{1}+{3}='.format(a,a-5,b,b*5))
     return a-5+b*5
+
+def mindread2():
+    print("Pick an integer between 1-32 and say yes or no if it's in the list.\nPrepare to have your 'mind' 'read'\n")
+    a = 0
+    for N in range(5):
+        n = 1 << N
+        print(" ".join(str(i) for i in range(1,32) if i&n))
+        while 1:
+            s = input("Does your number appear in this list? ")
+            if s: s = s[0]
+            if s.lower() == "y":
+                a += n
+                print("YES")
+                break
+            elif s.lower() == "n":
+                print("NO")
+                break
+            else: print("I didn't understand that. Please respond with yes or no.")
+    print("Your Number Is: %s"%a)
 
 def zombie():
     """Survive the zombieapocalypse"""

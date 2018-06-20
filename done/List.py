@@ -84,8 +84,12 @@ def combine(*lists, tupled=False):
     return oldlis
 
 def dct(X):
-    new = [];    N = len(X);    pin = pi/N;    N2 = 2/N
-    return [ round(N2*sum( X[i]*cos( pin*(i+.5)*k ) for i in range(N) ), 9) for k in range(N) ]
+    N = len(X)
+    pin = pi/N
+    N2 = 2/N
+    return [ round(N2 * sum( X[i]*cos( pin*(i+.5)*k ) for i in range(N) ), 9) for k in range(N) ]
 def idct(X):
-    new = [];    N = len(X);    pin = pi/N;    org = .5*X[0]
+    N = len(X)
+    pin = pi/N
+    org = .5*X[0]
     return [ int(round( org + sum( X[i]*cos( pin*i*(k+.5) ) for i in range(1,N) ), 0)) for k in range(N) ]
