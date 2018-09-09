@@ -5,7 +5,7 @@ from os.path import exists, join, splitext, split, relpath, abspath
 from glob import glob
 def getHome():
     from os import environ
-    return environ['HOME']
+    return environ.get('HOME',environ.get('USERPROFILE'))
 Desktop = join(getHome(),'Desktop')
 
 def files(DIR,relative=True):
