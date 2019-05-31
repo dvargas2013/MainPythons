@@ -12,9 +12,10 @@ just import everything from everywhere
 **distinctPrimeFactorsOf** - list of prime factors  
 **totient** - Evaluates Euler's totient function as best I know  
 **changeBase** - convert to new base (comes with helper functions fromBaseTen and toBaseTen)  
-**convergentSqrt** - yield numerator and denominator of closer approximations to the sqrt
-**radToFrac** - converts the sqrt into a continued fraction (the period will always be the last n-1 terms and the last term is always 2x the first) 
-**convergentsE** - yield numerator and denominator of closer approximations to the number e (comes with helper function convergents which can be used to emulate convergentsSqrt if used in conjunction with radToFrac)
+**convergentSqrt** - yield numerator and denominator of closer approximations to the sqrt  
+**radToFrac** - converts the sqrt into a continued fraction (the period will always be the last n-1 terms and the last term is always 2x the first)  
+**convergentsE** - yield numerator and denominator of closer approximations to the number e (comes with helper function convergents which can be used to emulate convergentsSqrt if used in conjunction with radToFrac)  
+**PI** - given a decimal precision will return pi to that precision  
 **numToStr** - gives name of number  
 **piecewiseMaker** - makes a piecewise function  
 ## List.py

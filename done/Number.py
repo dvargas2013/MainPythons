@@ -16,8 +16,7 @@ def pyTrip(m,n):
     '''
     # when n and m are both odd it is reducible by 2 because mm-nn will be a multiple of 4
     # if n and m have a cofactor . should be kinda obvious that it will be reducible by the cofactor
-    n,m = sorted(int(i) for i in [m,n]) # if n>m: mm-nn < 0 so assert n<m
-    return sorted([2*m*n, m*m-n*n, m*m+n*n])
+    return sorted([2*m*n, abs(m*m-n*n), m*m+n*n])
 def pythagoreanTriplets(i):
     "Generates pythagorean triplets that contain i"
     i = int(i)
@@ -260,6 +259,20 @@ def convergentsE():
         return 2*(i+1)//3
     yield from iterateContinuedFraction(1,b)
 
+def PI(decimals_wanted=10):
+    "Calculates pi to the decimal place precision wanted"
+    def pi_df(loops):
+        from fractions import Fraction
+        p,d,n = range(3) # 0,1,2
+        for n0 in range(1,loops): # 1 2 3 4 ...
+            p += Fraction(n,d)
+            n *= n0     # 2 2 2*2 2*2*3 ...
+            d *= 2*n0+1 # 1 3 3*5 3*5*7 ...
+        return p.numerator,p.denominator
+    a,b = pi_df(4*decimals_wanted)
+    from decimal import Decimal,getcontext
+    getcontext().prec = decimals_wanted
+    return Decimal(a)/Decimal(b)
 
 
 def numToStr(num):
