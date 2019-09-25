@@ -24,7 +24,6 @@ def pythagoreanTriplets(i):
     # procedure: i is even, pyTrip(factors of i/2)
     if i%2==0:
         for k,j in factorsOf(i/2): yield pyTrip(j,k)
-    
     # mm-nn = i
     # m-n = k
     # procedure: k<√i,k factor of i,i/k-k is even, pyTrip((i/k-k)/2,(i/k+k)/2)
@@ -92,11 +91,9 @@ def totient(i):
     p = distinctPrimeFactorsOf(i)
     y=i/reduce(operator.mul,p,1)
     return int(y*reduce(operator.mul, (x-1 for x in p), 1))
-
 def theFactorsOf(integer):
     "_(15) = ['1+15=16', '3+5=8']"
-    for j,k in factorsOf(integer): lis.append( '%s+%s=%s'%(j,k,j+k) )
-    return lis
+    return [ '%s+%s=%s'%(j,k,j+k) for j,k in factorsOf(integer) ]
 class BaseInteger():
     """Manipulates numbers in other bases
     
@@ -274,6 +271,19 @@ def PI(decimals_wanted=10):
     getcontext().prec = decimals_wanted
     return Decimal(a)/Decimal(b)
 
+def preciseSqrt(N,decimals_wanted=100):
+    "Gives the sqrt(N) to the appropriate decimal places"
+    from decimal import Decimal,getcontext
+    getcontext().prec = decimals_wanted
+    csn = convergentSqrt(N)
+    old = -1 # im pretty sure nothing will ever think its -1
+    for a,b in csn:
+        new = Decimal(a)/Decimal(b)
+        # TODO: i dunno how much change is visible to indicate accuracy reached
+        if abs(old-new) < 10**(-2*decimals_wanted):
+            return new
+        old = new
+    return new
 
 def numToStr(num):
     "valid: 0 to 999"
