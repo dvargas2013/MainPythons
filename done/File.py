@@ -230,6 +230,30 @@ def write(s, file, tag='w', encoding="utf", onerror=['strict','replace','ignore'
             return True
     return False
 
+from functools import wraps
+def repeatTillValid(validationFn):
+    """When given a validation function, returns a decorator
+
+The decorator runs `validationFn(decoratedFn(...))`
+until validationFn returns true
+
+It then returns the value passed into decoratedFn
+
+EXAMPLE USAGE:
+@repeatTillValid(str.islower)
+def getInput(): return input()
+
+will repeatedly execute input() until the input is lowercase"""
+    def decoratorWithParameter(decoratedFn):
+        @wraps(decoratedFn)
+        def wrapper(*args,**kwargs):
+            x = decoratedFn(*args,**kwargs)
+            while not validationFn(x):
+                x = decoratedFn(*args,**kwargs)
+            return x
+        return wrapper
+    return decoratorWithParameter
+
 def reImport(module):
     """imports and returns a {module} object. Automatically save itself in the global"""
     import importlib
