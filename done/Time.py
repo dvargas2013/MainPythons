@@ -25,8 +25,8 @@ class Time:
         """
         if len(time)==1:
             if type(time[0])==str: new = time[0].split(":")
-            else: new = [self.run(time[0],0),0,0]
-        elif len(time)>1: new = [self.run(i,0) for i in time[:3]]
+            else: new = [Time.run(time[0],0),0,0]
+        elif len(time)>1: new = [Time.run(i,0) for i in time[:3]]
         else:
             a=datetime.now()
             new=[a.hour,a.minute,a.second+a.microsecond/1e6]
@@ -80,32 +80,30 @@ class Time:
     #Some math operations for time
     def __add__(self, new): return Time(self.hr+new.hr,self.mn+new.mn,self.sc+new.sc)
     def __sub__(self, new): return Time(self.hr-new.hr,self.mn-new.mn,self.sc-new.sc)
-    def __mul__(self, new): return Time(0,0,self.totalSc()*self.run(new,1))
-    def __truediv__(self,new): return Time(0,0,self.totalSc()/self.run(new,1))
-    def __floordiv__(self,new): return Time(0,0,self.totalSc()//self.run(new,1))
-    def __mod__(self,new): return Time(0,0,self.totalSc()%self.run(new,self.totalSc()+1))
+    def __mul__(self, new): return Time(0,0,self.totalSc * Time.run(new))
+    def __truediv__(self,new): return Time(0,0,self.totalSc / Time.run(new))
+    def __floordiv__(self,new): return Time(0,0,self.totalSc // Time.run(new))
+    def __mod__(self,new):
+        new = Time.run(new,None)
+        if new == None: return Time(self)
+        return Time(0,0,self.totalSc % new)
     def __round__(self,n): return Time(self.hr,self.mn,round(self.sc,n))
     #Comparisons
     def __lt__(self,new):
-        if type(new)==type(self): return self.totalSc()<new.totalSc()
-        try: return self.totalSc()<new
-        except: return True
-    def __eq__(self,new):
-        if type(new)==type(self): return self.totalSc()==new.totalSc()
-        return False
-    def __ne__(self,new): return not self==new
+        if hasattr(new,"totalSc"): return self.totalSc < new.totalSc
+        return self.totalSc < new
+    def __eq__(self,new): return hasattr(new,"totalSc") and self.totalSc == new.totalSc
     def __le__(self,new): return self<new or self==new
-    def __gt__(self,new): return not self<=new
-    def __ge__(self,new): return not self<new
     #Show the time in a cool way
     def __repr__(self): return "Time(%s)" % self.__str__()
     def __str__(self): return '{:0>2}:{:0>2}:{:0>2}'.format(self.hr,self.mn,self.sc)
+    @classmethod
     def run(cls,num,default=1):
         """Convert parameter sent into the total amount of seconds.
         
         Can accept int, float, and Time. Anything else and default is returned"""
-        if type(num)==type(self): return num.totalSc()
-        if type(num) in [int, float]: return num
+        if isinstance(num, cls): return num.totalSc
+        if isinstance(num, (int, float)): return num
         return default
 
 def DayOfTheWeek(month,date,year):
