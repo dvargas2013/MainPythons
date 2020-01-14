@@ -120,19 +120,12 @@ class BitString():
     def __repr__(self):
         return '.'.join(str(i) if i>9 else "0%s"%i for i in self)
 
-def factorial(num):
-    "Calculate factorial"
-    if type(num)!=int or num<0: return 0
-    ret=1
-    for i in range(num): ret*=i+1
-    return int(ret)
-fact = factorial
+fact = factorial = math.factorial
 def permutation(n,r):
     "Calculate Permutation"
     if type(n*r)!=int or n*r<0 or r>n: return 0
-    ret=1
-    for i in range(n-r,n): ret*=i+1
-    return int(ret)
+    import operator
+    return reduce(operator.mul, range(n-r, n), 1)
 perm = permutation
 def combination(n,r):
     "Calculate Combination"
