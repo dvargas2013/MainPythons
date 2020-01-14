@@ -94,55 +94,26 @@ def totient(i):
 def theFactorsOf(integer):
     "_(15) = ['1+15=16', '3+5=8']"
     return [ '%s+%s=%s'%(j,k,j+k) for j,k in factorsOf(integer) ]
-class BaseInteger():
-    """Manipulates numbers in other bases
-    
-    _(5)         = 5
-    _([5])       = 5
-    _([5],10)    = 5
-    _([1,0,1],2) = 5
-    _(5,2)       = 5
-    _(55)        = 55
-    _([5,5])     = 55
-    """
-    def __init__(self, num, base=10):
-        if type(base) != int: raise Exception("Base must be an integer")
-        if not (type(num) == int or type(num) == list and all(type(i)==int for i in num)):
-            raise Exception("Number must be integer or list of integers")
-        self.b = base
-        if type(num) == list:
-            self.r = num
-            self.n = toBaseTen(num,base)
-        else:
-            self.r = fromBaseTen(num,base)
-            self.n = num
-    def __repr__(self):
-        if self.b == 10: return self.n.__repr__()
-        else: return "BaseInteger(%s,%s)"%( self.r, self.b )
-    def __int__(self): return self.n.__int__()
-    def changeBase(self,newbase):
-        self.r = changeBase(self.r,self.b,newbase)
-        self.b = newbase
-from math import log
-def changeBase(lists,oldbase,newbase):
-    "_([1,0,1],2,10) = [5]"
-    summ = toBaseTen(lists,oldbase)
-    return fromBaseTen(summ,newbase)
-def toBaseTen(lis,oldbase):
-    n,p,s = len(lis)-1,1,0
-    for i in range(n,-1,-1):
-        s += lis[i]*p
-        p *= oldbase
-    return s
-def fromBaseTen(num,newbase):
-    stop=int(log(num,newbase))+1
-    lis=list(range(stop))
-    n = newbase**(stop-1)
-    for i in range(stop):
-        lis[i]=num//n
-        num-=lis[i]*n
-        n=int(n//newbase)
-    return lis
+class BaseChanger():
+    """Allows for conversion of non-negative integers into other bases"""
+    def __init__(self, integer): self.value = abs(int(integer))
+    def toNewBase(self, newbase):
+        if self.value in {0,1}: return [self.value]
+        return list(reversed(BaseChanger._baseHelper(self.value)))
+    @staticmethod
+    def fromList(List, givenBase):
+        return BaseChanger(sum(BaseChanger._power(List)))
+    @staticmethod
+    def _power(iterable):
+        p = 1
+        for n in reversed(iterable):
+            yield n * p
+            p *= givenBase
+    @staticmethod
+    def _baseHelper(x):
+        while x:
+            yield x % base
+            x //= base
 def radToFrac(D):
     """Turns √D into continued fraction
     in the form [a0; a1, a2, ..., ar] where a1 to ar is the period of the Fraction
@@ -272,7 +243,14 @@ def PI(decimals_wanted=10):
     return Decimal(a)/Decimal(b)
 
 def preciseSqrt(N,decimals_wanted=100):
-    "Gives the sqrt(N) to the appropriate decimal places"
+    """Gives the sqrt(N) to the appropriate decimal places
+
+This is just a proof that convergents work.
+Use decimal to take sqrt intead:
+    >>> from decimal import Decimal,getcontext
+    >>> getcontext().prec = decimals_wanted
+    >>> Decimal(N).sqrt()
+"""
     from decimal import Decimal,getcontext
     getcontext().prec = decimals_wanted
     csn = convergentSqrt(N)
@@ -295,13 +273,3 @@ def numToStr(num):
     elif num%100>9 and num%100<20:
         return huns(num)+['Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'][num%10]
     else: return huns(num)+tens(num)+ones(num)
-def piecewiseMaker(funcstr,slicer):
-    "_('2x', ':2') = '((1-abs(x-2)/(x-2))/2)(2x)'"
-    if type(slicer)!=str or type(funcstr)!=str or slicer.count(':')!=1: return "Don't play games with me"
-    mini,maxi=slicer.split(':')
-    if slicer==':': out=""
-    elif slicer[0]==':': out="((1-abs(x-%s)/(x-%s))/2)"%(maxi,maxi)
-    elif slicer[-1]==':': out="((abs(x-%s)/(x-%s)+1)/2)"%(mini,mini)
-    else: out="((1-abs((x-%s)*(x-%s))/((x-%s)*(x-%s)))/2)"%(mini,maxi,mini,maxi)
-    out=out.replace('.0)',')').replace('-0.0','').replace('-0','').replace('--','+')      
-    return out+'('+funcstr+')'
