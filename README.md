@@ -1,6 +1,8 @@
 # MainPythons
+
 ## __init__.py
-just import everything from everywhere  
+just imports everything into the namespace  
+**TEST** - run the hidden done.test module
 
 ## Number.py
 **simplifyRadical** - simplifies radicals  
@@ -8,17 +10,16 @@ just import everything from everywhere
 **isPrime** - returns True if n is prime  
 **nextPrime** - returns prime >= to number given  
 **primeFactorize** - prime factorizes a number  
-**theFactorsOf** - human readable list of factors of a integer  
+**theFactorsOf** - human readable version of (factorsOf) lists the factors of a integer  
 **distinctPrimeFactorsOf** - list of prime factors  
 **totient** - Evaluates Euler's totient function as best I know  
-**changeBase** - convert to new base (comes with helper functions fromBaseTen and toBaseTen)  
+**BaseChanger** - used to convert integers to a list representation of a base  
 **convergentSqrt** - yield numerator and denominator of closer approximations to the sqrt  
 **radToFrac** - converts the sqrt into a continued fraction (the period will always be the last n-1 terms and the last term is always 2x the first)  
 **convergentsE** - yield numerator and denominator of closer approximations to the number e (comes with helper function convergents which can be used to emulate convergentsSqrt if used in conjunction with radToFrac)  
 **PI** - given a decimal precision will return pi to that precision  
-**preciseSqrt** - uses convergentSqrt to return sqrt(N) to a specified amount of digits
+**preciseSqrt** - uses convergentSqrt to return sqrt(N) to a specified amount of digits (Use decimal.Decimal.sqrt instead)  
 **numToStr** - gives name of number  
-**piecewiseMaker** - makes a piecewise function  
 ## List.py
 **poisson** - finds poisson probability (mean rate & successes)  
 **Dev** - finds sample or population Deviation  
@@ -35,14 +36,9 @@ just import everything from everywhere
 **idct** - amplitudal yay  
 ## Time.py
 **Time Class** - internally has basically the time since midnight and will perform calculations based on that number.  
-**bisectHrMnHands** - will bisect the hour and minute hands with the second hand (there are two solutions no matter where hr and mn are set so the sc parameter can't just always be set to 0)  
+**bisectHrMnHands** - no longer exists because it is deterministic (https://www.mikero.com/misc/clocks/)  
 **DayOfTheWeek** - will give you Monday,Tuesday, ... etc, according to month, day, year given  
 **timer** - context manager that will time how much the block runs  
-*Usage:*  
-```
-with timer("Message"):
-   <block>
-```
 **QuickThread** - starts a thread with the function you pass on. returns the thread running the function  
 ## Solver.py
 **solve** - using 4 basic operations {*-+/} makes numbers into lookup
@@ -77,6 +73,7 @@ Desktop - path to Desktop = join(getHome(), 'Desktop')
 **siteRead** - Give it a http and you get a byte  string.  
 **read** - reads file and returns string  
 **write** - writes to a file return boolean saying is successful  
+**repeatUntilValid** - decorator that repeatedly executes wrapped function until the parameterized function returns True  
 **reImport** - reimport a module for if you modify the module and dont want to close and reopen  
 **dARename** - renames files in a special way  
 **ZipGui** - creates a GUI to explore a Zipfile
