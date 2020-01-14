@@ -83,22 +83,39 @@ def File():
 
     print("File.py "+("Passed" if succ else "did not Pass"))
 
+
+from contextlib import contextmanager
+
+@contextmanager
+def redirect_stdin(stringio):
+    import sys
+    save = sys.stdin
+    sys.stdin = stringio
+    try: yield
+    finally: sys.stdin = save
+    
+
 def Game():
     import done.Game as Game
     succ = 1
     
     import sys
     from io import StringIO
+    from contextlib import redirect_stdout
     
     def GameTester(func, send = "giveup\ngiveup\n15\n12\n"):
         succ = 1
-        sys.stdin = StringIO(send)
-        sys.stdout = StringIO()
-        try: func()
-        except Exception as e:
-            succ = 0
-            sys.stdout = sys.__stdout__
-            print(str(func).split()[1]+" doesnt work. Exception: "+str(e))
+
+        with redirect_stdin(StringIO(send)):
+            with redirect_stdout(StringIO()):
+                try: func()
+                except Exception as e:
+                    succ = 0
+                    output = "%s doesnt work. Exception: %s" % (
+                        func.__name__, str(e))
+                
+        if not succ: print(output)
+
         return succ
     
     succ&=GameTester(Game.multgame)
@@ -109,9 +126,6 @@ def Game():
     succ&=GameTester(Game.zombie,"1\n1\n1\n1\n1\n2\n2\n1\n3\n1\n")
     succ&=GameTester(Game.ultrps,"nat\nhot\nmet\nqui\n")
     succ&=GameTester(Game.murdergame,"q\n")
-    
-    sys.stdout = sys.__stdout__
-    sys.stdin = sys.__stdin__
     
     print("Game.py "+("Passed" if succ else "did not Pass"))
 
