@@ -3,3 +3,6 @@
 # python bins
 __pycache__/
 *.py[ocd]
+
+#pycharm
+.idea/

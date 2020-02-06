@@ -1,117 +1,160 @@
 #!/usr/bin/env python3
-'''Deals with anything with the human concept of time and dates'''
+"""Deals with anything with the human concept of time and dates"""
 
-from time import *
+from time import sleep, time as time_now
 from datetime import datetime
+from contextlib import contextmanager
+
 
 class Time:
-    def __init__(self, *time):
-        """Instance of time can do many Timely things.
-        
-        Keeps track of total seconds from midnite to time.
-        
-        Initialization:
-            
-            All of these are equavilent and will initialize with 8 o'clock AM
-            
-            Time(8,0,0) - set hours, minutes, seconds
-            Time(8,0) - set hours, minutes
-            Time(8) - set hours
-            Time('8') - set hours from string
-            Time('8:0') - set hours, minutes from string
-            Time('8:0:0') - set hours, minutes, seconds from string
+    """Instance of time can do many Timely things.
 
-            Time() - returns an instance with time of creation
-        """
-        if len(time)==1:
-            if type(time[0])==str: new = time[0].split(":")
-            else: new = [Time.run(time[0],0),0,0]
-        elif len(time)>1: new = [Time.run(i,0) for i in time[:3]]
+Keeps track of total seconds from midnight to time.
+
+Initialization:
+
+    All of these are equivalent and will initialize with 8 o'clock AM
+
+    Time(8,0,0) - set hours, minutes, seconds
+    Time(8,0) - set hours, minutes
+    Time(8) - set hours
+    Time('8') - set hours from string
+    Time('8:0') - set hours, minutes from string
+    Time('8:0:0') - set hours, minutes, seconds from string
+
+    Time() - returns an instance with time of creation
+"""
+    def __init__(self, *time):
+        if len(time) == 1:
+            if type(time[0]) == str:
+                new = time[0].split(":")
+            else:
+                new = [Time.run(time[0], 0), 0, 0]
+        elif len(time) > 1:
+            new = [Time.run(i, 0) for i in time[:3]]
         else:
-            a=datetime.now()
-            new=[a.hour,a.minute,a.second+a.microsecond/1e6]
-        while len(new)<3: new=list(new)+[0]
-        self.sc=float(new[2])+(float(new[1])+float(new[0])*60)*60
-        self.mn=int(self.sc//60) #Get some minutes from it
-        self.hr=int(self.mn//60%12) #Get hours from the minutes gotten
-        self.mn=int(self.mn%60) #Reduce minutes
-        self.sc=round(self.sc%60,9) #Reduce seconds
-        #That's the best way I thought of at the moment
+            a = datetime.now()
+            new = [a.hour, a.minute, a.second + a.microsecond / 1e6]
+        while len(new) < 3: new = list(new) + [0]
+        self.sc = float(new[2]) + (float(new[1]) + float(new[0]) * 60) * 60
+        self.mn = int(self.sc // 60)  # Get some minutes from it
+        self.hr = int(self.mn // 60 % 12)  # Get hours from the minutes gotten
+        self.mn = int(self.mn % 60)  # Reduce minutes
+        self.sc = round(self.sc % 60, 9)  # Reduce seconds
+        # That's the best way I thought of at the moment
+
     @property
     def totalSc(self):
-        """Total amount of seconds from midnite to time"""
-        return 60*(60*self.hr+self.mn)+self.sc
+        """Total amount of seconds from midnight to time"""
+        return 60 * (60 * self.hr + self.mn) + self.sc
+
     @property
     def hrHandDeg(self):
         """Angle between the 12 and position of the hour hand"""
-        return (60*(60*self.hr+self.mn)+self.sc)/120%360
+        return (60 * (60 * self.hr + self.mn) + self.sc) / 120 % 360
+
     @property
     def mnHandDeg(self):
         """Angle between the 12 and position of the minute hand"""
-        return (60*self.mn+self.sc)/10%360
+        return (60 * self.mn + self.sc) / 10 % 360
+
     @property
     def scHandDeg(self):
         """Angle between the 12 and position of the second hand"""
-        return self.sc*6%360
+        return self.sc * 6 % 360
+
     @hrHandDeg.setter
-    def hrFromD(self,deg):
+    def hrHandDeg(self, deg):
         """Set the hour hand of time to where it should be according to the angle given in degrees"""
-        self.hr=deg//30
+        self.hr = deg // 30
+
     @mnHandDeg.setter
-    def mnFromD(self,deg):
+    def mnHandDeg(self, deg):
         """Set the minute hand of time to where it should be according to the angle given in degrees"""
-        self.mn=deg//6
+        self.mn = deg // 6
+
     @scHandDeg.setter
-    def scFromD(self,deg):
+    def scHandDeg(self, deg):
         """Set the second hand of time to where it should be according to the angle given in degrees"""
-        self.sc=deg/6
+        self.sc = deg / 6
+
     def setHr(self, num):
         """Set the hours of time"""
-        new = Time(num,self.mn,self.sc)
-        self.hr,self.mn,self.sc = new.hr,new.mn,new.sc
+        new = Time(num, self.mn, self.sc)
+        self.hr, self.mn, self.sc = new.hr, new.mn, new.sc
+
     def setMn(self, num):
         """Set the minutes of time"""
-        new = Time(self.hr,num,self.sc)
-        self.hr,self.mn,self.sc = new.hr,new.mn,new.sc
+        new = Time(self.hr, num, self.sc)
+        self.hr, self.mn, self.sc = new.hr, new.mn, new.sc
+
     def setSc(self, num):
         """Set the seconds of time"""
-        new = Time(self.hr,self.mn,num)
-        self.hr,self.mn,self.sc = new.hr,new.mn,new.sc
-    #Some math operations for time
-    def __add__(self, new): return Time(self.hr+new.hr,self.mn+new.mn,self.sc+new.sc)
-    def __sub__(self, new): return Time(self.hr-new.hr,self.mn-new.mn,self.sc-new.sc)
-    def __mul__(self, new): return Time(0,0,self.totalSc * Time.run(new))
-    def __truediv__(self,new): return Time(0,0,self.totalSc / Time.run(new))
-    def __floordiv__(self,new): return Time(0,0,self.totalSc // Time.run(new))
-    def __mod__(self,new):
-        new = Time.run(new,None)
-        if new == None: return Time(self)
-        return Time(0,0,self.totalSc % new)
-    def __round__(self,n): return Time(self.hr,self.mn,round(self.sc,n))
-    #Comparisons
-    def __lt__(self,new):
-        if hasattr(new,"totalSc"): return self.totalSc < new.totalSc
+        new = Time(self.hr, self.mn, num)
+        self.hr, self.mn, self.sc = new.hr, new.mn, new.sc
+
+    # Some math operations for time
+    def __add__(self, new):
+        return Time(self.hr + new.hr, self.mn + new.mn, self.sc + new.sc)
+
+    def __sub__(self, new):
+        return Time(self.hr - new.hr, self.mn - new.mn, self.sc - new.sc)
+
+    def __mul__(self, new):
+        return Time(0, 0, self.totalSc * Time.run(new))
+
+    def __truediv__(self, new):
+        return Time(0, 0, self.totalSc / Time.run(new))
+
+    def __floordiv__(self, new):
+        return Time(0, 0, self.totalSc // Time.run(new))
+
+    def __mod__(self, new):
+        new = Time.run(new, None)
+        if new is None: return Time(self)
+        return Time(0, 0, self.totalSc % new)
+
+    def __round__(self, n=0):
+        return Time(self.hr, self.mn, round(self.sc, n))
+
+    # Comparisons
+    def __lt__(self, new):
+        if hasattr(new, "totalSc"): return self.totalSc < new.totalSc
         return self.totalSc < new
-    def __eq__(self,new): return hasattr(new,"totalSc") and self.totalSc == new.totalSc
-    def __le__(self,new): return self<new or self==new
-    #Show the time in a cool way
-    def __repr__(self): return "Time(%s)" % self.__str__()
-    def __str__(self): return '{:0>2}:{:0>2}:{:0>2}'.format(self.hr,self.mn,self.sc)
+
+    def __eq__(self, new):
+        return hasattr(new, "totalSc") and self.totalSc == new.totalSc
+
+    def __le__(self, new):
+        return self < new or self == new
+
+    # Show the time in a cool way
+    def __repr__(self):
+        return "Time(%s)" % self.__str__()
+
+    def __str__(self):
+        return '{:0>2}:{:0>2}:{:0>2}'.format(self.hr, self.mn, self.sc)
+
     @classmethod
-    def run(cls,num,default=1):
+    def run(cls, num, default=1):
         """Convert parameter sent into the total amount of seconds.
         
-        Can accept int, float, and Time. Anything else and default is returned"""
+Can accept int, float, and Time. Anything else and default is returned"""
         if isinstance(num, cls): return num.totalSc
         if isinstance(num, (int, float)): return num
         return default
 
-def DayOfTheWeek(month,date,year):
-    """"Calculate the Day of the Week according to month, day, year given."""
-    if type(month)==str: month = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].index(month.lower()[:3])+1
-    return ['Thrusday','Friday','Saturday','Sunday','Monday','Tuesday','Wednesday'][int((23*month//9+date+year+(year-(1-abs(month-2.5)/(month-2.5))//2)//4-(year-(1-abs(month-2.5)/(month-2.5))//2)//100+(year-(1-abs(month-2.5)/(month-2.5))//2)//400)-abs(month-2.5)/(month-2.5)-1)%7]
 
-from contextlib import contextmanager
+def DayOfTheWeek(month, date, year):
+    """"Calculate the Day of the Week according to month, day, year given."""
+    if type(month) == str: month = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov',
+                                    'dec'].index(month.lower()[:3]) + 1
+    abs_month = abs(month - 2.5) / (month - 2.5)
+    abs_year = year - (1 - abs_month) // 2
+    return ['Thursday', 'Friday', 'Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday'][(
+        23 * month // 9 + date + year - abs_month - 1 + abs_year // 4 - abs_year // 100 + abs_year // 400) % 7]
+
+
 @contextmanager
 def timer(msg):
     """Give time taken by the block within context.
@@ -121,10 +164,11 @@ def timer(msg):
         with timer('<Message>'):
             <block>
     """
-    start = time()
+    start = time_now()
     yield
-    end = time()
-    print("%s: %.02fms" % (msg, (end-start)*1000))
+    end = time_now()
+    print("%s: %.02fms" % (msg, (end - start) * 1000))
+
 
 def stopwatch(n=10):
     """Give time SINCE call for {n} Enter Key presses."""
@@ -132,23 +176,31 @@ def stopwatch(n=10):
     for i in range(n):
         input()
         print(datetime.now() - a)
+
+
 countUp = stopwatch
+
+
 def countBetween(n=10):
     """Give time BETWEEN key presses for {n*2} Enter Key presses."""
     for i in range(n):
         input("[Start]")
         a = datetime.now()
         input("Counting...")
-        print(datetime.now()-a)
-def countdown(n=10,count=1):
+        print(datetime.now() - a)
+
+
+def countdown(n=10, count=1):
     """Show a countdown on the Terminal starting at {n} counting down by {count}"""
-    a = Time()+Time(0,0,n*count)
-    while a>Time():
-        print(round((a-Time())/count,0),end="\r")
+    a = Time() + Time(0, 0, n * count)
+    while a > Time():
+        print(round((a - Time()) / count, 0), end="\r")
         sleep(count)
 
+
 def QuickThread(f):
+    """run the function in a new Thread (returns the Thread object)"""
     from threading import Thread
-    t = Thread(target = f, daemon=True)
+    t = Thread(target=f, daemon=True)
     t.start()
     return t
