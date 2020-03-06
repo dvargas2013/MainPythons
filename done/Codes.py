@@ -1,6 +1,6 @@
 """Just a bunch of Codes"""
 
-from String import multiple_replace, createTranslationTable
+from .String import multiple_replace, createTranslationTable
 
 
 def binary(text, to_binary=True):

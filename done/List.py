@@ -1,6 +1,6 @@
 """Deals with lists of information. Many probability things are found here."""
 
-from Math import fact, comb
+from .Math import fact, comb
 from math import exp
 from collections import deque
 

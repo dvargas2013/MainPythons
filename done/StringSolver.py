@@ -2,7 +2,7 @@
 import re
 from string import ascii_lowercase
 from functools import partial
-import String
+from . import String
 import random
 
 printAll = print_iterable = String.print_iterable

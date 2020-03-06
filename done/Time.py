@@ -149,7 +149,7 @@ def DayOfTheWeek(month, date, year):
     """"Calculate the Day of the Week according to month, day, year given."""
     if type(month) == str: month = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov',
                                     'dec'].index(month.lower()[:3]) + 1
-    abs_month = abs(month - 2.5) / (month - 2.5)
+    abs_month = -1 if month < 3 else 1
     abs_year = year - (1 - abs_month) // 2
     return ['Thursday', 'Friday', 'Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday'][(
         23 * month // 9 + date + year - abs_month - 1 + abs_year // 4 - abs_year // 100 + abs_year // 400) % 7]

@@ -67,7 +67,7 @@ random_char = get_next
 def random_word(letters):
     """"Create a random pronounceable word"""
     word = ' '
-    return ''.join(word := get_next(word) for _ in range(letters)).strip().title()
+    return ''.join((word := get_next(word)) for _ in range(letters)).strip().title()
 
 
 def chain(words, letters):

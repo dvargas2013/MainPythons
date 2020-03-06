@@ -7,7 +7,7 @@ there are others but they are really obscure problems and puzzles.
 
 from itertools import product
 from functools import reduce
-from List import lcm, cross
+from .List import lcm, cross
 
 
 def __solve_equals_lookup(a, b, lookup, epsilon=1e-6):
