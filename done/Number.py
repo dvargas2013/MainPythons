@@ -3,6 +3,8 @@
 """Searching functions dealing with singular number space - Prioritized for human readability"""
 
 from math import ceil
+from decimal import Decimal, localcontext, Context
+from fractions import Fraction
 
 
 def parse_number(input_string, onerror=0):
@@ -297,7 +299,6 @@ def PI(decimals_wanted=10):
 
     def pi_df(loops):
         """gets a ratio that approximates pi better and better the higher the input"""
-        from fractions import Fraction
         p, d, n = range(3)  # 0,1,2
         for n0 in range(1, loops):  # 1 2 3 4 ...
             p += Fraction(n, d)
@@ -306,32 +307,46 @@ def PI(decimals_wanted=10):
         return p.numerator, p.denominator
 
     a, b = pi_df(4 * decimals_wanted)
-    from decimal import Decimal, getcontext
-    getcontext().prec = decimals_wanted
-    return Decimal(a) / Decimal(b)
+    with localcontext(Context(prec=decimals_wanted)):
+        return Decimal(a) / Decimal(b)
+
+
+def preciseSqrt_babylonian(N, decimals_wanted=100):
+    """Gives the sqrt(N) to the appropriate decimal places
+
+from my timeit tests this is 1.1x faster than Decimal.sqrt() don't ask me how
+(maybe its cause its operating on N as integer)
+"""
+    with localcontext(Context(prec=decimals_wanted)):
+        num = Decimal(N**.5)
+        while True:
+            new_num = (num * num + N) / num / 2
+            if new_num == num:
+                return num
+            else: num = new_num
 
 
 def preciseSqrt(N, decimals_wanted=100):
     """Gives the sqrt(N) to the appropriate decimal places
 
-This is just a proof that convergents work.
-Use decimal to take sqrt instead:
+This is just a proof that convergents work
+This method is more than 3 orders of magnitude slower than babylonian method
+Use decimal to take sqrt instead (uses newtonian method):
     >>> from decimal import Decimal,getcontext
     >>> getcontext().prec = decimals_wanted
     >>> Decimal(N).sqrt()
 """
-    from decimal import Decimal, getcontext
-    getcontext().prec = decimals_wanted
-    csn = convergentSqrt(N)
-    old = -1  # im pretty sure nothing will ever think its -1
-    new = 0
-    for a, b in csn:
-        new = Decimal(a) / Decimal(b)
-        # TODO: i dunno how much change is visible to indicate accuracy reached
-        if abs(old - new) < 10 ** (-2 * decimals_wanted):
-            return new
-        old = new
-    return new
+    with localcontext(Context(prec=decimals_wanted)):
+        csn = convergentSqrt(N)
+        old = -1  # im pretty sure nothing will ever think its -1
+        new = 0
+        for a, b in csn:
+            new = Decimal(a) / Decimal(b)
+            # TODO: i dunno how much change is visible to indicate accuracy reached
+            if abs(old - new) < 10 ** (-2 * decimals_wanted):
+                return new
+            old = new
+        return new
 
 
 def numToStr(num):
