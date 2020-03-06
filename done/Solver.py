@@ -79,14 +79,16 @@ def solve(*nums, lookup=24):
             if _ := __solve_double(a, b, *rest1, lookup=lookup):
                 return _
 
+def cross_str(a,b):
+    return [i+j for i in a for j in b]
 
 # These are static vars
 sudoku_rows, sudoku_cols = 'ABCDEFGHI', '123456789'
-sudoku_squares = cross(sudoku_rows, sudoku_cols)  # Every boxy (denoted by s)
+sudoku_squares = cross_str(sudoku_rows, sudoku_cols)  # Every boxy (denoted by s)
 sudoku_units = dict((s, [u for u in  # s:[Column, Row, Square] (all three units denoted by u=s[])
-                         [cross(sudoku_rows, c) for c in sudoku_cols] +
-                         [cross(r, sudoku_cols) for r in sudoku_rows] +
-                         [cross(rs, cs) for rs in ('ABC', 'DEF', 'GHI') for cs in ('123', '456', '789')]
+                         [cross_str(sudoku_rows, c) for c in sudoku_cols] +
+                         [cross_str(r, sudoku_cols) for r in sudoku_rows] +
+                         [cross_str(rs, cs) for rs in ('ABC', 'DEF', 'GHI') for cs in ('123', '456', '789')]
                          if s in u]) for s in sudoku_squares)
 sudoku_peers = dict((s, set(sum(sudoku_units[s], [])) - {s}) for s in sudoku_squares)  # s:union(u1,u2,u3)
 sudoku_values = dict((s, sudoku_cols) for s in sudoku_squares)  # s:'123456789' (denoted by d)
