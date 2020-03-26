@@ -8,35 +8,37 @@ there are others but they are really obscure problems and puzzles.
 from itertools import product
 from functools import reduce
 from .List import lcm, cross
+from functools import lru_cache
+from fractions import Fraction
 
-
-def __solve_equals_lookup(a, b, lookup, epsilon=1e-6):
+@lru_cache
+def __solve_equals_lookup(a, b, lookup):
     """helper function for solve(). base-case where *nums is empty"""
-    if abs(a + b - lookup) < epsilon: return f"{a} + {b}"
-    if abs(a - b - lookup) < epsilon: return f"{a} - {b}"
-    if abs(b - a - lookup) < epsilon: return f"{b} - {a}"
-    if abs(a * b - lookup) < epsilon: return f"{a} * {b}"
-    if b != 0 and abs(a - lookup * b) < epsilon: return f"{a} / {b}"
-    if a != 0 and abs(b - lookup * a) < epsilon: return f"{b} / {a}"
+    if a + b == lookup: return f"{a} + {b}"
+    if a - b == lookup: return f"{a} - {b}"
+    if b - a == lookup: return f"{b} - {a}"
+    if a * b == lookup: return f"{a} * {b}"
+    if b != 0 and a == lookup * b: return f"{a} / {b}"
+    if a != 0 and b == lookup * a: return f"{b} / {a}"
 
-
+@lru_cache
 def __solve_single(a, *nums, lookup, a_string=None):
     """helper function for solve(). recursive helper where u extract a single num"""
     if a_string is None: a_string = str(a)
     if _ := solve(*nums, lookup=lookup - a):
         return f"{a_string} + ({_})"
-    if a != 0 and (_ := solve(*nums, lookup=lookup / a)):
+    if a != 0 and (_ := solve(*nums, lookup=Fraction(lookup, a))):
         return f"{a_string} * ({_})"
     if _ := solve(*nums, lookup=a - lookup):
         return f"{a_string} - ({_})"
     if _ := solve(*nums, lookup=lookup + a):
         return f"({_}) - {a_string}"
-    if lookup != 0 and (_ := solve(*nums, lookup=a / lookup)):
+    if a*lookup != 0 and (_ := solve(*nums, lookup=Fraction(a, lookup))):
         return f"{a_string} / ({_})"
     if a != 0 and (_ := solve(*nums, lookup=lookup * a)):
         return f"({_}) / {a_string}"
 
-
+@lru_cache
 def __solve_double(a, b, *nums, lookup):
     """helper function for solve(). """
     if _ := __solve_single(a + b, *nums, lookup=lookup, a_string=f"({a} + {b})"):
@@ -47,16 +49,18 @@ def __solve_double(a, b, *nums, lookup):
         return _
     if _ := __solve_single(b - a, *nums, lookup=lookup, a_string=f"({b} - {a})"):
         return _
-    if b != 0 and (_ := __solve_single(a / b, *nums, lookup=lookup, a_string=f"({a} / {b})")):
+    if b != 0 and (_ := __solve_single(Fraction(a, b), *nums, lookup=lookup, a_string=f"({a} / {b})")):
         return _
-    if a != 0 and (_ := __solve_single(b / a, *nums, lookup=lookup, a_string=f"({b} / {a})")):
+    if a != 0 and (_ := __solve_single(Fraction(b, a), *nums, lookup=lookup, a_string=f"({b} / {a})")):
         return _
 
-
+@lru_cache
 def solve(*nums, lookup=24):
     """_(1,2,3,4,lookup=30) yields '3*(2*(4+1))'"""
-    if len(nums) == 0:
-        raise Exception("im not sure how u did this")
+    if len(nums) == 0: raise Exception("no numbers given")
+    if not all( (type(i) in [int,Fraction]) for i in [*nums,lookup] ):
+        # all the inputs must be int or Fraction types
+        raise Exception("only integers and Fractions allowed for computation")
 
     if len(nums) == 1:
         if nums[0] == lookup:
