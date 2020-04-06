@@ -174,19 +174,20 @@ def linear_combination(num, lis, sort=True):
 
 _(50, [4, 7]) yields '6*7+2*4'"""
     if sort: lis = [i for i in sorted(lis, reverse=True) if i > 0]
-    for i in range(num // lis[0] + 1):
-        new = num - i * lis[0]
+    first = lis[0]
+    for i in reversed(range(num // first + 1)):
+        new = num - i * first
         if new == 0:
-            yield '{}*{}'.format(i, lis[0])
+            yield f'{i}*{first}'
         elif new > 0 and len(lis) > 1:
             for piece in linear_combination(new, lis[1:], False):
                 if i == 0:
                     yield piece
                 elif i == 1:
-                    yield '{} + '.format(lis[0]) + piece
+                    yield f'{first} + {piece}'
                 else:
-                    yield '{}*{} + '.format(i, lis[0]) + piece
-
+                    yield f'{i}*{first} + {piece}'
+                    
 
 def addOrSub(string, num):
     """Adds +, -, or nothing between every number and evaluates to num"""
