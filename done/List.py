@@ -2,7 +2,7 @@
 
 from .Math import fact, comb
 from math import exp
-from collections import deque
+from collections import deque, defaultdict
 
 
 def window(seq, n=2):
@@ -26,7 +26,7 @@ def poisson(y, x):
 
 def Dev(lis, population=False):
     """Sample Standard Deviation"""
-    xbar = sum(lis)/len(lis)
+    xbar = sum(lis) / len(lis)
     print('x%s = %s' % (chr(773), xbar))
     sum_square_deviation = sum(x * x for x in lis) - sum(x for x in lis) ** 2 / len(lis)
     print("(x-x%s)^2 = %s" % (chr(773), sum_square_deviation))
@@ -102,3 +102,21 @@ def cross(*lists, tupled=False):
     if not tupled:
         return [sum(i) for i in pd]
     return list(pd)
+
+class CollisionDict(defaultdict):
+    def __init__(self, factory, add_func, data=None):
+        super().__init__(factory)
+        self.add_func = add_func
+        for k, v in data:
+            self.addItem(k, v)
+
+    def addItem(self, key, value):
+        self.add_func(self[key], value)
+
+class CollisionDictOfLists(CollisionDict):
+    def __init__(self, data=None):
+        super().__init__(list, list.append, data)
+
+class CollisionDictOfSets(CollisionDict):
+    def __init__(self, data=None):
+        super().__init__(set, set.add, data)
