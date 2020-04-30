@@ -58,7 +58,7 @@ def get_next(prev_char=None):
     """gets a random character based on the distribution of characters based on the previous character"""
     if prev_char is None:
         prev_char = " "
-    return random.choices(ascii_uppercase, cum_weights=ChainData[prev_char[-1]])
+    return random.choices(ascii_uppercase, cum_weights=ChainData[prev_char[-1]])[0]
 
 
 random_char = get_next
