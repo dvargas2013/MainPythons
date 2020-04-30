@@ -29,20 +29,21 @@ just imports everything into the namespace
 **probDev** - same as freq Dev  
 **hypergeometric** - stats stuff  
 **median** - center of list when ordered  
-**gcd** - finds gratest common factor of many numbers  
+**gcd** - finds greatest common factor of many numbers  
 **lcm** - finds least common multiple of many numbers  
 **cross** - combines many lists (compressing nd to 1d)  
+**CollisionDict** - class that is essentially dict\<mutable-collection\>  
 ## Time.py
 **Time Class** - performs math based on the time since midnight  
 **DayOfTheWeek** - will give you Monday,Tuesday, ... etc, according to month, day, year given  
 **timer** - context manager that will time how much the block runs  
 **QuickThread** - starts a thread with the function you pass on.  
 ## Solver.py
-**solve** - using 4 basic operations {*-+/} makes numbers into lookup
-**sudoku** - solves sudoku problems for you
-**numRemainders** - finds number with divisor:remainder pairs
-**linear_combination** - finds how many of each in list to make num
-**addOrSub** - adds +/- between #s to make num
+**solve** - using 4 basic operations {*-+/} makes numbers into lookup  
+**sudoku** - solves sudoku problems for you  
+**numRemainders** - finds number with divisor:remainder pairs  
+**linear_combination** - finds how many of each in list to make num  
+**addOrSub** - adds +/- between #s to make num  
 ## Math.py
 **angle** - together with distance gives polar coord  
 **angleForStar** - gets number of spokes and gives angle needed  
@@ -69,7 +70,7 @@ Desktop - path to Desktop = join(getHome(), 'Desktop')
 **write** - writes to a file return boolean saying is successful  
 **repeatUntilValid** - decorator that repeatedly executes wrapped function until the parameterized function returns True  
 **reImport** - reimport a module for if you modify the module and don't want to close and reopen  
-**ZipGui** - creates a GUI to explore a Zipfile
+**ZipGui** - creates a GUI to explore a Zipfile  
 **unzip** - Unzips files 1 at a time. (used for when you need to unzip a corrupted zip file)  
 ## Game.py
 **matrix** - will randomly print numbers between nums  
@@ -82,9 +83,9 @@ Desktop - path to Desktop = join(getHome(), 'Desktop')
 **ultimate_rps** - Ultimate Rock Paper Scissors  
 **murder** - Murder happens; figure out who did what  
 ## String.py
-**multiple_replace** -  
-**createTranslationTable** -  
-**print_iterable** -  
+**multiple_replace** -  replaces multiple times using [(from, to),..]  
+**createTranslationTable** -  basically just a helper for codes  
+**print_iterable** - for i in iterable: print(i)  
 **switch** - swap the strings in the main string. almost like a simultaneous double replace statement.  
 **reverse** - reverse a string's characters  
 **wrapPrint** - Text Wrapper  
