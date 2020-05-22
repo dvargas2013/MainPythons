@@ -172,18 +172,18 @@ def timer(msg):
     print("%s: %.02fms" % (msg, (end - start) * 1000))
 
 
-def function_time(func_or_str, **kwargs):
+def function_time(func_or_str, times=3, initn=10_000, **kwargs):
     """basically a wrapper for timeit.timeit. returns number of times you could run the function in a second"""
     kwargs.pop('number', 0)
 
-    n = 1000000
+    n = initn
     x = timeit(func_or_str, **kwargs, number=n)
 
     while round(x) != 1:
         n = int(n / x)
         x = timeit(func_or_str, **kwargs, number=n)
 
-    n *= 3
+    n *= times
     return n / timeit(func_or_str, **kwargs, number=n)
 
 
