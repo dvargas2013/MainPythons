@@ -186,7 +186,7 @@ The wall collapses and kills all the zombies""")
         if input("Do you eat the burger? (1-Yes)(2-No): ")[0] in '1yY':  # eat
             return print("""
 If you don't know this: the burger is tainted, anyone that eats it becomes a zombie
-you can guess what %s did when he saw a random zombie""" % name)
+you can guess what %s did when they saw a random zombie""" % name)
         else:  # no eat
             print("\nYou keep walking and see water")
             if input("Do you want the water? (1-Yes)(2-No): ")[0] in '1yY':

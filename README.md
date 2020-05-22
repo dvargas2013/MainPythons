@@ -37,6 +37,7 @@ just imports everything into the namespace
 **Time Class** - performs math based on the time since midnight  
 **DayOfTheWeek** - will give you Monday,Tuesday, ... etc, according to month, day, year given  
 **timer** - context manager that will time how much the block runs  
+**function_time** - timeit.timeit wrapper. calculates iterations/second  
 **QuickThread** - starts a thread with the function you pass on.  
 ## Solver.py
 **solve** - using 4 basic operations {*-+/} makes numbers into lookup  

@@ -2,6 +2,7 @@
 """Deals with anything with the human concept of time and dates"""
 
 from time import sleep, time as time_now
+from timeit import timeit
 from datetime import datetime
 from contextlib import contextmanager
 
@@ -24,6 +25,7 @@ Initialization:
 
     Time() - returns an instance with time of creation
 """
+
     def __init__(self, *time):
         if len(time) == 1:
             if type(time[0]) == str:
@@ -138,7 +140,7 @@ Initialization:
     @classmethod
     def run(cls, num, default=1):
         """Convert parameter sent into the total amount of seconds.
-        
+
 Can accept int, float, and Time. Anything else and default is returned"""
         if isinstance(num, cls): return num.totalSc
         if isinstance(num, (int, float)): return num
@@ -151,16 +153,16 @@ def DayOfTheWeek(month, date, year):
                                     'dec'].index(month.lower()[:3]) + 1
     abs_month = -1 if month < 3 else 1
     abs_year = year - (1 - abs_month) // 2
-    return ['Thursday', 'Friday', 'Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday'][(
-        23 * month // 9 + date + year - abs_month - 1 + abs_year // 4 - abs_year // 100 + abs_year // 400) % 7]
+    index = 23 * month // 9 + date + year - abs_month - 1 + abs_year // 4 - abs_year // 100 + abs_year // 400
+    return ['Thursday', 'Friday', 'Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday'][index % 7]
 
 
 @contextmanager
 def timer(msg):
     """Give time taken by the block within context.
-    
+
     Usage:
-    
+
         with timer('<Message>'):
             <block>
     """
@@ -168,6 +170,21 @@ def timer(msg):
     yield
     end = time_now()
     print("%s: %.02fms" % (msg, (end - start) * 1000))
+
+
+def function_time(func_or_str, **kwargs):
+    """basically a wrapper for timeit.timeit. returns number of times you could run the function in a second"""
+    kwargs.pop('number', 0)
+
+    n = 1000000
+    x = timeit(func_or_str, **kwargs, number=n)
+
+    while round(x) != 1:
+        n = int(n / x)
+        x = timeit(func_or_str, **kwargs, number=n)
+
+    n *= 3
+    return n / timeit(func_or_str, **kwargs, number=n)
 
 
 def stopwatch(n=10):
