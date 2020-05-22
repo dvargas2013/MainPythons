@@ -88,10 +88,6 @@ def solve(*nums, lookup=24):
                 return _
 
 
-def cross_str(a, b):
-    return [i + j for i in a for j in b]
-
-
 class Sudoku:
     # Prepare for Ultra-Recursion
     # search() and parse() both call assign()
@@ -99,43 +95,36 @@ class Sudoku:
     # eliminate() calls assign() and itself
 
     class EliminationError(Exception):
+        """Exception so I could catch specifically things thrown by Sudoku.eliminate"""
         pass
 
-    rows, nums = 'ABCDEFGHI', '123456789'
-    squares = cross_str(rows, nums)  # all 81 boxes (denoted by s)
-
-    # dumb lambda hack cause rows and cols arent defined enough to access inside of a list
-    # the reason it works is cause lambda adds a scope that list comprehension comprehends
-
-    # all 27 columns, rows, and squares
-    sections = (lambda rows, cols: [cross_str(rows, c) for c in cols] +
-                                   [cross_str(r, cols) for r in rows] +
-                                   [cross_str(rs, cs) for rs in ('ABC', 'DEF', 'GHI') for cs in ('123', '456', '789')]
-                )(rows, nums)
-
-    # s:[Column, Row, Square]
-    units = (lambda sects, sqrs: dict((s, [u for u in sects if s in u]) for s in sqrs))(sections, squares)
-
-    # all 81 boxes matched to its 20 peers
-    peers = (lambda unts, sqrs: dict((s, set(sum(unts[s], [])) - {s}) for s in sqrs))(units, squares)
+    # 81 squares of the form A1, G4, D9, mapped to 3 lists denoting Column, Row, and 3x3 units
+    # every unit has 9 elements including the square itself
+    # set(sum(unit,[])) is 21 elements including the square itself
+    units = dict((s0 + s1, [[s0 + i for i in "123456789"],
+                            [i + s1 for i in "ABCDEFGHI"],
+                            [i + j
+                             for i in [a for a in ('ABC', 'DEF', 'GHI') if s0 in a][0]
+                             for j in [b for b in ('123', '456', '789') if s1 in b][0]]])
+                 for s0 in 'ABCDEFGHI' for s1 in '123456789')
 
     def __init__(self, string_grid="", blank_character="0"):
         """initializes possibilities (ignores anything thats not 1-9 or the specified blank character)"""
         # d: all 81 boxes matched with the numbers 1-9
-        self.values = dict((s, Sudoku.nums) for s in Sudoku.squares)
+        self.values = dict((s, "123456789") for s in Sudoku.units)
 
         if string_grid:
             self._parse(string_grid, blank_character)
 
     def _parse(self, string_grid, blank_character):
-        """parse out numbers given in string_grid and adjust values to those numbers by using assign"""
-        accept_set = set(Sudoku.nums + blank_character)
+        """parse out numbers given in string_grid and adjust data by using assign"""
+        accept_set = set("123456789" + blank_character)
 
         def accept(c):
             return c in accept_set
 
-        for s, d in zip(Sudoku.squares, list(filter(accept, string_grid))):
-            if d in Sudoku.nums: self.assign(s, d)
+        for s, d in zip(sorted(Sudoku.units), list(filter(accept, string_grid))):
+            if '1' <= d <= '9': self.assign(s, d)
         return self
 
     def assign(self, position, digit_str):
@@ -151,15 +140,17 @@ class Sudoku:
         self.values[pos] = self.values[pos].replace(digit, '')
         if self.amntof_vals_at(pos) == 0:
             raise Sudoku.EliminationError(f"No more digits can go at {pos}")  # eliminated all the numbers
-        elif self.amntof_vals_at(pos) == 1:  # only has 1 value left
-            for s2 in Sudoku.peers[pos]:  # eliminate value from peers
+        if self.amntof_vals_at(pos) == 1:  # only has 1 value left
+            peers = set(sum(Sudoku.units[pos], []))
+            peers.remove(pos)
+            for s2 in peers:  # eliminate value from peers
                 self.eliminate(s2, self.values[pos])
 
         for unit in Sudoku.units[pos]:  # for all units, see if there's a number that only goes in 1 place
             d_places = [p for p in unit if digit in self.values[p]]
             if len(d_places) == 0:
                 raise Sudoku.EliminationError(f"No more digit {digit} in unit {unit[0]}-{unit[-1]}")
-            elif len(d_places) == 1:  # if only 1 more place for d to go, then assign d.
+            if len(d_places) == 1:  # if only 1 more place for d to go, then assign d.
                 self.assign(d_places[0], digit)
 
         return self
@@ -168,49 +159,53 @@ class Sudoku:
         """amount of values left in the box"""
         return len(self.values[position])
 
-    def search(self):
+    def search(self, debug=False):
         """try all possible values."""
-        if all(self.amntof_vals_at(s) == 1 for s in Sudoku.squares):
+        if all(self.amntof_vals_at(s) == 1 for s in Sudoku.units):
             yield self
             return
 
         # choose a square s with least values
-        s = min((s for s in Sudoku.squares if self.amntof_vals_at(s) > 1),
+        s = min((s for s in Sudoku.units if self.amntof_vals_at(s) > 1),
                 key=self.amntof_vals_at)
 
         for d in self.values[s]:  # it has to be one of those d so pick one and search again
             try:
                 yield from self.copy().assign(s, d).search()
             except Sudoku.EliminationError as e:
-                print(e)
+                if debug: print(e)
 
-        yield self
+        raise Sudoku.EliminationError(f"Reached end of search loop at {s} and no numbers worked")
 
     def solve(self):
         """return new board solve or same board if already solved"""
         return next(self.search())
 
     def copy(self):
+        """create a new sudoku board and copy over the possible values"""
         n = Sudoku()
         n.values = self.values.copy()  # only needs shallow cause strings are immutable
         return n
 
-    def display(self):
-        """a quick and dirty string accumulator to print out the grid"""
-        for r, c in Sudoku.squares:
-            print("".join(self.values[r + c]), end="")
-            if c in '36':
-                print('|', end="")
-            elif c == '9':
-                print()
-                if r in 'CF':
-                    print('-----------')
+    def display(self, blank="."):
+        """prints out an ok looking grid"""
+        print('\n-----------\n'.join(  # between triple rows
+            "\n".join(  # between rows
+                "|".join(  # between triple columns
+                    "".join((d if len(d := self.values[r + c]) == 1 else blank)
+                            for c in cs)
+                    for cs in ("123", "456", "789"))
+                for r in rs)
+            for rs in ("ABC", "DEF", "GHI")))
 
     def __str__(self):
-        return "".join((s if len(s) == 1 else f"|{s}|") for s in self)
+        return "".join((s if len(s) == 1 else f"<{s}>") for s in self)
+
+    def __repr__(self):
+        return f"Sudoku({''.join((s if len(s) == 1 else '0') for s in self)!r})"
 
     def __iter__(self):
-        yield from (self.values[rc] for rc in Sudoku.squares)
+        yield from (self.values[rc] for rc in sorted(Sudoku.units))
 
 
 def numRemainders(divisors, remainders):
