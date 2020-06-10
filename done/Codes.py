@@ -84,15 +84,26 @@ Example:
     return ''.join(morse_dictionary.get(i, i) for i in text.split())
 
 
-def num_letters(text, inverse=False):
+def _let_to_num(let):
+    """let is a letter character [a-z][A-Z]"""
+    return str(ord(let.lower()) - 96)
+
+
+def _num_to_let(num):
+    """errors appear as spaces"""
+    return chr(96 + int(num or '-64'))
+
+
+def num_letters(text, backToWords=False, letterSep=".", wordSep="...."):
     """letters to numbers. and back.
     
 Example:
     _('daniel') --> '4.1.14.9.5.12'
     _('4.1.14.9.5.12', inverse=True) = 'daniel'
 """
-    if inverse: return ' '.join(''.join(chr(96 + int(a or '-64')) for a in i.split('.')) for i in text.split('....'))
-    return '....'.join('.'.join(str(ord(a) - 96) for a in i) for i in text.split(' '))
+    if backToWords:
+        return ' '.join(''.join(_num_to_let(let) for let in word.split(letterSep)) for word in text.split(wordSep))
+    return wordSep.join(letterSep.join(_let_to_num(let) for let in word) for word in text.split(' '))
 
 
 numword = num_letters
