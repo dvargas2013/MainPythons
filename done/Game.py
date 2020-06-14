@@ -122,10 +122,10 @@ def number_guesser1():
     print("Pick a number between 1-25 and pick row numbers.\nPrepare to have your 'mind' 'read'\n")
     print(
         'row1: 06 11 01 21 16\nrow2: 12 07 02 22 17\nrow3: 23 13 08 18 03\nrow4: 19 14 09 04 24\nrow5: 10 05 20 15 25')
-    a = eval(input('row number of location of your number: '))
+    a = int(input('row number of location of your number: '))
     print(
         'row1: 05 02 04 03 01\nrow2: 09 07 08 06 10\nrow3: 13 12 11 15 14\nrow4: 20 17 19 16 18\nrow5: 22 25 21 24 23')
-    b = eval(input('new row number of location of your number: '))
+    b = int(input('new row number of location of your number: '))
     print('{0} and {2} were your rows. \n{0}-5={1}; {2}*5={3}; \n{1}+{3}='.format(a, a - 5, b, b * 5))
     return a - 5 + b * 5
 
@@ -151,6 +151,20 @@ def number_guesser2():
     print("Your Number Is: %s" % a)
 
 
+def number_guesser3():
+    """open up a calculator and do the thing"""
+    print("pick a positive integer. any will do")
+    input("press enter when you've chosen...")
+
+    print("multiply it by 18")
+    input("press enter when you've multiplied...")
+
+    print("remove a non zero digit to be your secret digit")
+    print("gimme all the other numbers left")
+    print("example: if your number is 1571, and you pick the digit 1, gimme '715' in any order")
+
+    print(f"your secret number is {9 - sum(map(int, input(': '))) % 9}")
+
 def zombie():
     """Survive the zombie apocalypse"""
     print('In order to choose a path use keyboard then click enter')
@@ -159,7 +173,7 @@ def zombie():
     print("\nIt's the zombie apocalypse, only you and %s survive" % name)
     if input("Choose your weapon (1-Chainsaw)(2-Sniper Rifle): ")[0] in '1cC':  # Chain
         print("\nYou go out with %s and give them one of your chainsaws, you start killing zombies." % name)
-        if input("What side is %s on? (1-Left)(2-Right): " % name)[0] !=\
+        if input("What side is %s on? (1-Left)(2-Right): " % name)[0] != \
                 input("Which way do you slice? (1-Left to Right)(2-Right to Left): ")[0]:  # Slice
             return print("""
 You killed {0} by slicing towards them.
@@ -308,6 +322,7 @@ def murder(amount_of_choice=4):
     def sample_stuff(x):
         """from the big list of stuff. picks some at random"""
         return [i.title() for i in sample(x, amount_of_choice)]
+
     names, weapons, rooms = map(sample_stuff, (Murder.names, Murder.weapons, Murder.rooms))
     get_type = {**{n: Murder.BODY for n in names},
                 **{w: Murder.WEAPON for w in weapons},
@@ -334,8 +349,10 @@ In those cases, clues will be merged. Good luck separating them.\n''')
             get_input = input('General statement: ').title().strip()
             if get_input.startswith('Q'): return
             get_input = [i for i in get_input.split() if i in get_type]
-            if len(get_input): break
-            else: print("Bad Input: use at least 1 person, weapon, or room")
+            if len(get_input):
+                break
+            else:
+                print("Bad Input: use at least 1 person, weapon, or room")
 
         type_of_first = get_type[get_input[0]]
         p1 = p2 = None
@@ -366,7 +383,8 @@ In those cases, clues will be merged. Good luck separating them.\n''')
             print(f'Theory While Looking @{rom}: {p1} killed by {p2} with {wep}')
         elif type_of_first == Murder.WEAPON:
             print(f'Theory While Looking @{wep}: {p1} killed by {p2} in {rom}')
-        else: return
+        else:
+            return
 
         return p1, wep, rom, p2, type_of_first
 

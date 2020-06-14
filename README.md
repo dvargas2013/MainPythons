@@ -80,7 +80,7 @@ Desktop - path to Desktop = join(getHome(), 'Desktop')
 **pattern** - will make a pattern to figure out  
 **physics** - Will ask motion physics question to answer.  
 **thinker** - Will ask you which number has the divisor:remainder pairs  
-**number_guesser1** and **number_guesser2** - Will guess a number between 1-25 or 1-32 if you answer truthfully  
+**number_guesser** - fun games to play where the computer guesses ur numbers . 3 versions numbered 1,2, and 3  
 **zombie** - Choose your own adventure time. (I'm very proud of this. Especially since it was first programmed in my calculator.)  
 **ultimate_rps** - Ultimate Rock Paper Scissors  
 **murder** - Murder happens; figure out who did what  
