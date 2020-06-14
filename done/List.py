@@ -17,6 +17,13 @@ s -> (s0,s1,...s[n-1]), (s1,s2,...,sn), ..."""
         yield win
 
 
+def batch(seq, n=2):
+    """Cuts up a iterable into chunks os size n. the last one is whatever data is left"""
+    length = len(seq)
+    for i in range(0, length, n):
+        yield seq[i:min(i + n, length)]
+
+
 def poisson(y, x):
     """calculate the poisson probability given mean rate and successes"""
     if type(x) == list:

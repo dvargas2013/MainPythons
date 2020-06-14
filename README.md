@@ -23,6 +23,7 @@ just imports everything into the namespace
 **numToStr** - gives name of number  
 ## List.py
 **window** - gives sliding window iterator  
+**batch** - gives a batch (const size chunks) iterator  
 **poisson** - finds poisson probability (mean rate & successes)  
 **Dev** - finds sample or population Deviation  
 **freqDev** - same as Dev but freq increases size  
