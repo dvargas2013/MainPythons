@@ -386,10 +386,24 @@ class RangedNumber:
     Object brought about for the need to do (20k-30k) / (100k-150k) and give a result (13%-30%)
     """
 
-    def __init__(self, lo, hi):
+    def __new__(cls, lo, hi):
         """basically a fancy pair of numbers with a lo and a hi and does math based on the range"""
-        self.lo, self.hi = sorted((min(RangedNumber.check_range(lo)),
-                                   max(RangedNumber.check_range(hi))))
+        self = super(RangedNumber, cls).__new__(cls)
+
+        self._lo, self._hi = sorted((min(RangedNumber.check_range(lo)),
+                                     max(RangedNumber.check_range(hi))))
+
+    @property
+    def lo(self):
+        return self._lo
+
+    @property
+    def hi(self):
+        return self._hi
+
+    @property
+    def includes0(self):
+        return self.lo <= 0 and 0 <= self.hi
 
     def __eq__(self, other):
         lo, hi = RangedNumber.check_range(other)
@@ -400,10 +414,6 @@ class RangedNumber:
 
     def __repr__(self):
         return f"RangedNumber({self.lo!r},{self.hi!r})"
-
-    @property
-    def includes0(self):
-        return self.lo <= 0 and 0 <= self.hi
 
     def __abs__(self):
         if self.includes0:
@@ -441,45 +451,41 @@ class RangedNumber:
         return RangedNumber(x[0], x[-1])
 
     @staticmethod
-    def generate_division(op, doc=None, name=None, reverse=False):
-        if reverse:
-            def f(self, other):
-                lo, hi = RangedNumber.check_range(self)
-                if lo <= 0 and 0 <= hi:
-                    raise ZeroDivisionError()
-                return RangedNumber.fourwaymath(op, *RangedNumber.check_range(other), lo, hi)
-        else:
-            def f(self, other):
-                lo, hi = RangedNumber.check_range(other)
-                if lo <= 0 and 0 <= hi:
-                    raise ZeroDivisionError()
-                return RangedNumber.fourwaymath(op, *RangedNumber.check_range(self), lo, hi)
+    def generate_division(op, doc=None):
+        def fr(other, self):
+            lo, hi = RangedNumber.check_range(other)
+            if lo <= 0 and 0 <= hi:
+                raise ZeroDivisionError()
+            return RangedNumber.fourwaymath(op, *RangedNumber.check_range(self), lo, hi)
 
-        f.__doc__ = doc
-        f.__name__ = name if name else f"__{op.__name__}__"
-        return f
+        def ff(self, other):
+            lo, hi = RangedNumber.check_range(other)
+            if lo <= 0 and 0 <= hi:
+                raise ZeroDivisionError()
+            return RangedNumber.fourwaymath(op, *RangedNumber.check_range(self), lo, hi)
+
+        fr.__doc__ = ff.__doc__ = doc
+        ff.__name__ = f"__{op.__name__}__"
+        fr.__name__ = f"__r{op.__name__}__"
+        return ff, fr
 
     @staticmethod
-    def generate_dyadic(op, doc=None, name=None, reverse=False):
-        if reverse:
-            def f(self, other):
-                return RangedNumber.fourwaymath(op, *RangedNumber.check_range(other), *RangedNumber.check_range(self))
-        else:
-            def f(self, other):
-                return RangedNumber.fourwaymath(op, *RangedNumber.check_range(self), *RangedNumber.check_range(other))
+    def generate_dyadic(op, doc=None):
+        def fr(other, self):
+            return RangedNumber.fourwaymath(op, *RangedNumber.check_range(self), *RangedNumber.check_range(other))
 
-        f.__doc__ = doc
-        f.__name__ = name if name else f"__{op.__name__}__"
-        return f
+        def ff(self, other):
+            return RangedNumber.fourwaymath(op, *RangedNumber.check_range(self), *RangedNumber.check_range(other))
 
-RangedNumber.__truediv__ = RangedNumber.generate_division(operator.truediv)
-RangedNumber.__rtruediv__ = RangedNumber.generate_division(operator.truediv, name="__rtruediv_", reverse=True)
-RangedNumber.__floordiv__ = RangedNumber.generate_division(operator.floordiv)
-RangedNumber.__rfloordiv__ = RangedNumber.generate_division(operator.floordiv, name="__rfloordiv_", reverse=True)
-RangedNumber.__add__ = RangedNumber.generate_dyadic(operator.add)
-RangedNumber.__radd__ = RangedNumber.generate_dyadic(operator.add, name="__radd__", reverse=True)
-RangedNumber.__sub__ = RangedNumber.generate_dyadic(operator.sub)
-RangedNumber.__rsub__ = RangedNumber.generate_dyadic(operator.sub, name="__rsub__", reverse=True)
-RangedNumber.__mul__ = RangedNumber.generate_dyadic(operator.mul)
-RangedNumber.__rmul__ = RangedNumber.generate_dyadic(operator.mul, name="__rmul__", reverse=True)
-RangedNumber.__pow__ = RangedNumber.generate_dyadic(operator.pow)
+        fr.__doc__ = ff.__doc__ = doc
+        ff.__name__ = f"__{op.__name__}__"
+        fr.__name__ = f"__r{op.__name__}__"
+        return ff, fr
+
+
+RangedNumber.__truediv__, RangedNumber.__rtruediv__ = RangedNumber.generate_division(operator.truediv)
+RangedNumber.__floordiv__, RangedNumber.__rfloordiv__ = RangedNumber.generate_division(operator.floordiv)
+RangedNumber.__add__, RangedNumber.__radd__ = RangedNumber.generate_dyadic(operator.add)
+RangedNumber.__sub__, RangedNumber.__rsub__ = RangedNumber.generate_dyadic(operator.sub)
+RangedNumber.__mul__, RangedNumber.__rmul__ = RangedNumber.generate_dyadic(operator.mul)
+RangedNumber.__pow__, RangedNumber.__rpow__ = RangedNumber.generate_dyadic(operator.pow)
