@@ -15,6 +15,7 @@ just imports everything into the namespace
 **distinctPrimeFactorsOf** - list of prime factors  
 **totient** - Evaluates Euler's totient function as best I know  
 **BaseChanger** - used to convert integers to a list representation of a base  
+**RangedNumber** - imagine if ordered pairs could be operated on mathematically  
 **convergentSqrt** - yield numerator and denominator of closer approximations to the sqrt  
 **radToFrac** - converts the sqrt into a continued fraction  
 **convergentsE** - yield numerator and denominator of closer approximations to the number e  

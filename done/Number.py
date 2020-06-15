@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 """Searching functions dealing with singular number space - Prioritized for human readability"""
-
 from math import ceil
 from decimal import Decimal, localcontext, Context
 from fractions import Fraction
+import operator
 
 
 def parse_number(input_string, onerror=0):
@@ -285,6 +285,7 @@ Usage:
 
 def convergentsE():
     """returns the convergents of euler's number: e"""
+
     def b(i):
         """e = [2; 1,2,1, 1,4,1, 1,2k,1, ...]"""
         if i == 0: return 2
@@ -318,12 +319,14 @@ from my timeit tests this is 1.1x faster than Decimal.sqrt() don't ask me how
 (maybe its cause its operating on N as integer)
 """
     with localcontext(Context(prec=decimals_wanted)):
-        num = Decimal(N**.5)
+        num = Decimal(N ** .5)
         while True:
             new_num = (num * num + N) / num / 2
+            # TODO this looks like the wrong condition to be checking for, probably explains why its 1.1 times faster
             if new_num == num:
                 return num
-            else: num = new_num
+            else:
+                num = new_num
 
 
 def preciseSqrt(N, decimals_wanted=100):
@@ -355,12 +358,14 @@ def numToStr(num):
     def ones(n=num):
         return ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'][n % 10]
 
-    def tens():
-        return ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty',
-                'Seventy', 'Eighty', 'Ninety'][num % 100 // 10] + ('-' if num % 100 > 20 and num % 10 != 0 else '')
+    def hundred_and():
+        if num > 99:  # 1XX-9XX
+            needAnd = num % 100 != 0  # X01-X99
+            return ' Hundred' + (' & ' if needAnd else "")
+        return ''
 
     def huns():
-        return ones(num // 100) + (' Hundred & ' if num > 99 and num % 100 != 0 else (' Hundred' if num > 99 else ''))
+        return ones(num // 100) + hundred_and()
 
     if num < 0 or num > 999:
         return 'Number Out Of Range'
@@ -370,4 +375,111 @@ def numToStr(num):
         return huns() + ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen',
                          'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'][num % 10]
     else:
-        return huns() + tens() + ones()
+        tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'][num % 100 // 10]
+        tens += ('-' if num % 100 > 20 and num % 10 != 0 else '')
+
+        return huns() + tens + ones()
+
+
+class RangedNumber:
+    """
+    Object brought about for the need to do (20k-30k) / (100k-150k) and give a result (13%-30%)
+    """
+
+    def __init__(self, lo, hi):
+        """basically a fancy pair of numbers with a lo and a hi and does math based on the range"""
+        self.lo, self.hi = sorted((min(RangedNumber.check_range(lo)),
+                                   max(RangedNumber.check_range(hi))))
+
+    def __eq__(self, other):
+        lo, hi = RangedNumber.check_range(other)
+        return self.lo == lo and self.hi == hi
+
+    def __str__(self):
+        return f"({self.lo!s} <-> {self.hi!s})"
+
+    def __repr__(self):
+        return f"RangedNumber({self.lo!r},{self.hi!r})"
+
+    @property
+    def includes0(self):
+        return self.lo <= 0 and 0 <= self.hi
+
+    def __abs__(self):
+        if self.includes0:
+            return RangedNumber(0, max(-self.lo, self.hi))
+        return RangedNumber(abs(self.lo), abs(self.hi))
+
+    def __neg__(self):
+        return RangedNumber(-self.lo, -self.hi)
+
+    @staticmethod
+    def check_range(numeric):
+        """call when you're not sure if the input is RangedNumber or another Number"""
+        if hasattr(numeric, 'lo') and hasattr(numeric, 'hi'):
+            # if it quacks like a duck, then it is
+            return numeric.lo, numeric.hi
+        else:
+            return numeric, numeric
+
+    @staticmethod
+    def fourwaymath(op, alo, ahi, blo, bhi):
+        if blo == bhi:
+            return RangedNumber.create_fromsort(op(alo, blo), op(ahi, blo))
+        return RangedNumber.create_fromsort(op(alo, blo), op(alo, bhi), op(ahi, blo), op(ahi, bhi))
+
+    @staticmethod
+    def create_fromsort(*args):
+        if len(args) == 1:
+            args = args[0]
+
+        if len(args) > 1:
+            x = sorted(args)
+        else:
+            raise ValueError("Nothing to sort")
+
+        return RangedNumber(x[0], x[-1])
+
+    @staticmethod
+    def generate_division(op, doc=None, name=None, reverse=False):
+        if reverse:
+            def f(self, other):
+                lo, hi = RangedNumber.check_range(self)
+                if lo <= 0 and 0 <= hi:
+                    raise ZeroDivisionError()
+                return RangedNumber.fourwaymath(op, *RangedNumber.check_range(other), lo, hi)
+        else:
+            def f(self, other):
+                lo, hi = RangedNumber.check_range(other)
+                if lo <= 0 and 0 <= hi:
+                    raise ZeroDivisionError()
+                return RangedNumber.fourwaymath(op, *RangedNumber.check_range(self), lo, hi)
+
+        f.__doc__ = doc
+        f.__name__ = name if name else f"__{op.__name__}__"
+        return f
+
+    @staticmethod
+    def generate_dyadic(op, doc=None, name=None, reverse=False):
+        if reverse:
+            def f(self, other):
+                return RangedNumber.fourwaymath(op, *RangedNumber.check_range(other), *RangedNumber.check_range(self))
+        else:
+            def f(self, other):
+                return RangedNumber.fourwaymath(op, *RangedNumber.check_range(self), *RangedNumber.check_range(other))
+
+        f.__doc__ = doc
+        f.__name__ = name if name else f"__{op.__name__}__"
+        return f
+
+RangedNumber.__truediv__ = RangedNumber.generate_division(operator.truediv)
+RangedNumber.__rtruediv__ = RangedNumber.generate_division(operator.truediv, name="__rtruediv_", reverse=True)
+RangedNumber.__floordiv__ = RangedNumber.generate_division(operator.floordiv)
+RangedNumber.__rfloordiv__ = RangedNumber.generate_division(operator.floordiv, name="__rfloordiv_", reverse=True)
+RangedNumber.__add__ = RangedNumber.generate_dyadic(operator.add)
+RangedNumber.__radd__ = RangedNumber.generate_dyadic(operator.add, name="__radd__", reverse=True)
+RangedNumber.__sub__ = RangedNumber.generate_dyadic(operator.sub)
+RangedNumber.__rsub__ = RangedNumber.generate_dyadic(operator.sub, name="__rsub__", reverse=True)
+RangedNumber.__mul__ = RangedNumber.generate_dyadic(operator.mul)
+RangedNumber.__rmul__ = RangedNumber.generate_dyadic(operator.mul, name="__rmul__", reverse=True)
+RangedNumber.__pow__ = RangedNumber.generate_dyadic(operator.pow)
