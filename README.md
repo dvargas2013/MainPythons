@@ -23,6 +23,7 @@ just imports everything into the namespace
 **preciseSqrt** - uses convergentSqrt to return sqrt(N) to a specified amount of digits (Use decimal.Decimal.sqrt instead)  
 **numToStr** - gives name of number  
 ## List.py
+**is_iterable** - determines if object is iterable  
 **window** - gives sliding window iterator  
 **batch** - gives a batch (const size chunks) iterator  
 **poisson** - finds poisson probability (mean rate & successes)  

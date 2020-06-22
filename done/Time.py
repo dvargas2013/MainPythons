@@ -159,12 +159,22 @@ def DayOfTheWeek(month, date, year):
 
 @contextmanager
 def timer(msg):
-    """Give time taken by the block within context.
+    """print time taken in ms by the block within context.
 
-    Usage:
+Usage:
 
-        with timer('<Message>'):
-            <block>
+>>> with timer('<Message>'):
+>>>     <block>
+
+if you do not wish to print and would rather receive the time to handle yourself,
+pass in an object that allows self.__setitem__(0, <float>)
+
+example:
+
+>>> time_elapsed = [0]
+>>> with timer(time_elapsed):
+>>>     <block>
+>>> print(time_elapsed[0])
     """
     start = time_now()
     yield

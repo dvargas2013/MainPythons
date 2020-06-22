@@ -5,6 +5,18 @@ from math import exp
 from collections import deque, defaultdict
 
 
+def is_iterable(potentially_iterable):
+    """checks if something is iterable"""
+    # try:
+    #     (*potentially_iterable,)
+    #     for _ in potentially_iterable:
+    #         break
+    # except TypeError:
+    #     return False
+    # return True
+    return hasattr(potentially_iterable, "__iter__")
+
+
 def window(seq, n=2):
     """Returns a sliding window (of width n) over data from the iterable
 s -> (s0,s1,...s[n-1]), (s1,s2,...,sn), ..."""
@@ -110,6 +122,7 @@ def cross(*lists, tupled=False):
         return [sum(i) for i in pd]
     return list(pd)
 
+
 class CollisionDict(defaultdict):
     def __init__(self, factory, add_func, data=None):
         super().__init__(factory)
@@ -120,9 +133,11 @@ class CollisionDict(defaultdict):
     def addItem(self, key, value):
         self.add_func(self[key], value)
 
+
 class CollisionDictOfLists(CollisionDict):
     def __init__(self, data=None):
         super().__init__(list, list.append, data)
+
 
 class CollisionDictOfSets(CollisionDict):
     def __init__(self, data=None):
