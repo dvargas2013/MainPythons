@@ -5,7 +5,8 @@ from time import sleep, time as time_now
 from timeit import timeit
 from datetime import datetime
 from contextlib import contextmanager
-
+from itertools import islice
+from math import ceil
 
 class Time:
     """Instance of time can do many Timely things.
@@ -179,8 +180,58 @@ example:
     start = time_now()
     yield
     end = time_now()
-    print("%s: %.02fms" % (msg, (end - start) * 1000))
 
+    if hasattr(msg, "__setitem__"):
+        try:
+            msg[0] = (end - start) * 1000
+            return
+        except (IndexError, ValueError):
+            # if you cant reach [0] or you cant put the float in there
+            # just resort to printing it as a string
+            pass
+    print(f"{msg!s}: {((end - start) * 1000):.02f}ms")
+
+
+def maxtime_computation(generator, online_calculation, maxtime=10, initn=10_000,
+                        unpack_generated=False, unpack_previous=False):
+    """Given a max time in seconds will try to generate and compute within that alloted time
+
+generator and online_calculation should be of the form such that
+>>> previous = online_calculation()
+>>> for i in generator:
+>>>    previous = online_calculation(i, previous)
+
+unpack_generated == True
+>>> online_calculation(*i, previous)
+
+unpack_previous == True
+>>> online_calculation(i, *previous)
+    """
+    if unpack_previous and unpack_generated:
+        calc = lambda gn, pv: online_calculation(*gn, *pv)
+    elif unpack_generated:
+        calc = lambda gn, pv: online_calculation(*gn, pv)
+    elif unpack_previous:
+        calc = lambda gn, pv: online_calculation(gn, *pv)
+    else:
+        calc = online_calculation
+
+    time = [0]
+    with timer(time):
+        p = online_calculation()
+        for i in islice(generator, initn):
+            p = calc(i, p)
+
+    time = time[0]
+
+    its_per_ms = initn / time
+    ms_left = maxtime * 1000 - time
+    its_left = ceil(its_per_ms * ms_left)
+
+    for i in islice(generator, its_left):
+        p = calc(i, p)
+
+    return p
 
 def function_time(func_or_str, times=3, initn=10_000, **kwargs):
     """basically a wrapper for timeit.timeit. returns number of times you could run the function in a second"""

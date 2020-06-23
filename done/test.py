@@ -8,32 +8,29 @@ from io import StringIO
 from contextlib import redirect_stdout
 
 
-def notequal(str1, str2): return str1 != str2
-
-
 def notequal_ignore_spaces(str1, str2): return ''.join(str1.split()) != ''.join(str2.split())
 
 
 def notequal_ignore_capital(str1, str2): return str1.lower() != str2.lower()
 
 
-def inversable(func, s, invr=None, ne=notequal, name=""):
-    if not name: name = str(func).split()[1]
-    if not invr: invr = func
+def inversable(func, s, invr=None, ne=str.__ne__, name=""):
+    if not name: name = func.__name__
+    if not invr: invr = func  # if not defined function is its own inverse
     try:
         a = func(s)
     except Exception as e:
         print("%s Failed: Function throws Error: " % name)
-        print("\tInput: %s" % s)
-        print("\t%s" % e)
+        print("\tInput:", s)
+        print("\t", e)
         return 0
     try:
         b = invr(a)
     except Exception as e:
         print("%s Failed: Inverse throws Error: " % name)
-        print("\tInput: %s" % s)
-        print("\tOutput: %s" % a)
-        print("\t%s" % e)
+        print("\tInput:", s)
+        print("\tOutput:", a)
+        print("\t", e)
         return 0
     if ne(s, b):
         print("%s Failed: Not Equal" % name)

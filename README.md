@@ -31,6 +31,7 @@ just imports everything into the namespace
 **freqDev** - same as Dev but freq increases size  
 **probDev** - same as freq Dev  
 **hypergeometric** - stats stuff  
+**online_average** - computes average one at a time  
 **median** - center of list when ordered  
 **gcd** - finds greatest common factor of many numbers  
 **lcm** - finds least common multiple of many numbers  
@@ -40,6 +41,7 @@ just imports everything into the namespace
 **Time Class** - performs math based on the time since midnight  
 **DayOfTheWeek** - will give you Monday,Tuesday, ... etc, according to month, day, year given  
 **timer** - context manager that will time how much the block runs  
+**maxtime_computation** - using an infinate generator and a online calculation method will return around maxtime seconds  
 **function_time** - timeit.timeit wrapper. calculates iterations/second  
 **QuickThread** - starts a thread with the function you pass on.  
 ## Solver.py

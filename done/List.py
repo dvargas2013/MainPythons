@@ -90,6 +90,19 @@ def hypergeometric(start, total, runs, success):
     return 0
 
 
+def online_average(item=0, p_sum=0, p_count=-1):
+    """calculate the mean given 1 item at a time. defaults assigned such that online_average() == (0,0)
+
+>>> p_sum, p_count = online_average() # 0, 0
+>>> for i in range(100):
+>>>     p_sum, p_count = online_average(i, p_sum, p_count)
+
+>>> assert p_sum == sum(range(100))
+>>> assert p_count == 100
+    """
+    return p_sum + item, p_count + 1
+
+
 def median(lis):
     """Calculate the median of the list given"""
     a = (len(lis) + 1) // 2
