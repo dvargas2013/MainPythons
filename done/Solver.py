@@ -123,7 +123,7 @@ class Sudoku:
         def accept(c):
             return c in accept_set
 
-        for s, d in zip(sorted(Sudoku.units), list(filter(accept, string_grid))):
+        for s, d in zip(sorted(Sudoku.units), filter(accept, string_grid)):
             if '1' <= d <= '9': self.assign(s, d)
         return self
 
