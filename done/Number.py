@@ -89,26 +89,10 @@ def primeGen(a, b):
         yield a
 
 
-def primeFactorize(i):
-    """_(15) = ['3^1', '5^1']"""
+def primify(i):
+    """_(15) = ...(3,1), (5,1)"""
     i = int(i)
-    prime, lis = 0, []
-    while i != 1:
-        prime = nextPrime(prime + 1)
-        if i ** .5 < prime: prime = i
-        power = 0
-        while i % prime == 0:
-            power += 1
-            i //= prime
-        i = int(i)
-        if power > 0: lis.append('%s^%s' % (prime, power))
-    return lis
-
-
-def distinctPrimeFactorsOf(i):
-    """_(15) = [3,5]"""
-    i = int(i)
-    prime, lis = 0, []
+    prime = 0
     while i != 1:
         prime = nextPrime(prime + 1)
         if i < prime * prime: prime = i
@@ -117,8 +101,18 @@ def distinctPrimeFactorsOf(i):
             power += 1
             i //= prime
         i = int(i)
-        if power > 0: lis.append(prime)
-    return lis
+        if power > 0:
+            yield prime, power
+
+
+def primeFactorize(i):
+    """_(15) = ['3^1', '5^1']"""
+    return [f"{prime}^{power}" for prime, power in primify(i)]
+
+
+def distinctPrimeFactorsOf(i):
+    """_(15) = [3,5]"""
+    return [prime for prime, _ in primify(i)]
 
 
 def totient(i):
@@ -403,7 +397,7 @@ class RangedNumber:
 
     @property
     def includes0(self):
-        return self.lo <= 0 and 0 <= self.hi
+        return self.lo <= 0 <= self.hi
 
     def __eq__(self, other):
         lo, hi = RangedNumber.check_range(other)
