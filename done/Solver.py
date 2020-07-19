@@ -82,7 +82,6 @@ def solve(*nums, lookup=24):
         if _ := __solve_single(a, *rest, lookup=lookup):
             return _
 
-    for a, rest in splitter(nums):
         for b, rest1 in splitter(rest):
             if _ := __solve_double(a, b, *rest1, lookup=lookup):
                 return _
