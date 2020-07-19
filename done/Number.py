@@ -4,6 +4,7 @@
 from math import ceil
 from decimal import Decimal, localcontext, Context
 from fractions import Fraction
+import itertools
 import operator
 
 
@@ -169,20 +170,26 @@ def radToFrac(D):
     
     _(2) = [1,2]
     _(3) = [1,1,2]
+    _(5) = [2,4]
+    _(7) = [2,1,1,1,4]
     """
-    D = int(D)
-    a = [int(D ** .5)]
-    if a[0] * a[0] == D: return a  # length of period is 0 since its a square
-    P = [0, a[0]]
-    Q = [1, D - a[0] * a[0]]
-    a.append(int((2 * a[0]) // Q[-1]))
-    while a[0] * 2 != a[-1]:
-        P.append(a[-1] * Q[-1] - P[-1])
-        Q.append(int((D - P[-1] * P[-1]) // Q[-1]))
-        a.append(int((a[0] + P[-1]) // Q[-1]))
-        P.pop(0)
-        Q.pop(0)
-    return a
+    d = int(D)
+    f = int(d ** .5)
+
+    def _():
+        yield f
+        if f * f == d: return  # length of period is 0 since its a square
+        Q = 1
+        P = f
+        while True:
+            Q = int((D - P * P) // Q)
+            a = int((f + P) // Q)
+            yield a
+            if f * 2 == a:
+                break
+            P = a * Q - P
+
+    return list(_())
 
 
 def convergentSqrt(D):
@@ -196,36 +203,20 @@ def convergentSqrt(D):
                 if sufficientCondition(i): return i
         def F(D):
             a=_(D)
-            for i in range(100): a.send(None)
-            return a.send(None)
+            for i in range(100): next(a)
+            return next(a)
     
     Note: be careful when D is a square number; the iteration will stop
     """
-    D = int(D)
-    a0 = int(D ** .5)
-    yield a0, 1
-    if a0 * a0 == D: return
-    a = [a0]
-    P = [0, a0]
-    Q = [1, D - a0 * a0]
-    a.append(int((2 * a0) / Q[-1]))
-    p = [a0, a0 * a[1] + 1]
-    q = [1, a[1]]
-    while 1:
-        yield p[-1], q[-1]
-        P.append(a[-1] * Q[-1] - P[-1])
-        Q.append(int((D - P[-1] * P[-1]) // Q[-1]))
-        a.append(int((a0 + P[-1]) // Q[-1]))
-        p.append(a[-1] * p[-1] + p[-2])
-        q.append(a[-1] * q[-1] + q[-2])
-        # Some cool properties
-        # p[n]*q[n-1] - p[n-1]*q[n] = (-1)**(n+1)
-        # p[n]*p[n] - D*q[n]*q[n] = (-1)**(n+1)*Q[n+1]
-        P.pop(0)
-        Q.pop(0)
-        a.pop(0)
-        p.pop(0)
-        q.pop(0)
+    f, *a = radToFrac(D := int(D))
+    yield f, 1
+    if f * f == D: return
+    P0, P1 = 1, f
+    Q0, Q1 = 0, 1
+    for a in itertools.cycle(a):
+        P0, P1 = P1, a * P1 + P0
+        Q0, Q1 = Q1, a * Q1 + Q0
+        yield P1, Q1
 
 
 def convergents(a, b):
@@ -263,18 +254,14 @@ Usage:
 
     a = number(a)
     b = number(b)
-    A = [1, b(0)]
-    B = [0, 1]
-    i = 1
-    while 1:
+    A0, A1 = 1, b(0)
+    B0, B1 = 0, 1
+    for i in itertools.count(1):
+        yield A1, B1
         ai = a(i)
         bi = b(i)
-        yield A[-1], B[-1]
-        A.append(bi * A[-1] + ai * A[-2])
-        B.append(bi * B[-1] + ai * B[-2])
-        A.pop(0)
-        B.pop(0)
-        i += 1
+        A0, A1 = A1, bi * A1 + ai * A0
+        B0, B1 = B1, bi * B1 + ai * B0
 
 
 def convergentsE():
