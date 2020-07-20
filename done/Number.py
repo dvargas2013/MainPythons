@@ -374,6 +374,8 @@ class RangedNumber:
         self._lo, self._hi = sorted((min(RangedNumber.check_range(lo)),
                                      max(RangedNumber.check_range(hi))))
 
+        return self
+
     @property
     def lo(self):
         return self._lo
