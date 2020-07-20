@@ -472,3 +472,90 @@ RangedNumber.__add__, RangedNumber.__radd__ = RangedNumber.generate_dyadic(opera
 RangedNumber.__sub__, RangedNumber.__rsub__ = RangedNumber.generate_dyadic(operator.sub)
 RangedNumber.__mul__, RangedNumber.__rmul__ = RangedNumber.generate_dyadic(operator.mul)
 RangedNumber.__pow__, RangedNumber.__rpow__ = RangedNumber.generate_dyadic(operator.pow)
+
+
+class PrimalNatural:
+    """Internally represents numbers as prime factorization
+    in order to do some more specific operations more optimally"""
+
+    def __new__(cls, obj):
+        self = super(PrimalNatural, cls).__new__(cls)
+
+        if issubclass(type(obj), PrimalNatural):
+            self.pf = obj.pf  # trust in the immutability
+        elif type(obj) is dict:
+            self.pf = obj
+        else:
+            if obj == 0:
+                raise ValueError("0 is not a Natural Number")
+            elif obj < 0:
+                raise ValueError("negatives are not Natural Numbers")
+            self.pf = dict(primify(obj))
+
+        return self
+
+    def __mul__(self, other):
+        other = PrimalNatural(other)
+        return PrimalNatural({k: self.pf.get(k, 0) + other.pf.get(k, 0)
+                              for k in set(self.pf.keys()).union(other.pf.keys())})
+
+    def __truediv__(self, other):
+        other = PrimalNatural(other)
+        return PrimalNatural({k: self.pf.get(k, 0) - other.pf.get(k, 0)
+                              for k in set(self.pf.keys()).union(other.pf.keys())})
+
+    def __pow__(self, power, modulo=None):
+        if modulo is not None: raise NotImplemented
+        p = int(power)
+        return PrimalNatural({k: self.pf.get(k, 0) * p for k in self.pf})
+
+    def __int__(self):
+        x = 1
+        for p, t in self.pf.items():
+            x *= p**t
+        return x
+
+    @property
+    def divisor_count(self):
+        x = 1
+        for i in self.pf.values():
+            x *= i + 1
+        return x
+
+    def divisor_generator(self):
+        yield from self._divisors(1, tuple(self.pf))
+
+    @property
+    def divisors(self):
+        return sorted(self._divisors(1, sorted(self.pf)))
+
+    def _divisors(self, curDivisor, arr):
+        if not len(arr):
+            yield curDivisor
+        else:
+            prime, arr = arr[0], arr[1:]
+            yield from self._divisors(curDivisor, arr)
+            for _ in range(self.pf[prime]):
+                curDivisor *= prime
+                yield from self._divisors(curDivisor, arr)
+
+    def __repr__(self):
+        return f"PrimalNatural({self.pf})"
+
+    def __str__(self):
+        def K(k, v):
+            if v == 1:
+                return "%s" % k
+            elif v == 2:
+                return "%s*%s" % (k, k)
+            else:
+                return "%s**%s" % (k, v)
+
+        return " * ".join(K(k, self.pf[k]) for k in sorted(self.pf))
+
+    @staticmethod
+    def from_factors(iterable_of_naturals):
+        x = PrimalNatural(1)
+        for i in iterable_of_naturals:
+            x *= i
+        return x
