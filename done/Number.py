@@ -119,7 +119,6 @@ def distinctPrimeFactorsOf(i):
 def totient(i):
     """euler's totient"""
     from functools import reduce
-    import operator
     p = distinctPrimeFactorsOf(i)
     y = i / reduce(operator.mul, p, 1)
     return int(y * reduce(operator.mul, (x - 1 for x in p), 1))
@@ -514,6 +513,10 @@ class PrimalNatural:
         for p, t in self.pf.items():
             x *= p**t
         return x
+
+    def coprime(self, other):
+        other = PrimalNatural(other)
+        return set(self.pf).isdisjoint(other.pf)
 
     @property
     def divisor_count(self):
