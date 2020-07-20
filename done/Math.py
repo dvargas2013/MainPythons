@@ -204,6 +204,7 @@ def permutation(n, r):
     if type(n * r) != int or n * r < 0 or r > n: return 0
     import operator
     from functools import reduce
+    n += 1
     return reduce(operator.mul, range(n - r, n), 1)
 
 
