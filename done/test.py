@@ -220,7 +220,7 @@ def Time_test():
     # import done.Time as Time
     # succ = 1
 
-    # TODO Time, bisectHrMnHands, DayOfTheWeek, stopwatch, countdown
+    # TODO Time, DayOfTheWeek, stopwatch, countdown
 
     # print("Time.py "+("Passed" if succ else "did not Pass"))
     pass
