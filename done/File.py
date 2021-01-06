@@ -8,6 +8,7 @@ from os import renames, remove, walk, makedirs, environ
 from os.path import exists, join, splitext, split, relpath, abspath
 from urllib.request import urlopen
 from shutil import copy2 as copyfile_normal  # preserves metadata
+from typing import Dict, List
 
 copyfile_hardlink = os.link
 
@@ -246,6 +247,19 @@ def read(file, tag='r', pickled=False):
         with open(file, tag, encoding='latin_1') as f:
             return f.read()
 
+def write_dict_to_tgf(dic: Dict[str, List[str]], file):
+    nodes = sorted(set.union(*map(set, dic.values()), dic.keys()))
+    node_to_tgf_index = {n: i for i, n in enumerate(nodes, start=1)}
+
+    f = []
+    for i, n in enumerate(nodes, start=1):
+        f.append(f"{i} {n}")
+    f.append("#")
+    for i, js in dic.items():
+        for j in js:
+            f.append(f"{node_to_tgf_index[i]} {node_to_tgf_index[j]}")
+
+    return write("\n".join(f), file)
 
 def write(s, file, tag='w', encoding="utf",
           onerror=['strict', 'replace', 'ignore', 'xmlcharrefreplace', 'backslashreplace'][3], pickled=False):
