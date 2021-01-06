@@ -140,8 +140,10 @@ class CollisionDict(defaultdict):
     def __init__(self, factory, add_func, data=None):
         super().__init__(factory)
         self.add_func = add_func
-        for k, v in data:
-            self.addItem(k, v)
+
+        if data is not None:
+            for k, v in data:
+                self.addItem(k, v)
 
     def addItem(self, key, value):
         self.add_func(self[key], value)
@@ -155,3 +157,4 @@ class CollisionDictOfLists(CollisionDict):
 class CollisionDictOfSets(CollisionDict):
     def __init__(self, data=None):
         super().__init__(set, set.add, data)
+
