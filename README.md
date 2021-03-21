@@ -37,6 +37,7 @@ just imports everything into the namespace
 **gcd** - finds greatest common factor of many numbers  
 **lcm** - finds least common multiple of many numbers  
 **cross** - combines many lists (compressing nd to 1d)  
+**applyToGenerator** - creates a decorator for generators  
 **CollisionDict** - class that is essentially dict\<mutable-collection\>  
 ## Time.py
 **Time Class** - performs math based on the time since midnight  

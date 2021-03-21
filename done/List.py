@@ -3,7 +3,7 @@
 from .Math import fact, comb
 from math import exp
 from collections import deque, defaultdict
-
+from functools import wraps
 
 def is_iterable(potentially_iterable):
     """checks if something is iterable"""
@@ -135,6 +135,13 @@ def cross(*lists, tupled=False):
         return [sum(i) for i in pd]
     return list(pd)
 
+def applyToGenerator(f):
+    def outer(generator):
+        @wraps(generator)
+        def inner(*args, **kwargs):
+            return f(generator(*args, **kwargs))
+        return inner
+    return outer
 
 class CollisionDict(defaultdict):
     def __init__(self, factory, add_func, data=None):
