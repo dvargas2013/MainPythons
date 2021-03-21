@@ -8,6 +8,7 @@ from contextlib import contextmanager
 from itertools import islice
 from math import ceil
 
+
 class Time:
     """Instance of time can do many Timely things.
 
@@ -158,6 +159,22 @@ def DayOfTheWeek(month, date, year):
     return ['Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Monday', 'Tuesday'][index % 7]
 
 
+def _mdy_convert(month, date, year):
+    LY = year - int(month < 3)
+    return LY // 4 - LY // 100 + LY // 400 + 365 * year + date + \
+        [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334][month - 1]
+
+
+def days_between(mdy1, mdy2):
+    return _mdy_convert(*mdy2) - _mdy_convert(*mdy1)
+
+
+def MoonPhase(month, date, year, baseline=(_mdy_convert(1, 6, 2000), 0.00)):
+    baseday, basephase = baseline
+    days = _mdy_convert(month, date, year) - baseday
+    return (days / 29.530588 + basephase) % 1
+
+
 @contextmanager
 def timer(msg):
     """print time taken in ms by the block within context.
@@ -232,6 +249,7 @@ unpack_previous == True
         p = calc(i, p)
 
     return p
+
 
 def function_time(func_or_str, times=3, initn=10_000, **kwargs):
     """basically a wrapper for timeit.timeit. returns number of times you could run the function in a second"""

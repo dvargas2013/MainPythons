@@ -41,7 +41,9 @@ just imports everything into the namespace
 **CollisionDict** - class that is essentially dict\<mutable-collection\>  
 ## Time.py
 **Time Class** - performs math based on the time since midnight  
+**days_between** - tells you how many days between two dates  
 **DayOfTheWeek** - will give you Monday,Tuesday, ... etc, according to month, day, year given  
+**MoonPhase** - will tell you how much percent starting from new moon  
 **timer** - context manager that will time how much the block runs  
 **maxtime_computation** - using an infinate generator and a online calculation method will return around maxtime seconds  
 **function_time** - timeit.timeit wrapper. calculates iterations/second  
