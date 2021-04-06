@@ -5,6 +5,9 @@ just imports everything into the namespace
 **TEST** - run the hidden done.test module
 
 ## Number.py
+**nth_remainder** - the nth remainder in the process of long division  
+**decimal_length** - gives the location and length of the repeating portion of the decimal expansion  
+**get_repeat** - application of the previous two functions to get the repeating portion of the decimal expansion  
 **parse_number** - convert to int or float (prefers ints)  
 **simplifyRadical** - simplifies radicals  
 **pythagoreanTriplets** - gets pythagorean triplet integer (comes with helper function pyTrip)  
