@@ -475,13 +475,13 @@ class RangedNumber:
     def generate_division(op, doc=None):
         def fr(other, self):
             lo, hi = RangedNumber.check_range(other)
-            if lo <= 0 and 0 <= hi:
+            if lo <= 0 <= hi:
                 raise ZeroDivisionError()
             return RangedNumber.fourwaymath(op, *RangedNumber.check_range(self), lo, hi)
 
         def ff(self, other):
             lo, hi = RangedNumber.check_range(other)
-            if lo <= 0 and 0 <= hi:
+            if lo <= 0 <= hi:
                 raise ZeroDivisionError()
             return RangedNumber.fourwaymath(op, *RangedNumber.check_range(self), lo, hi)
 
