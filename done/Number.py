@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
 """Searching functions dealing with singular number space - Prioritized for human readability"""
-from math import ceil
-from decimal import Decimal, localcontext, Context
-from fractions import Fraction
 import itertools
 import operator
+from decimal import Decimal, localcontext, Context
+from fractions import Fraction
 from functools import lru_cache
+from math import ceil
 
 
 @lru_cache
@@ -371,33 +371,52 @@ Use decimal to take sqrt instead (uses newtonian method):
         return new
 
 
-def numToStr(num):
-    """valid: 0 to 999"""
+class NumToStr:
+    Ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine']
+    Teen = ['Ten', 'Eleven', 'Twelve', 'Thir', 'Four', 'Fif', 'Six', 'Seven', 'Eigh', 'Nine']
+    for i in range(3, 10): Teen[i] += "teen"
+    Tenty = ['', '', 'Twen', 'Thir', 'For', 'Fif', 'Six', 'Seven', 'Eigh', 'Nine']
+    for i in range(2, 10): Tenty[i] += "ty"
 
-    def ones(n=num):
-        return ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'][n % 10]
+    @classmethod
+    def huns(cls, n):
+        def tens(n):
+            # rescoping so %= 100 applies to its own variable
+            n %= 100
+            if 9 < n < 20: return cls.Teen[n % 10]
+            if n < 10: return cls.Ones[n % 10]
+            return f"{cls.Tenty[n // 10]} {cls.Ones[n % 10]}".strip()
 
-    def hundred_and():
-        if num > 99:  # 1XX-9XX
-            needAnd = num % 100 != 0  # X01-X99
-            return ' Hundred' + (' & ' if needAnd else "")
-        return ''
+        n %= 1_000
+        t = tens(n)
 
-    def huns():
-        return ones(num // 100) + hundred_and()
+        n //= 100
+        if n == 0: return t
 
-    if num < 0 or num > 999:
-        return 'Number Out Of Range'
-    elif num == 0:
-        return 'Zero'
-    elif 9 < num % 100 < 20:
-        return huns() + ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen',
-                         'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'][num % 10]
-    else:
-        tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'][num % 100 // 10]
-        tens += ('-' if num % 100 > 20 and num % 10 != 0 else '')
+        return f"{cls.Ones[n % 10]} Hundred {t}".strip()
 
-        return huns() + tens + ones()
+    @staticmethod
+    def TMB():
+        yield ""
+        yield " Thousand "
+        yield " Million "
+        yield " Billion "
+        yield " Trillion "
+
+    def __new__(cls, num):
+        if num < 0 or num > 999_999_999_999_999:
+            return 'Number Out Of Range'
+        if num == 0: return 'Zero'
+
+        s = ""
+        tmb = cls.TMB()
+        while num > 0:
+            num, n = divmod(num, 1_000)
+            t = next(tmb)
+            if n == 0: continue
+            s = (cls.huns(n) + t + s).strip()
+
+        return s
 
 
 class RangedNumber:

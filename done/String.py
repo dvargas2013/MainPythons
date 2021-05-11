@@ -253,7 +253,7 @@ class Markov:
 def SequenceAlignment(s1, s2, DownSigma=0, RightSigma=0, Match=1, MisMatch=0):
     """Preforms Global Sequence Alignment on the two strings"""
     n, m = len(s1), len(s2)
-    S = [[tuple()] * (m + 1)] * (n + 1)
+    S = [[tuple()] * (m + 1) for _ in range(n + 1)]
     S[0][0] = (0, 0)
     for j in range(1, m + 1): S[0][j] = (S[0][j - 1][0] + RightSigma, 2)  # Right Sigma
     for i in range(1, n + 1): S[i][0] = (S[i - 1][0][0] + DownSigma, 1)  # Down  Sigma
