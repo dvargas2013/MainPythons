@@ -168,16 +168,16 @@ def theFactorsOf(integer):
     return ['%s+%s=%s' % (j, k, j + k) for j, k in factorsOf(integer)]
 
 
-class BaseChanger:
+class BaseChanger(int):
     """Allows for conversion of non-negative integers into other bases"""
 
-    def __init__(self, integer):
-        self.value = abs(int(integer))
+    def __new__(cls, integer: int):
+        return super(BaseChanger, cls).__new__(cls, abs(int(integer)))
 
     def to_base(self, base):
         """return a list representing the number"""
-        if self.value in {0, 1}: return [self.value]
-        it = list(BaseChanger.__baseHelper(self.value, base))
+        if self in {0, 1}: return [int(self)]
+        it = list(self.__baseHelper(base))
         it.reverse()  # reverses list in place so you save 1 (one) list creation
         return it
 
@@ -195,12 +195,16 @@ _([1,0,1,1], 2) => BaseChanger(11)
             yield n * p
             p *= base
 
-    @staticmethod
+    # due to the immutability of BaseChanger(int), this no longer need be a staticmethod
+    # however i will keep the name x cause it's not /really/ a self kind of method
     def __baseHelper(x, base):
+        """yields the numbers in base representation of the number x"""
         while x:
             yield x % base
             x //= base
 
+    def __repr__(self):
+        return f"BaseChanger({int(self)})"
 
 def radToFrac(D):
     """Turns √D into continued fraction
