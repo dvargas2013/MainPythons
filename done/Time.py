@@ -1,158 +1,162 @@
 #!/usr/bin/env python3
 """Deals with anything with the human concept of time and dates"""
 
-from time import sleep, time as time_now
-from timeit import timeit
-from datetime import datetime
 from contextlib import contextmanager
+from datetime import datetime, timedelta
 from itertools import islice
 from math import ceil
+from time import sleep, time as time_now
+from timeit import timeit
+from typing import Union
 
 
 class Time:
-    """Instance of time can do many Timely things.
-
-Keeps track of total seconds from midnight to time.
-
-Initialization:
-
-    All of these are equivalent and will initialize with 8 o'clock AM
-
-    Time(8,0,0) - set hours, minutes, seconds
-    Time(8,0) - set hours, minutes
-    Time(8) - set hours
-    Time('8') - set hours from string
-    Time('8:0') - set hours, minutes from string
-    Time('8:0:0') - set hours, minutes, seconds from string
-
-    Time() - returns an instance with time of creation
+    """
+Time(hour, minute, second, microsecond, pm=False)
 """
 
-    def __init__(self, *time):
-        if len(time) == 1:
-            if type(time[0]) == str:
-                new = time[0].split(":")
-            else:
-                new = [Time.run(time[0], 0), 0, 0]
-        elif len(time) > 1:
-            new = [Time.run(i, 0) for i in time[:3]]
-        else:
+    def __init__(self, hour=None, minute=0, second=0, microsecond=0, pm=False):
+        if hour is None:
             a = datetime.now()
-            new = [a.hour, a.minute, a.second + a.microsecond / 1e6]
-        while len(new) < 3: new = list(new) + [0]
-        self.sc = float(new[2]) + (float(new[1]) + float(new[0]) * 60) * 60
-        self.mn = int(self.sc // 60)  # Get some minutes from it
-        self.hr = int(self.mn // 60 % 12)  # Get hours from the minutes gotten
-        self.mn = int(self.mn % 60)  # Reduce minutes
-        self.sc = round(self.sc % 60, 9)  # Reduce seconds
-        # That's the best way I thought of at the moment
+            hour = a.hour
+            minute = minute or a.minute
+            second = second or a.second
+            microsecond = microsecond or a.microsecond
+
+        if pm:
+            hour += 12
+
+        self.innertime = timedelta(
+            hours=hour,
+            minutes=minute,
+            seconds=second,
+            microseconds=microsecond)  # has days, seconds, microseconds
 
     @property
-    def totalSc(self):
-        """Total amount of seconds from midnight to time"""
-        return 60 * (60 * self.hr + self.mn) + self.sc
+    def hr(self):
+        return self.innertime.seconds // 3600
+
+    @property
+    def mn(self):
+        return self.innertime.seconds // 60 % 60
+
+    @property
+    def sc(self):
+        return self.innertime.seconds % 60 + self.innertime.microseconds / 1e6
+
+    @property
+    def secondsSinceMidnight(self):
+        return self.innertime.seconds + self.innertime.microseconds / 1e6
 
     @property
     def hrHandDeg(self):
-        """Angle between the 12 and position of the hour hand"""
-        return (60 * (60 * self.hr + self.mn) + self.sc) / 120 % 360
+        return self.secondsSinceMidnight / 120 % 360
 
     @property
     def mnHandDeg(self):
-        """Angle between the 12 and position of the minute hand"""
-        return (60 * self.mn + self.sc) / 10 % 360
+        return self.secondsSinceMidnight / 10 % 360
 
     @property
     def scHandDeg(self):
-        """Angle between the 12 and position of the second hand"""
-        return self.sc * 6 % 360
+        return self.secondsSinceMidnight * 6 % 360
+
+    @hr.setter
+    def hr(self, hours: int):
+        self.innertime += timedelta(hours=hours - self.hr)
+
+    @mn.setter
+    def mn(self, mins: int):
+        self.innertime += timedelta(minutes=mins - self.mn)
+
+    @sc.setter
+    def sc(self, secs: float):
+        self.innertime += timedelta(seconds=secs - self.sc)
 
     @hrHandDeg.setter
-    def hrHandDeg(self, deg):
-        """Set the hour hand of time to where it should be according to the angle given in degrees"""
+    def hrHandDeg(self, deg: float):
         self.hr = deg // 30
 
     @mnHandDeg.setter
-    def mnHandDeg(self, deg):
-        """Set the minute hand of time to where it should be according to the angle given in degrees"""
+    def mnHandDeg(self, deg: float):
         self.mn = deg // 6
 
     @scHandDeg.setter
-    def scHandDeg(self, deg):
-        """Set the second hand of time to where it should be according to the angle given in degrees"""
+    def scHandDeg(self, deg: float):
         self.sc = deg / 6
 
-    def setHr(self, num):
-        """Set the hours of time"""
-        new = Time(num, self.mn, self.sc)
-        self.hr, self.mn, self.sc = new.hr, new.mn, new.sc
-
-    def setMn(self, num):
-        """Set the minutes of time"""
-        new = Time(self.hr, num, self.sc)
-        self.hr, self.mn, self.sc = new.hr, new.mn, new.sc
-
-    def setSc(self, num):
-        """Set the seconds of time"""
-        new = Time(self.hr, self.mn, num)
-        self.hr, self.mn, self.sc = new.hr, new.mn, new.sc
-
     # Some math operations for time
-    def __add__(self, new):
-        return Time(self.hr + new.hr, self.mn + new.mn, self.sc + new.sc)
+    def __add__(self, new: 'Time'):
+        return Time.fromTimedelta(self.innertime + new.innertime)
 
-    def __sub__(self, new):
-        return Time(self.hr - new.hr, self.mn - new.mn, self.sc - new.sc)
+    def __sub__(self, new: 'Time'):
+        return Time.fromTimedelta(self.innertime + new.innertime)
 
-    def __mul__(self, new):
-        return Time(0, 0, self.totalSc * Time.run(new))
+    def __mod__(self, new: 'Time'):
+        return Time.fromTimedelta(self.innertime % new.innertime)
 
-    def __truediv__(self, new):
-        return Time(0, 0, self.totalSc / Time.run(new))
+    def __mul__(self, new: float):
+        return Time.fromTimedelta(self.innertime * new)
 
-    def __floordiv__(self, new):
-        return Time(0, 0, self.totalSc // Time.run(new))
+    def __truediv__(self, new: Union['Time', float]):
+        if hasattr(new, "innertime"):
+            return self.innertime / new.innertime
+        else:
+            return Time.fromTimedelta(self.innertime / new)
 
-    def __mod__(self, new):
-        new = Time.run(new, None)
-        if new is None: return Time(self)
-        return Time(0, 0, self.totalSc % new)
-
-    def __round__(self, n=0):
-        return Time(self.hr, self.mn, round(self.sc, n))
+    def __floordiv__(self, new: Union['Time', int]):
+        if hasattr(new, "innertime"):
+            return self.innertime // new.innertime
+        else:
+            return Time.fromTimedelta(self.innertime // new)
 
     # Comparisons
-    def __lt__(self, new):
-        if hasattr(new, "totalSc"): return self.totalSc < new.totalSc
-        return self.totalSc < new
+    def __lt__(self, new: Union['Time', float]):
+        if hasattr(new, "innertime"):
+            return self.innertime < new.innertime
+        return self.secondsSinceMidnight < new
 
-    def __eq__(self, new):
-        return hasattr(new, "totalSc") and self.totalSc == new.totalSc
-
-    def __le__(self, new):
-        return self < new or self == new
+    def __eq__(self, new: 'Time'):
+        return hasattr(new, "secondsSinceMidnight") and self.secondsSinceMidnight == new.secondsSinceMidnight
 
     # Show the time in a cool way
     def __repr__(self):
-        return "Time(%s)" % self.__str__()
+        return f"Time({self!s})"
+
+    @staticmethod
+    def fromString(string: str):
+        pm = False
+        if string.endswith("pm"):
+            string = string[:-2]
+            pm = True
+        elif string.endswith("am"):
+            string = string[:-2]
+        new = string.split(":")
+        return Time(*map(float, new), pm=pm)
+
+    @staticmethod
+    def fromTimedelta(td: timedelta):
+        r = Time(0)
+        r.innertime = td
+        return r
 
     def __str__(self):
-        return '{:0>2}:{:0>2}:{:0>2}'.format(self.hr, self.mn, self.sc)
+        hr = self.hr
+        p = 'a'
+        if hr >= 12:
+            hr -= 12
+            p = 'p'
+        if hr == 0:
+            hr = 12
 
-    @classmethod
-    def run(cls, num, default=1):
-        """Convert parameter sent into the total amount of seconds.
+        return f'{hr:02}:{self.mn:02}:{self.sc:06.3f}{p}m'
 
-Can accept int, float, and Time. Anything else and default is returned"""
-        if isinstance(num, cls): return num.totalSc
-        if isinstance(num, (int, float)): return num
-        return default
+
+months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
 
 
 def DayOfTheWeek(month, date, year):
     """"Calculate the Day of the Week according to month, day, year given."""
-    if type(month) == str: month = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov',
-                                    'dec'].index(month.lower()[:3]) + 1
+    if type(month) == str: month = months.index(month.lower()[:3]) + 1
     abs_year = year - int(month < 3)  # year if month < 3 else year-1
     leap = (1 if month < 3 else -1) + abs_year // 4 - abs_year // 100 + abs_year // 400
     index = 23 * month // 9 + date + year + leap
@@ -182,7 +186,7 @@ def timer(msg):
 Usage:
 
 >>> with timer('<Message>'):
->>>     <block>
+>>>     pass
 
 if you do not wish to print and would rather receive the time to handle yourself,
 pass in an object that allows self.__setitem__(0, <float>)
@@ -191,7 +195,7 @@ example:
 
 >>> time_elapsed = [0]
 >>> with timer(time_elapsed):
->>>     <block>
+>>>     pass
 >>> print(time_elapsed[0])
     """
     start = time_now()
