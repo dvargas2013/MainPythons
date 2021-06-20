@@ -15,13 +15,13 @@ class Time:
 Time(hour, minute, second, microsecond, pm=False)
 """
 
-    def __init__(self, hour=None, minute=0, second=0, microsecond=0, pm=False):
-        if hour is None:
+    def __init__(self, hour=0, minute=0, second=0, microsecond=0, pm=False):
+        if not any((hour, minute, second, microsecond)):
             a = datetime.now()
             hour = a.hour
-            minute = minute or a.minute
-            second = second or a.second
-            microsecond = microsecond or a.microsecond
+            minute = a.minute
+            second = a.second
+            microsecond = a.microsecond
 
         if pm:
             hour += 12
