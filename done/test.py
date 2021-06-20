@@ -203,7 +203,6 @@ def Solver_test():
     # TODO respart, addOrSub
 
     print("Solver.py " + ("Passed" if succ else "did not Pass"))
-    pass
 
 
 def String_test():
@@ -217,14 +216,22 @@ def String_test():
 
 
 def Time_test():
-    # import done.Time as Time
-    # succ = 1
+    from .Time import Time
+    succ = 1
 
-    # TODO Time, DayOfTheWeek, stopwatch, countdown
+    succ &= (Time(8).hr == 8)
+    succ &= (Time(8, 8).mn == 8)
+    succ &= (Time(8, 8, 8).sc == 8)
+    succ &= (Time(minute=8).mn == 8)
+    succ &= (Time(8, pm=True).hr == 20)
+    succ &= (Time(16, 8, 8) == Time(8, 8, 8) + Time(8))
+    succ &= (Time(20) + Time(5) == Time(1))
+    succ &= (Time(20) + Time(5) > Time(1))
+    succ &= ((Time(1) > Time(1)) is False)
 
-    # print("Time.py "+("Passed" if succ else "did not Pass"))
-    pass
+    # TODO DayOfTheWeek, stopwatch, countdown
 
+    print("Time.py "+("Passed" if succ else "did not Pass"))
 
 def main():
     Codes_test()
