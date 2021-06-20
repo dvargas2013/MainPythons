@@ -28,10 +28,12 @@ note: if you create with [n-z] shuffled, it will already be its own inverse
     if len(string_mapping) == 26:
         string_mapping += string_mapping.upper()
     if len(string_mapping) == 52:
+        sm = string_mapping[::-1]
+        al = ascii_letters[::-1]
         if inverse:
-            return str.maketrans(ascii_letters, string_mapping)
+            return str.maketrans(sm, al)
         else:
-            return str.maketrans(ascii_letters, string_mapping)
+            return str.maketrans(al, sm)
 
 
 def print_iterable(iterable):

@@ -4,8 +4,8 @@
 Just in case some random edit Breaks something one day
 """
 from contextlib import contextmanager
-from io import StringIO
 from contextlib import redirect_stdout
+from io import StringIO
 
 
 def notequal_ignore_spaces(str1, str2): return ''.join(str1.split()) != ''.join(str2.split())
@@ -62,7 +62,8 @@ def Codes_test():
                            invr=lambda x: Codes.binary(x, to_binary=0))
 
         succ &= inversable(Codes.numword, s,
-                           invr=lambda x: Codes.numword(x, inverse=1))
+                           invr=lambda x: Codes.numword(x, backToWords=1),
+                           ne=notequal_ignore_capital)
 
         succ &= inversable(Codes.eggnog, s,
                            ne=notequal_ignore_spaces)
@@ -126,7 +127,7 @@ def Game_test():
     succ &= GameTester(Game.pattern)
     succ &= GameTester(Game.physics)
     succ &= GameTester(Game.thinker)
-    succ &= GameTester(Game.number_guesser, send="3\n4\n")
+    succ &= GameTester(Game.number_guesser1, send="3\n4\n")
     succ &= GameTester(Game.zombie, "1\n1\n1\n1\n1\n2\n2\n1\n3\n1\n")
     succ &= GameTester(Game.ultimate_rps(), "nat\nhot\nmet\nqui\n")
     succ &= GameTester(Game.murder, "q\n")
@@ -231,18 +232,16 @@ def Time_test():
 
     # TODO DayOfTheWeek, stopwatch, countdown
 
-    print("Time.py "+("Passed" if succ else "did not Pass"))
+    print("Time.py " + ("Passed" if succ else "did not Pass"))
+
 
 def main():
-    Codes_test()
-    File_test()
-    Game_test()
-    List_test()
-    Math_test()
-    Number_test()
-    Solver_test()
-    String_test()
-    Time_test()
+    for test in [String_test, Codes_test, File_test, Game_test,
+                 List_test, Math_test, Number_test,
+                 Solver_test, Time_test]:
+        try:
+            test()
+        except: pass
 
 
 if __name__ == '__main__':
