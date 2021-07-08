@@ -4,6 +4,7 @@ from .Math import fact, comb
 from math import exp
 from collections import deque, defaultdict
 from functools import wraps
+from inspect import isgeneratorfunction
 
 def is_iterable(potentially_iterable):
     """checks if something is iterable"""
@@ -95,7 +96,7 @@ def online_average(item=0, p_sum=0, p_count=-1):
 
 >>> p_sum, p_count = online_average() # 0, 0
 >>> for i in range(100):
->>>     p_sum, p_count = online_average(i, p_sum, p_count)
+...     p_sum, p_count = online_average(i, p_sum, p_count)
 
 >>> assert p_sum == sum(range(100))
 >>> assert p_count == 100
@@ -135,13 +136,41 @@ def cross(*lists, tupled=False):
         return [sum(i) for i in pd]
     return list(pd)
 
+
 def applyToGenerator(f):
+    """
+    applies the given function to the generator created when the generator function is called
+
+    example usage:
+
+lets say you have a generator that behaves like
+
+>>> lambda n: iter(range(n, 0, -1))
+
+but you want it to act like
+
+>>> lambda n: list(range(n, 0, -1))
+
+you could define the generator function like so:
+
+>>> @applyToGenerator(list)
+... def wild(n):
+...    while n > 0:
+...         yield n
+...         n -= 1
+now calling ``wild(5)`` is equivalent to calling ``list(wild(5))``
+    """
     def outer(generator):
+        if not isgeneratorfunction(generator):
+            from warnings import warn
+            warn(f"{generator.__qualname__} does not seem to be a generator function", stacklevel=2)
+
         @wraps(generator)
         def inner(*args, **kwargs):
             return f(generator(*args, **kwargs))
         return inner
     return outer
+
 
 class CollisionDict(defaultdict):
     def __init__(self, factory, add_func, data=None):
@@ -164,4 +193,3 @@ class CollisionDictOfLists(CollisionDict):
 class CollisionDictOfSets(CollisionDict):
     def __init__(self, data=None):
         super().__init__(set, set.add, data)
-
