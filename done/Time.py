@@ -180,7 +180,7 @@ def MoonPhase(month, date, year, baseline=(_mdy_convert(1, 6, 2000), 0.00)):
 
 
 @contextmanager
-def timer(msg):
+def timer(msg=None):
     """print time taken in ms by the block within context.
 
 Usage:
@@ -189,28 +189,21 @@ Usage:
 >>>     pass
 
 if you do not wish to print and would rather receive the time to handle yourself,
-pass in an object that allows self.__setitem__(0, <float>)
+use ``as TARGET`` to get a list of size 1 with a float inside containing the same number as would have been printed
 
 example:
 
->>> time_elapsed = [0]
->>> with timer(time_elapsed):
+>>> with timer() as time_elapsed:
 >>>     pass
 >>> print(time_elapsed[0])
     """
+    ba = [None]
     start = time_now()
-    yield
-    end = time_now()
+    yield ba
+    ba[0] = (time_now() - start) * 1000
 
-    if hasattr(msg, "__setitem__"):
-        try:
-            msg[0] = (end - start) * 1000
-            return
-        except (IndexError, ValueError):
-            # if you cant reach [0] or you cant put the float in there
-            # just resort to printing it as a string
-            pass
-    print(f"{msg!s}: {((end - start) * 1000):.02f}ms")
+    if msg is not None:
+        print(f"{msg!s}: {ba[0]:.02f}ms")
 
 
 def maxtime_computation(generator, online_calculation, maxtime=10, initn=10_000,
@@ -228,6 +221,7 @@ unpack_generated == True
 unpack_previous == True
 >>> online_calculation(i, *previous)
     """
+    # set up the function to be called as the online calculation
     if unpack_previous and unpack_generated:
         calc = lambda gn, pv: online_calculation(*gn, *pv)
     elif unpack_generated:
@@ -237,21 +231,23 @@ unpack_previous == True
     else:
         calc = online_calculation
 
-    time = [0]
-    with timer(time):
+    # time how much time the calculation takes
+    with timer() as time:
         p = online_calculation()
         for i in islice(generator, initn):
             p = calc(i, p)
-
     time = time[0]
 
+    # calculate how many iterations should be left
     its_per_ms = initn / time
     ms_left = maxtime * 1000 - time
     its_left = ceil(its_per_ms * ms_left)
 
+    # preform the iterations
     for i in islice(generator, its_left):
         p = calc(i, p)
 
+    # return the value
     return p
 
 
