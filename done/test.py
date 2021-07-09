@@ -3,8 +3,7 @@
 """ Tests for the Done Files
 Just in case some random edit Breaks something one day
 """
-from contextlib import contextmanager
-from contextlib import redirect_stdout
+from contextlib import contextmanager, redirect_stdout
 from io import StringIO
 
 

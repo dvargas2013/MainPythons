@@ -34,7 +34,7 @@ def batch(seq, n=2):
     """Cuts up a iterable into chunks os size n. the last one is whatever data is left"""
     length = len(seq)
     for i in range(0, length, n):
-        yield seq[i:min(i + n, length)]
+        yield seq[i:i + n]
 
 
 def poisson(y, x):
