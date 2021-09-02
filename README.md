@@ -24,7 +24,6 @@ just imports everything into the namespace
 **radToFrac** - converts the sqrt into a continued fraction  
 **convergentsE** - yield numerator and denominator of closer approximations to the number e  
 **PI** - given a decimal precision will return pi to that precision  
-**preciseSqrt** - uses convergentSqrt to return sqrt(N) to a specified amount of digits (Use decimal.Decimal.sqrt instead)  
 **NumToStr** - gives name of number  
 ## List.py
 **is_iterable** - determines if object is iterable  

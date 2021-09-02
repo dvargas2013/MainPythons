@@ -335,46 +335,6 @@ def PI(decimals_wanted=10):
         return Decimal(a) / Decimal(b)
 
 
-def preciseSqrt_babylonian(N, decimals_wanted=100):
-    """Gives the sqrt(N) to the appropriate decimal places
-
-from my timeit tests this is 1.1x faster than Decimal.sqrt() don't ask me how
-(maybe its cause its operating on N as integer)
-"""
-    with localcontext(Context(prec=decimals_wanted)):
-        num = Decimal(N ** .5)
-        while True:
-            new_num = (num * num + N) / num / 2
-            # TODO this looks like the wrong condition to be checking for, probably explains why its 1.1 times faster
-            if new_num == num:
-                return num
-            else:
-                num = new_num
-
-
-def preciseSqrt(N, decimals_wanted=100):
-    """Gives the sqrt(N) to the appropriate decimal places
-
-This is just a proof that convergents work
-This method is more than 3 orders of magnitude slower than babylonian method
-Use decimal to take sqrt instead (uses newtonian method):
-    >>> from decimal import Decimal,getcontext
-    >>> getcontext().prec = decimals_wanted
-    >>> Decimal(N).sqrt()
-"""
-    with localcontext(Context(prec=decimals_wanted)):
-        csn = convergentSqrt(N)
-        old = -1  # im pretty sure nothing will ever think its -1
-        new = 0
-        for a, b in csn:
-            new = Decimal(a) / Decimal(b)
-            # TODO: i dunno how much change is visible to indicate accuracy reached
-            if abs(old - new) < 10 ** (-2 * decimals_wanted):
-                return new
-            old = new
-        return new
-
-
 class NumToStr:
     Ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine']
     Teen = ['Ten', 'Eleven', 'Twelve', 'Thir', 'Four', 'Fif', 'Six', 'Seven', 'Eigh', 'Nine']
