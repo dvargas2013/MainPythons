@@ -3,6 +3,7 @@
 # python bins
 __pycache__/
 *.py[ocd]
+*.egg-info
 
 #pycharm
 .idea/

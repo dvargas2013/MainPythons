@@ -1,4 +1,6 @@
 # MainPythons
+**installation** - just `pip install .` from same location as setup.py couldn't be easier  
+if you want to keep the py files in a specific location preform `pip install -e .` instead  
 
 ## __init__.py
 just imports everything into the namespace  
