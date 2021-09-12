@@ -1,7 +1,11 @@
 """Formulaic, singular number functions are stored here"""
 
 import math
-from .Number import parse_number
+
+try:
+    from .Number import parse_number
+except ImportError:
+    from Number import parse_number
 
 
 def angle(x1, y1, x2, y2):

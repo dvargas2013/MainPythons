@@ -1,7 +1,12 @@
 """Deals with anything string and cute string manipulations"""
+
 import random
 from string import ascii_lowercase, ascii_letters
-from .List import window
+
+try:
+    from .List import window
+except ImportError:
+    from List import window
 
 
 def multiple_replace(string, replace_array):

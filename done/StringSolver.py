@@ -1,9 +1,14 @@
 """Solvers that take in a text-like input or require the use of a word-based dictionary"""
-import re
-from string import ascii_lowercase
-from functools import partial
-from . import String
+
 import random
+import re
+from functools import partial
+from string import ascii_lowercase
+
+try:
+    from . import String
+except ImportError:
+    import String
 
 printAll = print_iterable = String.print_iterable
 

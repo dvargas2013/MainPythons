@@ -1,7 +1,9 @@
 """Just a bunch of Codes"""
 
-from .String import multiple_replace, createTranslationTable
-
+try:
+    from .String import multiple_replace, createTranslationTable
+except ImportError:
+    from String import multiple_replace, createTranslationTable
 
 def binary(text, to_binary=True):
     """Change string into binary bytes (actually still a string)

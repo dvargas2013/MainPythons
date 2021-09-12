@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Deals with anything with the human concept of time and dates"""
 
 from contextlib import contextmanager

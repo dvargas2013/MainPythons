@@ -5,11 +5,15 @@ my pride and joys are the sudoku solver and the 24 game solver.
 there are others but they are really obscure problems and puzzles.
 """
 
-from itertools import product
-from functools import reduce
-from .List import lcm
-from functools import lru_cache
 from fractions import Fraction
+from functools import reduce, lru_cache
+from itertools import product
+from typing import Union
+
+try:
+    from .List import lcm
+except ImportError:
+    from List import lcm
 
 
 @lru_cache
@@ -59,7 +63,7 @@ def __solve_double(a, b, *nums, lookup):
 
 
 @lru_cache
-def solve(*nums, lookup=24):
+def solve(*nums, lookup: Union[Fraction, int] = 24):
     """_(1,2,3,4,lookup=30) yields '3*(2*(4+1))'"""
     if len(nums) == 0: raise Exception("no numbers given")
     if not all((type(i) in [int, Fraction]) for i in [*nums, lookup]):
@@ -208,7 +212,7 @@ class Sudoku:
 
 
 def numRemainders(divisors, remainders):
-    """_(sorted({3,8,3,7}),list([2,4,2])) = 74"""
+    """_(sorted({3,8,3,7}),list([2,4,2])) = {74}"""
     divisors = sorted(set(divisors))
     remainders = list(remainders)
     if len(divisors) != len(remainders) or any(r != r % d for d, r in zip(divisors, remainders)): return False

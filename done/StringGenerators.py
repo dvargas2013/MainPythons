@@ -1,8 +1,13 @@
 """functions that could potentially create new text forever"""
+
 import random
 from string import ascii_uppercase
 from itertools import accumulate
-from .String import Markov
+
+try:
+    from .String import Markov
+except ImportError:
+    from String import Markov
 
 stars = '．.☆.＋.。.．..．。ﾟ。,☆ﾟ.＋。ﾟ,。.。,.。ﾟ。ﾟ.+。ﾟ*。.,。ﾟ+.。*。ﾟ...．…,。＋ﾟ。。ﾟ.ﾟ。,☆*。ﾟ.o,。.＋ﾟ。。ﾟ.ﾟ。,☆*。ﾟ.'
 MarkovStars = Markov(' '.join(stars))

@@ -3,8 +3,11 @@
 ProTip: a lot of the games can be hacked by typing giveup in em c;"""
 
 from random import randint, randrange, shuffle, sample, choice
-from .List import lcm
 
+try:
+    from .List import lcm
+except ImportError:
+    from List import lcm
 
 def matrix(mini=-1, maxi=1):
     """print random integers between min and max... never stops"""

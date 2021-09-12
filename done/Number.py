@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
-
 """Searching functions dealing with singular number space - Prioritized for human readability"""
+
 import itertools
 import operator
 from decimal import Decimal, localcontext, Context
@@ -205,6 +204,7 @@ _([1,0,1,1], 2) => BaseChanger(11)
 
     def __repr__(self):
         return f"BaseChanger({int(self)})"
+
 
 def radToFrac(D):
     """Turns √D into continued fraction

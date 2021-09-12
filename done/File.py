@@ -1,16 +1,11 @@
-#!/usr/bin/env python3
 """If I made it and it has to do with files it is here"""
 
-import os
 import os.path
-
-from os import renames, remove, walk, makedirs, environ
+from os import renames, remove, walk, makedirs, environ, link as copyfile_hardlink
 from os.path import exists, join, splitext, split, relpath, abspath
-from urllib.request import urlopen
 from shutil import copy2 as copyfile_normal  # preserves metadata
 from typing import Dict, List
-
-copyfile_hardlink = os.link
+from urllib.request import urlopen
 
 
 def same(file1, file2):
@@ -247,8 +242,9 @@ def read(file, tag='r', pickled=False):
         with open(file, tag, encoding='latin_1') as f:
             return f.read()
 
+
 def write_dict_to_tgf(dic: Dict[str, List[str]], file):
-    nodes = sorted(set.union(*map(set, dic.values()), dic.keys()))
+    nodes = sorted(set.union(*map(set, dic.values()), set(dic.keys())))
     node_to_tgf_index = {n: i for i, n in enumerate(nodes, start=1)}
 
     f = []
@@ -260,6 +256,7 @@ def write_dict_to_tgf(dic: Dict[str, List[str]], file):
             f.append(f"{node_to_tgf_index[i]} {node_to_tgf_index[j]}")
 
     return write("\n".join(f), file)
+
 
 def write(s, file, tag='w', encoding="utf",
           onerror=['strict', 'replace', 'ignore', 'xmlcharrefreplace', 'backslashreplace'][3], pickled=False):
@@ -410,6 +407,7 @@ def ZipGui():
 
     class FileList(Listbox):
         """the vertical file selector thing"""
+
         def __init__(self, master, place='./'):
             Listbox.__init__(self, master, selectmode="SINGLE")
             self.grid(row=0, column=len(master.lists), sticky="NSWE")

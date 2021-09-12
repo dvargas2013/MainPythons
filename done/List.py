@@ -1,10 +1,15 @@
 """Deals with lists of information. Many probability things are found here."""
 
-from .Math import fact, comb
-from math import exp
 from collections import deque, defaultdict
 from functools import wraps
 from inspect import isgeneratorfunction
+from math import exp
+
+try:
+    from .Math import fact, comb
+except ImportError:
+    from Math import fact, comb
+
 
 def is_iterable(potentially_iterable):
     """checks if something is iterable"""
@@ -160,6 +165,7 @@ you could define the generator function like so:
 ...         n -= 1
 now calling ``wild(5)`` is equivalent to calling ``list(wild(5))``
     """
+
     def outer(generator):
         if not isgeneratorfunction(generator):
             from warnings import warn
@@ -168,7 +174,9 @@ now calling ``wild(5)`` is equivalent to calling ``list(wild(5))``
         @wraps(generator)
         def inner(*args, **kwargs):
             return f(generator(*args, **kwargs))
+
         return inner
+
     return outer
 
 
