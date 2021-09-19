@@ -4,10 +4,8 @@ import random
 from itertools import accumulate
 from string import ascii_uppercase
 
-if __package__:
-    from .String import Markov
-else:
-    from String import Markov
+from done.String import Markov
+
 
 stars = '．.☆.＋.。.．..．。ﾟ。,☆ﾟ.＋。ﾟ,。.。,.。ﾟ。ﾟ.+。ﾟ*。.,。ﾟ+.。*。ﾟ...．…,。＋ﾟ。。ﾟ.ﾟ。,☆*。ﾟ.o,。.＋ﾟ。。ﾟ.ﾟ。,☆*。ﾟ.'
 MarkovStars = Markov(' '.join(stars))

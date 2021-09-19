@@ -77,7 +77,7 @@ def listFormats(directory):
 
 def hideInMaze(file, maze_root, depth, size, name_length=7):
     """Hides a file inside {size} directories in each directory for {depth} levels"""
-    from StringGenerators import chain
+    from done.String.Generators import chain
     from random import choice
     if input('are you sure you want to make ' + str(sum(size ** i for i in range(depth + 1))) + ' folders')[0] in 'Yy':
         paths = [maze_root]

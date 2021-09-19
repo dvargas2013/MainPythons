@@ -1,9 +1,6 @@
 """Just a bunch of Codes"""
 
-if __package__:
-    from .String import multiple_replace, createTranslationTable
-else:
-    from String import multiple_replace, createTranslationTable
+from done.String import multiple_replace, createTranslationTable
 
 
 def unbinary(text):

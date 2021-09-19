@@ -3,10 +3,7 @@
 import random
 from string import ascii_lowercase, ascii_letters
 
-if __package__:
-    from .List import window
-else:
-    from List import window
+from done.List import window
 
 
 def multiple_replace(string, replace_array):

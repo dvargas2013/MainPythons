@@ -6,10 +6,7 @@ from functools import partial
 from itertools import product
 from string import ascii_lowercase
 
-if __package__:
-    from . import String
-else:
-    import String
+from done import String
 
 printAll = print_iterable = String.print_iterable
 

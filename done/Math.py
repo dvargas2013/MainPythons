@@ -4,10 +4,7 @@ import math
 from itertools import zip_longest
 from typing import Union, List, Tuple
 
-if __package__:
-    from .Number import parse_number
-else:
-    from Number import parse_number
+from done.Number import parse_number
 
 
 def angle(x1, y1, x2, y2):

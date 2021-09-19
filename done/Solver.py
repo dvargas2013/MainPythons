@@ -10,10 +10,7 @@ from functools import reduce, lru_cache
 from itertools import product
 from typing import Union
 
-if __package__:
-    from .List import lcm
-else:
-    from List import lcm
+from done.List import lcm
 
 
 @lru_cache

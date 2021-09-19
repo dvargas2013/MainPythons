@@ -4,10 +4,7 @@ ProTip: a lot of the games can be hacked by typing giveup in em c;"""
 
 from random import randint, randrange, shuffle, sample, choice
 
-if __package__:
-    from .List import lcm
-else:
-    from List import lcm
+from done.List import lcm
 
 
 def Input(s):
