@@ -223,7 +223,7 @@ def numRemainders(divisors, remainders):
     divisors = sorted(set(divisors))
     remainders = list(remainders)
     if len(divisors) != len(remainders) or any(r != r % d for d, r in zip(divisors, remainders)): return False
-    divisors_lcm = lcm(divisors)
+    divisors_lcm = lcm(*divisors)
     return reduce(set.intersection, (set(range(r, divisors_lcm, d)) for d, r in zip(divisors, remainders)))
 
 

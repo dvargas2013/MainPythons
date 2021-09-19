@@ -103,14 +103,19 @@ def physics():
 def thinker():
     """Logic game with remainders"""
     while 1:
-        giveup, lis = randint(10, 99), list(range(2, 10))
-        lis = sorted(sample(lis, 3))
-        lis *= 2
-        for i in range(3): lis[i + 3] = giveup % lis[i]
-        n = lcm(lis[:3])
-        print("A number between 9 and {} divided by {} {} and {} gives remainders {} {} and {}".format(
-            n if n < 100 else 100, lis[0], lis[1], lis[2], lis[3], lis[4], lis[5]))
-        giveup %= n
+        # 3 numbers between [2..9]
+        lis = sorted(sample(range(2, 10), 3))
+
+        # number such that any triplet `range(10, n) % lis` is unique
+        n = min(lcm(*lis) + 10, 100)
+
+        giveup = randrange(10, n)
+        mds = [giveup % i for i in lis]
+
+        assert len({tuple(i % k for k in lis) for i in range(10, n)}) == len(range(10, n))
+
+        print("A number between 9 and {} divided by {} {} and {} gives remainders {} {} and {}".format(n, *lis, *mds))
+
         n = 0
         while n != giveup:
             try:
@@ -551,7 +556,6 @@ In those cases, clues will be merged. Good luck separating them.\n''')
 
     loop = 0
     while len(answers) > 0:
-
         try:
             inputs = parse()
         except KeyboardInterrupt:
