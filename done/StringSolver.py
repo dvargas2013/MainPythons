@@ -3,26 +3,35 @@
 import random
 import re
 from functools import partial
+from itertools import product
 from string import ascii_lowercase
 
-try:
+if __package__:
     from . import String
-except ImportError:
+else:
     import String
 
 printAll = print_iterable = String.print_iterable
 
 ascii_lowercase_set = set(ascii_lowercase)
 
+masterDictionary = set()
+
+
+def loadDictionary(dictionary_file='/usr/share/dict/web2'):
+    masterDictionary.clear()
+    with open(dictionary_file) as f:
+        masterDictionary.update(set(f.read().split()))
+
 
 def chemistry(text="Hello World", showall=False):
     """Given a sentence will try to recreate string with chemistry symbols"""
 
     # without j and q the algorithm would get stuck
-    def splitTarget(target, word):
-        target, word = target.lower(), word.lower()
+    def splitTarget(target, w2):
+        target, w2 = target.lower(), w2.lower()
         grow = ''
-        for c in word:
+        for c in w2:
             if target[:1] == c:
                 grow += target[:1]
                 target = target[1:]
@@ -30,8 +39,8 @@ def chemistry(text="Hello World", showall=False):
 
     def perfLvl(gem, aim):
         if len(gem) == 1: return 2
-        for i in range(len(gem), 0, -1):
-            if gem[:i].lower() == aim[:i].lower(): return 2 * i - 1
+        for _i in range(len(gem), 0, -1):
+            if gem[:_i].lower() == aim[:_i].lower(): return 2 * _i - 1
         return 0
 
     Gems = ['j*', 'q*', 'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl',
@@ -43,13 +52,13 @@ def chemistry(text="Hello World", showall=False):
             'Hs', 'Mt', 'Ds', 'Rg', 'Cn', 'Uut', 'Fl', 'Uup', 'Lv', 'Uus', 'Uuo']
     UseGems = dict()  # grab the gems that are possible to use
 
-    def expandWord(word, target):
-        first, last = splitTarget(target, word)
+    def expandWord(w2, target):
+        first, last = splitTarget(target, w2)
         tLetter = last[:1]
         if not tLetter: return
-        save = dict((word + i, perfLvl(i, last)) for i in UseGems[tLetter])
+        save = dict((w2 + _i, perfLvl(_i, last)) for _i in UseGems[tLetter])
         M = 1 if 2 in save.values() else 0
-        return [i for i in save if save[i] > M]
+        return [_i for _i in save if save[_i] > M]
 
     def yieldMaximums(words, target, M=.5, show=0):
         returnable = dict()
@@ -59,7 +68,7 @@ def chemistry(text="Hello World", showall=False):
             if show and words: print("\t" * (show - 1) + str(words))
             if words:  # If words have been added go deeper
                 words, M = yieldMaximums(words, target, M, 0 if not show else show + 1)
-                returnable.update(dict((word, words[word]) for word in words if words[word] >= M))
+                returnable.update(dict((w2, words[w2]) for w2 in words if words[w2] >= M))
             else:
                 s = String.score(target, w)
                 if s >= M:
@@ -89,20 +98,16 @@ def chemistry(text="Hello World", showall=False):
     return string
 
 
-def anagram(jumbled_word, dictionary_file='/usr/share/dict/web2', dictionary_set=None):
-    """Yields anagram matches that contain the letters in jumbled_word
-
-if dictionary_set is defined, will not use the dictionary_file
-anything yielded will be a word in the dictionary_file (lowercase, whitespace-split)
-"""
+def anagram(jumbled_word, dictionary_set=None):
+    """Yields anagram matches that contain the letters in jumbled_word"""
     jumbled_word = jumbled_word.lower()
     letters = set(jumbled_word)
     if dictionary_set is None:
-        with open(dictionary_file) as f:
-            dictionary_set = set(f.read().lower().split())
+        dictionary_set = set(map(str.lower, masterDictionary))
 
     # letters that are not allowed
-    hbl = re.compile("[%s]" % ''.join(ascii_lowercase_set.difference(letters)))
+    unallowed_regex = "[%s]" % ''.join(ascii_lowercase_set.difference(letters))
+    hbl = re.compile(unallowed_regex)
 
     # count the letters that are allowed
     count = dict((i, jumbled_word.count(i)) for i in letters)
@@ -128,34 +133,33 @@ def assemble(word, pieces):
     return False
 
 
-def clues22(pairs, dictionary_file='/usr/share/dict/web2'):
+def clues22(pairs, dictionary_set=None):
     """rearrange substrings to create a word in the dictionary file
 
 Usage:
     clues22(['he','ll','be','o']) -> list containing "hello" and "bell"
 """
     pairs = [i.lower() for i in pairs]
-    with open(dictionary_file) as f:
-        dictionary = set(f.read().lower().split())
+    if dictionary_set is None:
+        dictionary_set = set(map(str.lower, masterDictionary))
+
     all_letters = ''.join(pairs)
 
-    assemble_with_given_pairs = partial(assemble, pairs=pairs)
-    yield from filter(assemble_with_given_pairs, anagram(all_letters, dictionary_set=dictionary))
+    assemble_with_given_pairs = partial(assemble, pieces=pairs)
+    yield from filter(assemble_with_given_pairs, anagram(all_letters, dictionary_set=dictionary_set))
 
 
-def oneLetterFromEach(*strings, dictionary_file='/usr/share/dict/web2'):
+def oneLetterFromEach(*strings, dictionary_set=None):
     """picks one letter from each string and rearranges it to make words
 
 Usage:
     oneLetterFromEach(["t","hx","ea"]) -> ["the","het","hat","tax",...]
     """
-    from itertools import product
+    if dictionary_set is None:
+        dictionary_set = set(map(str.lower, filter((lambda i: len(i) == len(strings)), masterDictionary)))
 
-    with open(dictionary_file) as f:
-        dictionary = set(i for i in f.read().lower().split() if len(i) == len(strings))
-
-    for p in product(strings):
-        yield from anagram("".join(p), dictionary_set=dictionary)
+    for p in product(*strings):
+        yield from anagram("".join(p), dictionary_set=dictionary_set)
 
 
 def offByOne(word1, word2):
@@ -170,7 +174,7 @@ or if you could add or remove a symbol to get the other one"""
     return n == 1
 
 
-def connectWords(word1, word2, dictionary_file='/usr/share/dict/web2'):
+def connectWords(word1, word2):
     """changes 1 letter at a time until word1 becomes word2"""
     if len(word1) != len(word2): return
     length = len(word1)
@@ -178,13 +182,12 @@ def connectWords(word1, word2, dictionary_file='/usr/share/dict/web2'):
     word2 = word2.lower()
     from heapq import heappop, heappush
 
-    with open(dictionary_file) as f:
-        unvisited = set(i for i in f.read().lower().split() if len(i) == length)
+    unvisited = set(map(str.lower, filter((lambda i: len(i) == length), masterDictionary)))
 
-    def getNeighbors(word, remove=0):
+    def getNeighbors(w2, remove=0):
         """finds words in the unvisited list as long as they're off by 1 letter"""
         for w in list(unvisited):
-            if offByOne(w, word):
+            if offByOne(w, w2):
                 if remove: unvisited.remove(w)
                 yield w
 
@@ -201,16 +204,6 @@ def connectWords(word1, word2, dictionary_file='/usr/share/dict/web2'):
         else:
             for neigh in getNeighbors(word, remove=1):
                 heappush(queue, (dist + 1, neigh, rest + [word]))
-
-
-def db_test(alphabet='acbef', length=5):
-    """Test for the DeBruijn generator"""
-    from List import window
-    seq = DeBruijn(alphabet, length)
-    seq += seq[:length]
-    store = set(window(seq, length))
-    assert len(store) == len(set(alphabet)) ** length  # Check that all possible arrangements of length were added
-    print("Assertion Passed")
 
 
 def DeBruijn(alphabet, length):

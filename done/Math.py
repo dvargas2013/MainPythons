@@ -1,10 +1,12 @@
 """Formulaic, singular number functions are stored here"""
 
 import math
+from itertools import zip_longest
+from typing import Union, List, Tuple
 
-try:
+if __package__:
     from .Number import parse_number
-except ImportError:
+else:
     from Number import parse_number
 
 
@@ -13,92 +15,61 @@ def angle(x1, y1, x2, y2):
     return math.atan2(y2 - y1, x2 - x1)
 
 
-def angleForStar(spokes):
-    """Calculate angle to create a star
-    
-Starts working best for {spokes} > 9.
+def angleForStar(spokes, enturtle=False):
+    """Calculate angle to create a nice star"""
 
-Example Usage:
-    def f(n):
-        "draw a star using a turtle"
+    def f():
+        """draw a star using a turtle"""
         import turtle
         # Turtle set up
         s = turtle.Screen()
         t = turtle.Turtle()
-        # set angle needed to rotate
-        a = angleForStar(n)
+        # get angle
+        a = angleForStar(spokes)
         # preform
-        for i in range(n*2):
+        for _ in range(spokes):
             t.fd(100)
             t.rt(a)
+        s.exitonclick()
+        return a
+
+    if enturtle:
+        return f()
+
+    i = next((i for i in range(spokes // 2, spokes) if math.gcd(spokes, i) == 1), default=1)
+    return round(360 * i / spokes, 9)
+
+
+class Polynomial:
+    """polynomial class: add, subtract, multiply, divide
+
+    internally represented by a tuple of ints and floats
+    in little endian
+    so that the constant term is accessed via data[0]
+    and the coefficient of x squared via data[2]
     """
-    # TODO the formula doesnt really work. You need to base it on co-primes
-    return round(180 * (spokes - 2 - spokes % 2) / spokes, 9)
 
+    def __init__(self, data: Union[List[int], Tuple[int]] = tuple()):
+        if type(data) == str and 'x' in data:
+            from warnings import warn
+            warn(f"It seems you might want Polynomial.fromString: Polynomial({data})")
 
-class Nomial:
-    """polynomial list class: add, subtract, multiply, divide"""
+        if len(data) == 0:
+            self.data = (0,)
+            return
 
-    # This is basically a list wrapper that can be used to represent polynomials
-    def __init__(self, data):
-        if type(data) == str or type(data) == Polynom:
-            self.data = Nomial.lis(data)
-        else:
-            self.data = Nomial.lis(Polynom(data))
+        data = list(map(parse_number, data))
+        while len(data) > 1 and data[-1] == 0:
+            data.pop()
 
-    def __call__(self, num):
-        return sum(self[i] * num ** (len(self) - 1 - i) for i in range(len(self)))
+        self.data = data
 
-    def __add__(self, l2):
-        return Nomial([self[-i] + l2[-i] for i in range(max(len(self), len(l2)), 0, -1)])
-
-    def __neg__(self):
-        return Nomial([-i for i in self])
-
-    def __sub__(self, l2):
-        return self + -l2
-
-    def __mul__(self, l2):
-        l3 = [0] * (len(self) + len(l2) - 1)
-        for a in range(len(self)):
-            for b in range(len(l2)): l3[a + b] += self[a] * l2[b]
-        return Nomial(l3)
-
-    def __truediv__(self, l2):
-        l3 = [-i / l2[0] for i in l2]
-        mat = [[0] * len(self)] * len(l2)
-        for x in range(len(self)):
-            for y in range(len(l2)):
-                if y + 1 == len(l2):
-                    mat[y][x] = self[x] + sum([mat[i][x] for i in range(len(l2) - 1)])
-                elif len(l2) - 2 < x + y < len(self):
-                    mat[y][x] = mat[len(l2) - 1][x + y - len(l2) + 1] * l3[len(l3) - 1 - y]
-        return [mat[len(l2) - 1][i] / l2[0] for i in range(len(self))]
-
-    def __floordiv__(self, l2):
-        return Nomial((self / l2)[:1 - len(l2)])
-
-    def __mod__(self, l2):
-        return Nomial((self / l2)[1 - len(l2):])
-
-    def __len__(self):
-        return len(self.data)
-
-    def __repr__(self):
-        return ','.join([str(i) for i in self])
-
-    def __iter__(self):
-        for i in range(len(self)): yield self[i]
-
-    def __getitem__(self, i):
-        if type(i) == int: return parse_number(self.data[i])
-        if type(i) == slice: return [self[i] for i in range(parse_number(i.start), parse_number(i.stop) or len(self),
-                                                            parse_number(i.step) or 1)]
+    def __copy__(self):
+        return Polynomial(self.data)
 
     @staticmethod
-    def lis(to_parse):
-        """_('4x2+3') = [4, 0, 3]"""
-        to_parse = ''.join(i for i in str(to_parse) if i.isalnum() or i in '.+-/*')
+    def fromString(in_str):
+        to_parse = ''.join(i for i in str(in_str) if i.isalnum() or i in '.+-/*')
         sym = {i for i in to_parse if i.isalpha()}
         if len(sym) == 0: return [parse_number(to_parse)]
         if len(sym) != 1: return []
@@ -112,54 +83,86 @@ class Nomial:
             if string.find(sym) == -1: string += sym + '0'
             n += [parse_number(string.rsplit(sym)[0])]
             p += [parse_number(string.rsplit(sym)[1])]
-        dic = dict((i, 0) for i in range(int(max(p) + 1)))
-        for i in range(len(p)): dic[p[i]] += n[i]
-        return [dic[i] for i in range(len(dic) - 1, -1, -1)]
-
-
-class Polynom:
-    """polynomial string class: add, subtract, multiply, divide"""
-
-    # This is basically a wrapper for the nomial class
-    def __init__(self, data, sym='x'):
-        if type(data) == list or type(data) == Nomial:
-            self.data = Polynom.term(data)
-        else:
-            self.data = Polynom.term(Nomial(data), sym)
+        dic = [0] * int(max(p) + 1)
+        for pi, ni in zip(p, n): dic[pi] += ni
+        return Polynomial(dic)
 
     def __call__(self, num):
-        return Nomial(self)(num)
+        return sum(coef * num ** power for power, coef in enumerate(self.data))
 
-    def __add__(self, s2):
-        return Polynom(Nomial(self) + Nomial(s2))
+    def __eq__(self, other):
+        return len(self) == len(other) and all(i == j for i, j in zip(self, other))
+
+    def __add__(self, l2):
+        return Polynomial([a + b for a, b in zip_longest(self.data, l2, fillvalue=0)])
 
     def __neg__(self):
-        return Polynom(-Nomial(self))
+        return Polynomial([-i for i in self.data])
 
-    def __sub__(self, s2):
-        return Polynom(Nomial(self) - Nomial(s2))
+    def __sub__(self, l2):
+        return self + -l2
 
-    def __mul__(self, s2):
-        return Polynom(Nomial(self) * Nomial(s2))
+    def __len__(self):
+        return len(self.data)
+
+    def __repr__(self):
+        return f"Polynomial({self.data!r})"
+
+    def __iter__(self):
+        return iter(self.data)
+
+    def __getitem__(self, i):
+        if type(i) == int: return parse_number(self.data[i])
+        if type(i) == slice: return [self[i] for i in range(parse_number(i.start), parse_number(i.stop) or len(self),
+                                                            parse_number(i.step) or 1)]
+
+    def __mul__(self, l2):
+        l3 = [0] * (len(self) + len(l2) - 1)
+        for p1, c1 in enumerate(self.data):
+            if c1 == 0: continue  # this one is worth checking cause it skips a whole loop
+            for p2, c2 in enumerate(l2):
+                l3[p1 + p2] += c1 * c2
+        return Polynomial(l3)
 
     def __truediv__(self, s2):
         return str(self // s2) + '+(' + str(self % s2) + ')'
 
-    def __floordiv__(self, s2):
-        return Polynom(Nomial(self) // Nomial(s2))
+    def _truediv(self, l2):
+        num = list(self.data)
+        den = list(l2.data)
 
-    def __mod__(self, s2):
-        return Polynom(Nomial(self) % Nomial(s2))
+        if len(num) < len(den):
+            return [0, *num]
 
-    def __repr__(self):
-        return self.data
+        # Shift den towards right so it's the same degree as num
+        shiftlen = len(num) - len(den)
+        den = [0] * shiftlen + den
 
-    @staticmethod
-    def term(lis, sym='x'):
-        """_([4, 0, 3]) = '4x2+3'"""
-        ret = '+'.join(str(parse_number(lis[i])) + sym + str(len(lis) - i - 1) for i in range(len(lis)))
-        return ret.replace(sym + '0', '').replace(sym + '1+', sym + '+').replace('+1' + sym, '+' + sym).replace(
-            '-1' + sym, '+' + sym).replace('+-', '-')
+        quot = []
+        divisor = den[-1]
+        for i in range(shiftlen + 1):
+            quot.append(mult := num[-1] / divisor)
+
+            # num - mult * den, but don't bother if mult == 0
+            if mult != 0:
+                num = [u - (mult * v) for u, v in zip(num, den)]
+
+            num.pop()
+            den.pop(0)
+
+        quot.reverse()
+        return quot, num
+
+    def __floordiv__(self, l2):
+        return Polynomial(self._truediv(l2)[0])
+
+    def __mod__(self, l2):
+        return Polynomial(self._truediv(l2)[1])
+
+    def __str__(self):
+        return '+'.join(f"{'' if coef == 1 and power else coef}x{'' if power == 1 else power}"
+                        for power, coef in reversed(list(enumerate(self.data)))
+                        if coef).replace('x0', '').replace('+-', '-')
 
 
 class BitString:
@@ -168,7 +171,7 @@ class BitString:
     def __init__(self, ints=None):
         if type(ints) == int:
             self.data = ints
-            self.length = math.ceil(ints / 4)
+            self.length = math.ceil(ints.bit_length() / 4)
         else:
             self.data = 0
             self.length = 0
@@ -192,6 +195,9 @@ class BitString:
         for _ in range(self.length):
             yield x % 16
             x >>= 4
+
+    def __eq__(self, other):
+        return len(self) == len(other) and all(i == j for i, j in zip(self, other))
 
     def __str__(self):
         return '.'.join(format(i, '02d') for i in self)

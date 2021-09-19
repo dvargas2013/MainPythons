@@ -3,9 +3,9 @@
 import random
 from string import ascii_lowercase, ascii_letters
 
-try:
+if __package__:
     from .List import window
-except ImportError:
+else:
     from List import window
 
 
@@ -25,6 +25,10 @@ if len == 13 (i.e. [n-z] shuffled), I'll map [a-m] to those and figure out how t
 
 if inverse is set, will do everything the same but will preform the final table making as the inverse of the original
 note: if you create with [n-z] shuffled, it will already be its own inverse
+
+usage:
+    albhed = createTranslationTable('ypltavkrezgmshubxncdiwfqoj', inverse=True)
+    "rammu".translate(albhed) == "hello"
 """
     if len(string_mapping) == 13:
         first13 = ascii_lowercase[:13]
@@ -48,8 +52,8 @@ def print_iterable(iterable):
 
 
 def yield_all_characters(code_point=0):
-    """starting at \x00 go up forever"""
-    while True:
+    """starting at \x00 go up while under chr(0x110000)"""
+    for code_point in range(code_point, 0x110000):
         yield chr(code_point)
         code_point += 1
 

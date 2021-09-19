@@ -1,6 +1,7 @@
 """If I made it and it has to do with files it is here"""
 
 import os.path
+from contextlib import contextmanager
 from os import renames, remove, walk, makedirs, environ, link as copyfile_hardlink
 from os.path import exists, join, splitext, split, relpath, abspath
 from shutil import copy2 as copyfile_normal  # preserves metadata
@@ -23,6 +24,26 @@ def getHome():
 
 
 Desktop = join(getHome(), 'Desktop')
+
+
+@contextmanager
+def cwd_as(location):
+    """set cwd as location and then set it back to what it was before
+
+    if location doesnt exist or isnt a directory, will make directories as needed
+    the directories will not be deleted.
+    (it is a context manager over the variable given by os.getcwd nothing else)
+    """
+    previous = os.getcwd()
+    try:
+        os.chdir(location)
+        yield
+    except (FileNotFoundError, NotADirectoryError):
+        os.makedirs(location)
+        os.chdir(location)
+        yield
+    finally:
+        os.chdir(previous)
 
 
 def files(directory, relative=True):
@@ -336,7 +357,6 @@ def show(place, master):
     """basically runs the ls method by splitting to the first /"""
 
     def generator():
-        """nice lil helper generator to build the set"""
         for name in subset(place, master):
             a = name.find('/') + 1
             if a > 0:

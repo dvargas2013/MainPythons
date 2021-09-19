@@ -4,10 +4,16 @@ ProTip: a lot of the games can be hacked by typing giveup in em c;"""
 
 from random import randint, randrange, shuffle, sample, choice
 
-try:
+if __package__:
     from .List import lcm
-except ImportError:
+else:
     from List import lcm
+
+
+def Input(s):
+    """Used as a buffer between module and input() so it can be more easily monkeypatched during testing"""
+    return input(s)
+
 
 def matrix(mini=-1, maxi=1):
     """print random integers between min and max... never stops"""
@@ -26,7 +32,7 @@ Usage:
         giveup = x * y
         while True:
             try:
-                c = eval(input(str(x) + '*' + str(y) + '=?: '))
+                c = eval(Input(str(x) + '*' + str(y) + '=?: '))
             except KeyboardInterrupt:
                 return
             if c == giveup:
@@ -54,27 +60,27 @@ Keyboard Interrupt to exit
         while q != giveup:
             for b in range(hint_amount): print(lis[b])
             try:
-                q = eval(input('Next number is: '))
+                q = eval(Input('Next number is: '))
             except KeyboardInterrupt:
                 return
             if q == giveup:
-                print(q, 'is correct')
+                print(q, 'is Correct')
             else:
-                print(q, 'is wrong')
+                print(q, 'is Wrong')
 
 
 def physics():
     """Asks newtonian physics questions on acceleration, time, velocity and distance"""
 
-    def problem(*stuff, info='', giveup=0):
+    def problem(*stuff, info='', giveup=0.0):
         while 1:
             print(X.format(*stuff))
             try:
-                loop = eval(input(info))
+                loop = eval(Input(info))
             except KeyboardInterrupt:
                 return -1
             if loop != giveup:
-                print("{} is Incorrect".format(loop))
+                print("{} is Wrong".format(loop))
             else:
                 break
         print("{} is Correct\n=====NewProblem=====".format(loop))
@@ -111,13 +117,13 @@ def thinker():
         n = 0
         while n != giveup:
             try:
-                n = eval(input("What is the number? "))
+                n = eval(Input("What is the number? "))
             except KeyboardInterrupt:
                 return
             if n == giveup:
                 print(n, "is Correct")
             else:
-                print(n, "is Incorrect")
+                print(n, "is Wrong")
 
 
 def number_guesser1():
@@ -125,10 +131,10 @@ def number_guesser1():
     print("Pick a number between 1-25 and pick row numbers.\nPrepare to have your 'mind' 'read'\n")
     print(
         'row1: 06 11 01 21 16\nrow2: 12 07 02 22 17\nrow3: 23 13 08 18 03\nrow4: 19 14 09 04 24\nrow5: 10 05 20 15 25')
-    a = int(input('row number of location of your number: '))
+    a = int(Input('row number of location of your number: '))
     print(
         'row1: 05 02 04 03 01\nrow2: 09 07 08 06 10\nrow3: 13 12 11 15 14\nrow4: 20 17 19 16 18\nrow5: 22 25 21 24 23')
-    b = int(input('new row number of location of your number: '))
+    b = int(Input('new row number of location of your number: '))
     print('{0} and {2} were your rows. \n{0}-5={1}; {2}*5={3}; \n{1}+{3}='.format(a, a - 5, b, b * 5))
     return a - 5 + b * 5
 
@@ -140,7 +146,7 @@ def number_guesser2():
     for n in [1 << N for N in range(5)]:
         print(" ".join(str(i) for i in range(1, 32) if i & n))
         while 1:
-            s = input("Does your number appear in this list? ")
+            s = Input("Does your number appear in this list? ")
             if s: s = s[0].lower()
             if s == "y":
                 a += n
@@ -157,40 +163,41 @@ def number_guesser2():
 def number_guesser3():
     """open up a calculator and do the thing"""
     print("pick a positive integer. any will do")
-    input("press enter when you've chosen...")
+    Input("press enter when you've chosen...")
 
     print("multiply it by 18")
-    input("press enter when you've multiplied...")
+    Input("press enter when you've multiplied...")
 
     print("remove a non zero digit to be your secret digit")
     print("gimme all the other numbers left")
     print("example: if your number is 1571, and you pick the digit 1, gimme '715' in any order")
 
-    print(f"your secret number is {9 - sum(map(int, input(': '))) % 9}")
+    print(f"your secret number is {9 - sum(map(int, Input(': '))) % 9}")
+
 
 def zombie():
     """Survive the zombie apocalypse"""
     print('In order to choose a path use keyboard then click enter')
-    name = input("What is your partner's name? ")
+    name = Input("What is your partner's name? ")
     # Scene 1:
     print("\nIt's the zombie apocalypse, only you and %s survive" % name)
-    if input("Choose your weapon (1-Chainsaw)(2-Sniper Rifle): ")[0] in '1cC':  # Chain
+    if Input("Choose your weapon (1-Chainsaw)(2-Sniper Rifle): ")[0] in '1cC':  # Chain
         print("\nYou go out with %s and give them one of your chainsaws, you start killing zombies." % name)
-        if input("What side is %s on? (1-Left)(2-Right): " % name)[0] != \
-                input("Which way do you slice? (1-Left to Right)(2-Right to Left): ")[0]:  # Slice
+        if Input("What side is %s on? (1-Left)(2-Right): " % name)[0] != \
+                Input("Which way do you slice? (1-Left to Right)(2-Right to Left): ")[0]:  # Slice
             return print("""
 You killed {0} by slicing towards them.
 Without {0}'s help you hopelessly surrender your brains to the zombies""".format(name))
     else:  # Rifle
         print("""
 You and %s have rifles, you are making head-shots, you remember you are hungry, you see a hamburger""" % name)
-        if input("Do you go get the hamburger? (1-Yes)(2-No): ")[0] in '1yY':  # Eat
+        if Input("Do you go get the hamburger? (1-Yes)(2-No): ")[0] in '1yY':  # Eat
             return print("""
 You tell {0} to cover you while you go outside and eat
 The burger of doom makes you into a zombie, so {0} kills you thinking you are a zombie""".format(name))
         else:  # No eat
             print("\nYou and %s run out of bullets" % name)
-            if input("What do you do? (1-Stand Still)(2-Hit zombies with gun)(3-Falcon Punch zombies): ")[0] in '1sS':
+            if Input("What do you do? (1-Stand Still)(2-Hit zombies with gun)(3-Falcon Punch zombies): ")[0] in '1sS':
                 print("""
 Miraculously the zombies are moving so fast that they run into the opposite wall
 The wall collapses and kills all the zombies""")
@@ -198,23 +205,23 @@ The wall collapses and kills all the zombies""")
                 return print("\nYou and %s fight bravely but you cannot simply kill zombies without a weapon")
     # Scene 2:
     print("\nYou and %s killed all the zombies in sight" % name)
-    if input("What do you do now? (1-Find food)(2-Sleep): ")[0] in '1fF':  # Food
+    if Input("What do you do now? (1-Find food)(2-Sleep): ")[0] in '1fF':  # Food
         print("\nYou go outside and see a burger just sitting there")
-        if input("Do you eat the burger? (1-Yes)(2-No): ")[0] in '1yY':  # eat
+        if Input("Do you eat the burger? (1-Yes)(2-No): ")[0] in '1yY':  # eat
             return print("""
 If you don't know this: the burger is tainted, anyone that eats it becomes a zombie
 you can guess what %s did when they saw a random zombie""" % name)
         else:  # no eat
             print("\nYou keep walking and see water")
-            if input("Do you want the water? (1-Yes)(2-No): ")[0] in '1yY':
+            if Input("Do you want the water? (1-Yes)(2-No): ")[0] in '1yY':
                 print("\nYou want the water but it is just a mirage, disappointed you go to a weapons store")
             else:
                 print("\nYou give up the search for food and go to a weapons shop")
     else:  # Sleep
         print("You and %s go to sleep, you hear something approaching" % name)
-        input("What do you think it is? (1-Dog)(2-Zombie): ")
+        Input("What do you think it is? (1-Dog)(2-Zombie): ")
         print("\nWRONG. Kinda. It's a zomdog.")
-        if input("What do you want to do with it? (1-Kill it)(2-Develop a cure): ")[0] in '2dD':  # Cure
+        if Input("What do you want to do with it? (1-Kill it)(2-Develop a cure): ")[0] in '2dD':  # Cure
             return print(
                 "\nYou are not smart enough to develop cure, and the dog killed you while you weren't paying attention")
         else:
@@ -223,18 +230,18 @@ you can guess what %s did when they saw a random zombie""" % name)
     print("""
 You realize that because the zombies are technically humans
 they will soon learn to use tools (Like chainsaws)""")
-    if input("What do you do? (1-Fight)(2-Kill Yourself): ")[0] in '2kK':  # Suicide
+    if Input("What do you do? (1-Fight)(2-Kill Yourself): ")[0] in '2kK':  # Suicide
         return print("\nYou kill yourself successfully and %s dies of depression" % name)
     else:  # Fight
         print("\nIn the weapon place you find new weapons")
-        _ = input("What weapon do you want? (1-Katana)(2-Automatic Weapons)(3-Soda Cans): ")[0]
+        _ = Input("What weapon do you want? (1-Katana)(2-Automatic Weapons)(3-Soda Cans): ")[0]
         if _ in '1kK':  # Katana
             return print("\nSeems like you forgot that the zombies would learn to use chainsaws. chainsaws>swords")
         elif _ in '2aA':  # Guns
             return print("\nYou take your guns and like always guns ran out of bullets and there is no escape")
         else:  # Soda
             print('\nWith the chainsaw zombies approaching you look at the soda that says "Shake and Throw"')
-            if input("Do you listen to the soda? (1-Yes)(2-No): ")[0] in '2nN':  # No Soda
+            if Input("Do you listen to the soda? (1-Yes)(2-No): ")[0] in '2nN':  # No Soda
                 return print("Are you crazy!? Being indecisive in a war gets you killed by chainsaw zombies")
             else:
                 print(
@@ -284,8 +291,8 @@ def ultimate_rps(rounds=5):
             armies = sub.get(army, sub[''])
             for army in armies: print(army.capitalize(), end=' ' * 5 + '\n')
             lis = [army[1:3] for army in armies] + ["ui"]
-            out = input('pick an army: ')[1:3]
-            while not (out in lis): out = input('Typing error: try again: ')[1:3]
+            out = Input('pick an army: ')[1:3]
+            while not (out in lis): out = Input('Typing error: try again: ')[1:3]
             if out.lower() == 'ui': return
             ar_my, comp_arm = lis.index(out), randrange(len(armies))
             army, comparm = armies[ar_my], armies[comp_arm]
@@ -349,7 +356,7 @@ In those cases, clues will be merged. Good luck separating them.\n''')
     def parse():
         """take in user input and return proper data"""
         while True:
-            get_input = input('General statement: ').title().strip()
+            get_input = Input('General statement: ').title().strip()
             if get_input.startswith('Q'): return
             get_input = [i for i in get_input.split() if i in get_type]
             if len(get_input):

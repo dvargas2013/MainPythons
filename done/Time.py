@@ -151,6 +151,7 @@ Time(hour, minute, second, microsecond, pm=False)
 
 
 months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+_mdy_const = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
 
 
 def DayOfTheWeek(month, date, year):
@@ -164,8 +165,7 @@ def DayOfTheWeek(month, date, year):
 
 def _mdy_convert(month, date, year):
     LY = year - int(month < 3)
-    return LY // 4 - LY // 100 + LY // 400 + 365 * year + date + \
-        [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334][month - 1]
+    return LY // 4 - LY // 100 + LY // 400 + 365 * year + date + _mdy_const[month - 1]
 
 
 def days_between(mdy1, mdy2):
@@ -210,23 +210,23 @@ def maxtime_computation(generator, online_calculation, maxtime=10, initn=10_000,
     """Given a max time in seconds will try to generate and compute within that alloted time
 
 generator and online_calculation should be of the form such that
->>> previous = online_calculation()
->>> for i in generator:
->>>    previous = online_calculation(i, previous)
+previous = online_calculation()
+for i in generator:
+   previous = online_calculation(i, previous)
 
-unpack_generated == True
->>> online_calculation(*i, previous)
-
-unpack_previous == True
->>> online_calculation(i, *previous)
+unpack_generated == True: online_calculation(*i, previous)
+unpack_previous == True: online_calculation(i, *previous)
     """
     # set up the function to be called as the online calculation
     if unpack_previous and unpack_generated:
-        calc = lambda gn, pv: online_calculation(*gn, *pv)
+        def calc(gn, pv):
+            return online_calculation(*gn, *pv)
     elif unpack_generated:
-        calc = lambda gn, pv: online_calculation(*gn, pv)
+        def calc(gn, pv):
+            return online_calculation(*gn, pv)
     elif unpack_previous:
-        calc = lambda gn, pv: online_calculation(gn, *pv)
+        def calc(gn, pv):
+            return online_calculation(gn, *pv)
     else:
         calc = online_calculation
 

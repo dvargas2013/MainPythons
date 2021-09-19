@@ -1,12 +1,12 @@
 """functions that could potentially create new text forever"""
 
 import random
-from string import ascii_uppercase
 from itertools import accumulate
+from string import ascii_uppercase
 
-try:
+if __package__:
     from .String import Markov
-except ImportError:
+else:
     from String import Markov
 
 stars = '．.☆.＋.。.．..．。ﾟ。,☆ﾟ.＋。ﾟ,。.。,.。ﾟ。ﾟ.+。ﾟ*。.,。ﾟ+.。*。ﾟ...．…,。＋ﾟ。。ﾟ.ﾟ。,☆*。ﾟ.o,。.＋ﾟ。。ﾟ.ﾟ。,☆*。ﾟ.'

@@ -3,12 +3,7 @@
 from collections import deque, defaultdict
 from functools import wraps
 from inspect import isgeneratorfunction
-from math import exp
-
-try:
-    from .Math import fact, comb
-except ImportError:
-    from Math import fact, comb
+from math import exp, comb, factorial, gcd as _gcd
 
 
 def is_iterable(potentially_iterable):
@@ -42,11 +37,28 @@ def batch(seq, n=2):
         yield seq[i:i + n]
 
 
-def poisson(y, x):
+def interleave(*iterables):
+    iterables = list(iterables)
+    for ind, _i in enumerate(iterables):
+        if not is_iterable(_i):
+            raise Exception(f"doesn't seem to be iterable: {_i!s}")
+        if not hasattr(_i, "__next__"):
+            iterables[ind] = iter(_i)
+
+    while iterables:
+        i = 0
+        try:
+            for i, n in enumerate(iterables):
+                yield next(n)
+        except StopIteration:
+            iterables.pop(i)
+
+
+def poisson(y, x, rounding=4):
     """calculate the poisson probability given mean rate and successes"""
     if type(x) == list:
-        return round(sum(poisson(y, i) for i in x), 4)
-    return round(exp(-y) * (y ** x) / fact(x), 4)
+        return round(sum(poisson(y, i, rounding=rounding * 2) for i in x), rounding)
+    return round(exp(-y) * (y ** x) / factorial(x), rounding)
 
 
 def Dev(lis, population=False):
@@ -99,12 +111,13 @@ def hypergeometric(start, total, runs, success):
 def online_average(item=0, p_sum=0, p_count=-1):
     """calculate the mean given 1 item at a time. defaults assigned such that online_average() == (0,0)
 
->>> p_sum, p_count = online_average() # 0, 0
->>> for i in range(100):
-...     p_sum, p_count = online_average(i, p_sum, p_count)
+sample code:
+p_sum, p_count = online_average() # 0, 0
+for i in range(100):
+    p_sum, p_count = online_average(i, p_sum, p_count)
 
->>> assert p_sum == sum(range(100))
->>> assert p_count == 100
+assert p_sum == sum(range(100))
+assert p_count == 100
     """
     return p_sum + item, p_count + 1
 
@@ -120,26 +133,29 @@ def gcd(lis):
     """Calculate the greatest common divisor of list given"""
     a = lis[0]
     for b in lis[1:]:
-        while b: a, b = b, a % b
+        a = _gcd(a, b)
     return a
 
 
 def lcm(lis):
     """Calculate the least common multiple of list given"""
-    a = 1
-    for i in lis: a *= i
-    b = a / gcd(lis) ** (len(lis) - 1)
-    if int(b) == b: return int(b)
-    return b
+    a = lis[0]
+    for b in lis[1:]:
+        a //= _gcd(a, b)
+        a *= b
+    return a
 
 
-def cross(*lists, tupled=False):
-    """product magic"""
+def cross(*lists, sum_func=None):
+    """returns a list such that every element in every sublist is paired together
+    by default will return a list of tuples. each tuple of size len(lists)
+    if sum_func is given, function evaluates to [sum_func(tuple) for tuple in cross(*lists)]
+    """
     from itertools import product
     pd = product(*lists)
-    if not tupled:
-        return [sum(i) for i in pd]
-    return list(pd)
+    if sum_func is None:
+        return list(pd)
+    return [sum_func(i) for i in pd]
 
 
 def applyToGenerator(f):

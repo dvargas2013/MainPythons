@@ -4,7 +4,7 @@ if you want to keep the py files in a specific location preform `pip install -e 
 
 ## __init__.py
 just imports everything into the namespace  
-**TEST** - run the hidden done.test module
+**TEST** - run the hidden `done.test` module
 
 ## Number.py
 **nth_remainder** - the nth remainder in the process of long division  
@@ -16,7 +16,7 @@ just imports everything into the namespace
 **isPrime** - returns True if n is prime  
 **nextPrime** - returns prime >= to number given  
 **primeFactorize** - prime factorizes a number  
-**theFactorsOf** - human readable version of (factorsOf) lists the factors of a integer  
+**theFactorsOf** - human-readable version of (factorsOf) lists the factors of an integer  
 **distinctPrimeFactorsOf** - list of prime factors  
 **totient** - Evaluates Euler's totient function as best I know  
 **BaseChanger** - used to convert integers to a list representation of a base  
@@ -38,18 +38,18 @@ just imports everything into the namespace
 **hypergeometric** - stats stuff  
 **online_average** - computes average one at a time  
 **median** - center of list when ordered  
-**gcd** - finds greatest common factor of many numbers  
-**lcm** - finds least common multiple of many numbers  
+**gcd** - finds the greatest common factor of many numbers  
+**lcm** - finds the least common multiple of many numbers  
 **cross** - combines many lists (compressing nd to 1d)  
 **applyToGenerator** - creates a decorator for generators  
 **CollisionDict** - class that is essentially dict\<mutable-collection\>  
 ## Time.py
 **Time Class** - performs math based on the time since midnight  
 **days_between** - tells you how many days between two dates  
-**DayOfTheWeek** - will give you Monday,Tuesday, ... etc, according to month, day, year given  
+**DayOfTheWeek** - will give you Monday,Tuesday, ... etc., according to month, day, year given  
 **MoonPhase** - will tell you how much percent starting from new moon  
 **timer** - context manager that will time how much the block runs  
-**maxtime_computation** - using an infinate generator and a online calculation method will return around maxtime seconds  
+**maxtime_computation** - using an infinate generator and an online calculation method will return around maxtime seconds  
 **function_time** - timeit.timeit wrapper. calculates iterations/second  
 **QuickThread** - starts a thread with the function you pass on.  
 ## Solver.py
@@ -79,7 +79,7 @@ Desktop - path to Desktop = join(getHome(), 'Desktop')
 **smartBackup** - Update files in backup  
 **rename_file** - using change function renames f in files  
 **site_look** - Give url and will try to save and open html file  
-**site_read** - Give it a http and you get a byte  string.  
+**site_read** - Give it a http, and you get a byte  string.  
 **read** - reads file and returns string  
 **write** - writes to a file return boolean saying is successful  
 **repeatUntilValid** - decorator that repeatedly executes wrapped function until the parameterized function returns True  
@@ -127,7 +127,7 @@ Desktop - path to Desktop = join(getHome(), 'Desktop')
 **crosc** - subsitition: (a:y, b:z, c:x, d:w, e:u, ...)  
 **craziness** - substitution: also called option code  
 **morse** & **anti_morse** - morse code and its inverse using '.', '-', and ' ' (dot, dash, space)  
-**num_letters** - abc becomes 1.2.3 etc (inverse is also allowed)  
+**num_letters** - abc becomes 1.2.3 etc. (inverse is also allowed)  
 **cypher** - moves letters in a circle depending on num.  
 **updown** - uses the unicode characters for 'rotated-vertically' characters and preforms reverse  
 **lisp** - make the string read like it has a lisp by swapping certain letters with 'TH'  

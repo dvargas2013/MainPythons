@@ -10,9 +10,9 @@ from functools import reduce, lru_cache
 from itertools import product
 from typing import Union
 
-try:
+if __package__:
     from .List import lcm
-except ImportError:
+else:
     from List import lcm
 
 
@@ -103,6 +103,9 @@ class Sudoku:
 
     # 81 squares of the form A1, G4, D9, mapped to 3 lists denoting Column, Row, and 3x3 units
     # every unit has 9 elements including the square itself
+    # ex: 'A1': [['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9'],
+    #            ['A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G1', 'H1', 'I1'],
+    #            ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3']]
     # set(sum(unit,[])) is 21 elements including the square itself
     units = dict((s0 + s1, [[s0 + i for i in "123456789"],
                             [i + s1 for i in "ABCDEFGHI"],
@@ -123,10 +126,7 @@ class Sudoku:
         """parse out numbers given in string_grid and adjust data by using assign"""
         accept_set = set("123456789" + blank_character)
 
-        def accept(c):
-            return c in accept_set
-
-        for s, d in zip(sorted(Sudoku.units), filter(accept, string_grid)):
+        for s, d in zip(sorted(Sudoku.units), filter(accept_set.__contains__, string_grid)):
             if '1' <= d <= '9': self.assign(s, d)
         return self
 
@@ -142,7 +142,8 @@ class Sudoku:
 
         self.values[pos] = self.values[pos].replace(digit, '')
         if self.amntof_vals_at(pos) == 0:
-            raise Sudoku.EliminationError(f"No more digits can go at {pos}")  # eliminated all the numbers
+            # eliminated all the numbers
+            raise Sudoku.EliminationError(f"No more digits can go at {pos}, eliminated: {digit}")
         if self.amntof_vals_at(pos) == 1:  # only has 1 value left
             peers = set(sum(Sudoku.units[pos], []))
             peers.remove(pos)
@@ -152,7 +153,7 @@ class Sudoku:
         for unit in Sudoku.units[pos]:  # for all units, see if there's a number that only goes in 1 place
             d_places = [p for p in unit if digit in self.values[p]]
             if len(d_places) == 0:
-                raise Sudoku.EliminationError(f"No more digit {digit} in unit {unit[0]}-{unit[-1]}")
+                raise Sudoku.EliminationError(f"No more digit {digit} in unit {unit[0]}-{unit[-1]}, @pos: {pos}")
             if len(d_places) == 1:  # if only 1 more place for d to go, then assign d.
                 self.assign(d_places[0], digit)
 
@@ -174,15 +175,24 @@ class Sudoku:
 
         for d in self.values[s]:  # it has to be one of those d so pick one and search again
             try:
-                yield from self.copy().assign(s, d).search()
+                yield from self.copy().assign(s, d).search(debug=debug)
             except Sudoku.EliminationError as e:
                 if debug: print(e)
 
-        raise Sudoku.EliminationError(f"Reached end of search loop at {s} and no numbers worked")
+        raise Sudoku.EliminationError(f"Reached end of search loop at {s} and no numbers worked {self!r}")
 
     def solve(self):
         """return new board solve or same board if already solved"""
         return next(self.search())
+
+    def all_solves(self):
+        """returns an iterator which if list(self.all_solves()) will give a list of Solved Sudoku objects"""
+        _it = self.search()
+        while True:
+            try:
+                yield next(_it)
+            except Sudoku.EliminationError:
+                return
 
     def copy(self):
         """create a new sudoku board and copy over the possible values"""
@@ -220,20 +230,24 @@ def numRemainders(divisors, remainders):
     return reduce(set.intersection, (set(range(r, divisors_lcm, d)) for d, r in zip(divisors, remainders)))
 
 
-def linear_combination(num, lis, sort=True):
-    """yields figures out an array c given an array a such that c0*a0 + c1*a1 + c2*a2 ... = num
+def linear_combination(num, lis, sort=True, tupled=False):
+    """yields strings representing sums of products with elements from given lis
+        (n1*lis[0] + n2*lis[1] + n3*lis[2] + ...)
+    such that eval(string) would return the desired number
 
-_(50, [4, 7]) yields '6*7+2*4'"""
+_(50, [4, 7]) yields '6*7+2*4', '2*7+9*4'"""
     if sort: lis = [i for i in sorted(lis, reverse=True) if i > 0]
     first = lis[0]
     for i in reversed(range(num // first + 1)):
         new = num - i * first
         if new == 0:
-            yield f'{i}*{first}'
+            yield ((i, first),) if tupled else f'{i}*{first}'
         elif new > 0 and len(lis) > 1:
-            for piece in linear_combination(new, lis[1:], False):
+            for piece in linear_combination(new, lis[1:], False, tupled):
                 if i == 0:
                     yield piece
+                elif tupled:
+                    yield (i, first), *piece
                 elif i == 1:
                     yield f'{first} + {piece}'
                 else:
@@ -242,9 +256,11 @@ _(50, [4, 7]) yields '6*7+2*4'"""
 
 def addOrSub(string, num):
     """Adds +, -, or nothing between every number and evaluates to num"""
-    if not (string.isnumeric() and type(num) == int): return "Why are you here?"
+    if not string.isnumeric():
+        raise Exception(f"invalid parameter: string {string} contains non-numerics")
+    num = abs(int(num))
+
     n = len(string)
     for stry in product('+ -', repeat=n - 1):
-        stry += (' ',)
-        math = ''.join(string[i] + stry[i] for i in range(n)).replace(' ', '')
-        if eval(math) == num: print(stry.count('+') + stry.count('-'), math)
+        math = ''.join(s + op for s, op in zip(string, stry + (' ',)))
+        if eval(math) == num: print(stry.count('+') + stry.count('-'), math.replace(' ', ''))

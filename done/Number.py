@@ -97,6 +97,11 @@ def factorsOf(i):
         if i % k == 0: yield k, int(i // k)
 
 
+def theFactorsOf(integer):
+    """_(15) = ['1+15=16', '3+5=8']"""
+    return ['%s+%s=%s' % (j, k, j + k) for j, k in factorsOf(integer)]
+
+
 def isPrime(n):
     """returns true if n is a prime"""
     if int(n) != n: return False
@@ -113,8 +118,8 @@ def isPrime(n):
 def nextPrime(i):
     """_(5) = 5, _(15) = 17"""
     i = int(i)
-    if i < 2: return 2
-    if i < 3: return 3
+    if i < 3: return 2
+    if i < 4: return 3
     i = int(ceil(i))
     if i % 2 == 0: i += 1
     while not isPrime(i): i += 2
@@ -162,11 +167,6 @@ def totient(i):
     return int(y * reduce(operator.mul, (x - 1 for x in p), 1))
 
 
-def theFactorsOf(integer):
-    """_(15) = ['1+15=16', '3+5=8']"""
-    return ['%s+%s=%s' % (j, k, j + k) for j, k in factorsOf(integer)]
-
-
 class BaseChanger(int):
     """Allows for conversion of non-negative integers into other bases"""
 
@@ -194,10 +194,9 @@ _([1,0,1,1], 2) => BaseChanger(11)
             yield n * p
             p *= base
 
-    # due to the immutability of BaseChanger(int), this no longer need be a staticmethod
-    # however i will keep the name x cause it's not /really/ a self kind of method
-    def __baseHelper(x, base):
+    def __baseHelper(self, base):
         """yields the numbers in base representation of the number x"""
+        x = int(self)
         while x:
             yield x % base
             x //= base
@@ -343,7 +342,7 @@ class NumToStr:
     for i in range(2, 10): Tenty[i] += "ty"
 
     @classmethod
-    def huns(cls, n):
+    def huns(cls, num):
         def tens(n):
             # rescoping so %= 100 applies to its own variable
             n %= 100
@@ -351,13 +350,13 @@ class NumToStr:
             if n < 10: return cls.Ones[n % 10]
             return f"{cls.Tenty[n // 10]} {cls.Ones[n % 10]}".strip()
 
-        n %= 1_000
-        t = tens(n)
+        num %= 1_000
+        t = tens(num)
 
-        n //= 100
-        if n == 0: return t
+        num //= 100
+        if num == 0: return t
 
-        return f"{cls.Ones[n % 10]} Hundred {t}".strip()
+        return f"{cls.Ones[num % 10]} Hundred {t}".strip()
 
     @staticmethod
     def TMB():
@@ -535,6 +534,11 @@ class PrimalNatural:
         for p, t in self.pf.items():
             x *= p ** t
         return x
+
+    def __eq__(self, other):
+        other = PrimalNatural(other)
+        return all(self.pf.get(k, 0) == other.pf.get(k, 0)
+                   for k in set(self.pf.keys()).union(other.pf.keys()))
 
     def coprime(self, other):
         other = PrimalNatural(other)

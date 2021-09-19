@@ -1,9 +1,15 @@
 """Just a bunch of Codes"""
 
-try:
+if __package__:
     from .String import multiple_replace, createTranslationTable
-except ImportError:
+else:
     from String import multiple_replace, createTranslationTable
+
+
+def unbinary(text):
+    """Change string of ones and zeroes into the actual string"""
+    return ''.join(chr(int(i, 2)) for i in text.split())
+
 
 def binary(text, to_binary=True):
     """Change string into binary bytes (actually still a string)
@@ -14,7 +20,7 @@ If to_binary is false, it will turn a binary string into a string again
     if to_binary:
         return ' '.join('{:0>8}'.format(bin(ord(i)).lstrip('0b')) for i in text)
     else:
-        return ''.join(chr(int(i, 2)) for i in text.split())
+        return unbinary(text)
 
 
 def eggnog(text):
@@ -132,6 +138,12 @@ def cypher(text, num):
 
 
 updown_translation = createTranslationTable('ɐqɔpǝɟƃɥᴉɾʞlɯuodbɹsʇnʌʍxʎz' * 2)
+downup_translation = createTranslationTable('ɐqɔpǝɟƃɥᴉɾʞlɯuodbɹsʇnʌʍxʎz' * 2, inverse=True)
+
+
+def downup(str_):
+    """turns updown text back into text"""
+    return str_.translate(downup_translation)[::-1]
 
 
 def updown(str_):
