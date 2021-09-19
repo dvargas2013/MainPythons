@@ -1,7 +1,7 @@
 from random import sample
 
 import pytest
-from done import Codes
+from done.String import Codes
 
 
 def makeCases(howmany=100, string_pool="1234 567890 qwertyuio pasdfghjklz xcvbnm QWERTYU IOPASD FGHJKLZX CVBNM"):

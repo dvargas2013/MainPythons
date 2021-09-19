@@ -1,4 +1,5 @@
 import pytest
+
 from done import Game
 
 
@@ -50,16 +51,16 @@ def metaTest(capsys, func, line1ind, line2ind, total):
 
 
 def test_multiplication(capsys):
-    metaTest(capsys, Game.multiplication, 0, 1, 2)
+    for _ in range(100): metaTest(capsys, Game.multiplication, 0, 1, 2)
 
 
 def test_pattern(capsys):
-    metaTest(capsys, Game.pattern, 3, 7, 11)
+    for _ in range(100): metaTest(capsys, Game.pattern, 3, 7, 11)
 
 
 def test_thinker(capsys):
-    metaTest(capsys, Game.thinker, 1, 3, 4)
+    for _ in range(100): metaTest(capsys, Game.thinker, 1, 3, 4)
 
 
 def test_physics(capsys):
-    metaTest(capsys, Game.physics, 3, 9, 14)
+    for _ in range(100): metaTest(capsys, Game.physics, 3, 9, 14)
