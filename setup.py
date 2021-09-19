@@ -1,4 +1,10 @@
 from setuptools import setup
 
-if __name__ == '__main__':
-    setup()
+setup(
+    name='done',
+    version='0.0.0',
+    packages=['done'],
+    extras_require={
+        'test': ['pytest']
+    }
+)

@@ -1,10 +1,10 @@
 # MainPythons
-**installation** - just `pip install .` from same location as setup.py couldn't be easier  
-if you want to keep the py files in a specific location preform `pip install -e .` instead  
 
-## __init__.py
-just imports everything into the namespace  
-**TEST** - run the hidden `done.test` module
+**installation:**
+
+- `pip install .` from same location as setup.py
+- `pip install .[test]` if you want to run `pytest`
+- `pip install -e .` if you're planning on editing the files
 
 ## Number.py
 **nth_remainder** - the nth remainder in the process of long division  
@@ -27,6 +27,7 @@ just imports everything into the namespace
 **convergentsE** - yield numerator and denominator of closer approximations to the number e  
 **PI** - given a decimal precision will return pi to that precision  
 **NumToStr** - gives name of number  
+
 ## List.py
 **is_iterable** - determines if object is iterable  
 **window** - gives sliding window iterator  
@@ -43,6 +44,7 @@ just imports everything into the namespace
 **cross** - combines many lists (compressing nd to 1d)  
 **applyToGenerator** - creates a decorator for generators  
 **CollisionDict** - class that is essentially dict\<mutable-collection\>  
+
 ## Time.py
 **Time Class** - performs math based on the time since midnight  
 **days_between** - tells you how many days between two dates  
@@ -52,12 +54,14 @@ just imports everything into the namespace
 **maxtime_computation** - using an infinate generator and an online calculation method will return around maxtime seconds  
 **function_time** - timeit.timeit wrapper. calculates iterations/second  
 **QuickThread** - starts a thread with the function you pass on.  
+
 ## Solver.py
 **solve** - using 4 basic operations {*-+/} makes numbers into lookup  
 **sudoku** - solves sudoku problems for you  
 **numRemainders** - finds number with divisor:remainder pairs  
 **linear_combination** - finds how many of each in list to make num  
 **addOrSub** - adds +/- between #s to make num  
+
 ## Math.py
 **angle** - together with distance gives polar coord  
 **angleForStar** - gets number of spokes and gives angle needed  
@@ -67,10 +71,12 @@ just imports everything into the namespace
 **fact** - factorial (n!)  
 **perm** - permutation (nPr)  
 **comb** - combination (nCr)  
+
 ## File.py
 **getHome** - returns the environment $HOME or $USERPROFILE   
 Desktop - path to Desktop = join(getHome(), 'Desktop')  
 **same** - compares 2 file paths and returns if they lead to same descriptor  
+**cwd_as** - set the current working directory to specified location while within the context manager block  
 **files** - walks through place; yields relative path to files  
 **folders** - walks through place; yields relative path to folders  
 **listFormats** - walks through place; outputs extensions found  
@@ -79,13 +85,14 @@ Desktop - path to Desktop = join(getHome(), 'Desktop')
 **smartBackup** - Update files in backup  
 **rename_file** - using change function renames f in files  
 **site_look** - Give url and will try to save and open html file  
-**site_read** - Give it a http, and you get a byte  string.  
+**site_read** - Give it a http, and you get a byte string.  
 **read** - reads file and returns string  
 **write** - writes to a file return boolean saying is successful  
 **repeatUntilValid** - decorator that repeatedly executes wrapped function until the parameterized function returns True  
 **reImport** - reimport a module for if you modify the module and don't want to close and reopen  
 **ZipGui** - creates a GUI to explore a Zipfile  
-**unzip** - Unzips files 1 at a time. (used for when you need to unzip a corrupted zip file)  
+**unzip** - Unzips files 1 at a time. (used for when you need to unzip a corrupted zip file)
+
 ## Game.py
 **matrix** - will randomly print numbers between nums  
 **multiplication** - will repeatedly ask you to multiply numbers  
@@ -121,13 +128,14 @@ Desktop - path to Desktop = join(getHome(), 'Desktop')
 **oneLetterFromEach** - an anagram solver with specific letters. given a list of strings will take a letter from each string  
 **connectWords** - a Word Ladder solver. given two words it finds how they're connected by changing 1 letter at a time. each step also being a word  
 **DeBruijn** - gives a DeBruijn Sequence given an alphabet and the substring length  
+
 ## Codes.py
-**binary** - changes letters to 8bitBinary  
+**binary** & **unbinary** - changes letters to 8bitBinary  
 **eggnog** - it sorta reverses the string in a special way  
 **crosc** - subsitition: (a:y, b:z, c:x, d:w, e:u, ...)  
 **craziness** - substitution: also called option code  
 **morse** & **anti_morse** - morse code and its inverse using '.', '-', and ' ' (dot, dash, space)  
-**num_letters** - abc becomes 1.2.3 etc. (inverse is also allowed)  
+**num_letters**/**numword** - abc becomes 1.2.3 etc. (inverse is also allowed)  
 **cypher** - moves letters in a circle depending on num.  
-**updown** - uses the unicode characters for 'rotated-vertically' characters and preforms reverse  
+**updown** & **downup** - uses the unicode characters for 'rotated-vertically' characters and preforms reverse  
 **lisp** - make the string read like it has a lisp by swapping certain letters with 'TH'  
