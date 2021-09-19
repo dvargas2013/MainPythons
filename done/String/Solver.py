@@ -1,14 +1,12 @@
 """Solvers that take in a text-like input or require the use of a word-based dictionary"""
 
-import random
-import re
 from functools import partial
 from itertools import product
+from random import choice
+from re import compile
 from string import ascii_lowercase
 
-from done import String
-
-printAll = print_iterable = String.print_iterable
+from done.String import score
 
 ascii_lowercase_set = set(ascii_lowercase)
 
@@ -67,7 +65,7 @@ def chemistry(text="Hello World", showall=False):
                 words, M = yieldMaximums(words, target, M, 0 if not show else show + 1)
                 returnable.update(dict((w2, words[w2]) for w2 in words if words[w2] >= M))
             else:
-                s = String.score(target, w)
+                s = score(target, w)
                 if s >= M:
                     M = s
                     returnable.update({w: s})
@@ -90,7 +88,7 @@ def chemistry(text="Hello World", showall=False):
         word = ''.join(c for c in word if c.isalpha())
         chem, num = chems(word)
         if showall: print(num, chem)
-        chem = random.choice(chem)
+        chem = choice(chem)
         string += chem + ' '
     return string
 
@@ -104,7 +102,7 @@ def anagram(jumbled_word, dictionary_set=None):
 
     # letters that are not allowed
     unallowed_regex = "[%s]" % ''.join(ascii_lowercase_set.difference(letters))
-    hbl = re.compile(unallowed_regex)
+    hbl = compile(unallowed_regex)
 
     # count the letters that are allowed
     count = dict((i, jumbled_word.count(i)) for i in letters)
@@ -201,34 +199,3 @@ def connectWords(word1, word2):
         else:
             for neigh in getNeighbors(word, remove=1):
                 heappush(queue, (dist + 1, neigh, rest + [word]))
-
-
-def DeBruijn(alphabet, length):
-    """Given an alphabet and substring length construct a DeBruijn Sequence"""
-    alphabet = ''.join(sorted(set(alphabet)))
-    allen = len(alphabet)
-
-    wordx = int(allen ** (length - 1))  # calculate the multiplier for the alphabet
-
-    def word(i):
-        """gets a letter from the alphabet based on the index provided"""
-        return alphabet[i // wordx]  # 111222333
-
-    def mapper(n):
-        """maps corresponding items into lyndon cycles"""
-        return n // wordx + (n % wordx) * allen
-
-    def db():
-        visited = [False] * (allen * wordx)
-        for i in range(allen * wordx):
-            if visited[i]:
-                continue  # If a cycle has visited this node then it's not the lexicographic rotation minimum
-            lyndon = word(i)
-            j = mapper(i)
-            while j != i:
-                visited[j] = True
-                lyndon += word(j)
-                j = mapper(j)
-            yield lyndon
-
-    return ''.join(db())
