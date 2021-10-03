@@ -130,13 +130,14 @@ calculator.)
 **switch** - swap the strings in the main string. almost like a simultaneous double replace statement.  
 **reverse** - reverse a string's characters  
 **score** - compares the two strings giving a score between 0 and 1  
+**upper_and_lower** - upper and lower cases chars in string according to the bool iterable given
 **Markov** - sliding window over string to get triplets of words to markov chain with  
 **SequenceAlignment** - aligns strings so that the most letters fall into the same place
 
 ## String.Generators
 
 **MarkovStars** - use .generate() to make random nonsense  
-**get_next**/**random_char** - returns a char using the ChainData matrix and the previous letter in string  
+**random_char** - returns a char using the ChainData matrix and the previous letter in string  
 **random_word** - makes a random string of given length using ChainData matrix  
 **chain** - makes random pronounceable 'words' using ChainData matrix  
 **loremIpsum** - uses chain() to make sentences

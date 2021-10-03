@@ -1,6 +1,7 @@
 """Deals with anything string and cute string manipulations"""
 
 import random
+from itertools import cycle
 from string import ascii_lowercase, ascii_letters
 
 from done.List import window
@@ -162,3 +163,7 @@ def SequenceAlignment(s1, s2, DownSigma=0, RightSigma=0, Match=1, MisMatch=0):
             j -= 1
         _, direction = S[i][j]
     return ss1, ss2
+
+
+def upper_and_lower(string, pattern):
+    return "".join((s.upper() if u else s.lower()) for s, u in zip(string, cycle(pattern)))

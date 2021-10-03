@@ -50,20 +50,23 @@ def _genChainData():
 ChainData = _genChainData()
 
 
-def get_next(prev_char=None):
+def random_char(prev_char=""):
     """gets a random character based on the distribution of characters based on the previous character"""
-    if prev_char is None:
+    if prev_char == "":
         prev_char = " "
-    return random.choices(ascii_uppercase, cum_weights=ChainData[prev_char[-1]])[0]
+    prev_char = prev_char[-1].upper()
+    if prev_char not in ChainData:
+        prev_char = " "
+    return random.choices(ascii_uppercase, cum_weights=ChainData[prev_char])[0]
 
 
-random_char = get_next
-
-
-def random_word(letters):
+def random_word(letters, startWith=""):
     """"Create a random pronounceable word"""
-    word = ' '
-    return ''.join((word := get_next(word)) for _ in range(letters)).strip().title()
+    letters -= len(startWith)
+    word = startWith
+
+    startWith += ''.join((word := random_char(word)) for _ in range(letters))
+    return startWith.title()
 
 
 def chain(words, letters):
