@@ -95,42 +95,60 @@ def cross(*lists, sum_func=None):
     return [sum_func(i) for i in pd]
 
 
-def applyToGenerator(f):
+def applyToGenerator(*fs, warning=True):
     """
     applies the given function to the generator created when the generator function is called
 
-    example usage:
-
-lets say you have a generator that behaves like
-
->>> lambda n: iter(range(n, 0, -1))
-
-but you want it to act like
-
->>> lambda n: list(range(n, 0, -1))
-
-you could define the generator function like so:
+    examples:
 
 >>> @applyToGenerator(list)
-... def wild(n):
-...    while n > 0:
-...         yield n
-...         n -= 1
-now calling ``wild(5)`` is equivalent to calling ``list(wild(5))``
-    """
+... def fibo(n):
+...    a, b = 0, 1
+...    for i in range(n):
+...        yield a
+...        a, b = b, a + b
+>>> fibo(10) == [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
+
+>>> @applyToGenerator(list, reversed, list)
+... def squares(n):
+...     for i in range(n):
+...         yield i * i
+>>> squares(10) == [81, 64, 49, 36, 25, 16, 9, 4, 1, 0]
+        """
 
     def outer(generator):
-        if not isgeneratorfunction(generator):
+        if warning and not isgeneratorfunction(generator):
             from warnings import warn
             warn(f"{generator.__qualname__} does not seem to be a generator function", stacklevel=2)
 
         @wraps(generator)
-        def inner(*args, **kwargs):
-            return f(generator(*args, **kwargs))
+        def inner(*args, **kwd):
+            rv = generator(*args, **kwd)
+            for f in fs:
+                rv = f(rv)
+            return rv
 
         return inner
 
     return outer
+
+
+def apply(*x):
+    """
+this is just applyToGenerator without the warning if you are applying it to something other than a generator
+
+for example you might want to call it to print output:
+>>> @apply(print)
+... def helloworld(): return "Hello, World!"
+... helloworld()
+is a valid hello world script
+it prints hello world (returns None)
+
+basically if there was no decorator, you'd have to do
+>>> print(helloworld())
+every time
+"""
+    return applyToGenerator(*x, warning=False)
 
 
 class Polynomial:
