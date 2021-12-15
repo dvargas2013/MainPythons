@@ -11,7 +11,7 @@
 **is_iterable** - determines if object is iterable  
 **window** - gives sliding window iterator  
 **batch** - gives a batch (const size chunks) iterator  
-**interleave** - gives a way to merge iterators, roundrobin style
+**interleave** - gives a way to merge iterators, roundrobin style  
 **product** - similar to the buiiltin sum but takes product instead   
 **gcd** - finds the greatest common factor of many numbers  
 **lcm** - finds the least common multiple of many numbers  
@@ -134,24 +134,24 @@ calculator.)
 **Markov** - sliding window over string to get triplets of words to markov chain with  
 **SequenceAlignment** - aligns strings so that the most letters fall into the same place
 
-## String.Generators
+### String.Generators
 
 **MarkovStars** - use .generate() to make random nonsense  
 **random_char** - returns a char using the ChainData matrix and the previous letter in string  
 **random_word** - makes a random string of given length using ChainData matrix  
 **chain** - makes random pronounceable 'words' using ChainData matrix  
-**loremIpsum** - uses chain() to make sentences
+**loremIpsum** - uses chain() to make sentences  
 **DeBruijn** - gives a DeBruijn Sequence given an alphabet and the substring length
 
-## String.printing
+### String.printing
 
 **pretty** - displays stars to the Terminal  
 **print_iterable** - for i in iterable: print(i)  
 **wrapPrint**/**smartPrint** - Text Wrapper  
-**safePrint**/**removePrint** - deletes center of text
+**safePrint**/**removePrint** - deletes center of text  
 **tree** - created to parse Applescript's 'entire content' dictionaries
 
-## String.Solver
+### String.Solver
 
 **chemistry** - will try to recreate sentence using only the symbols of the periodic table  
 **anagram** - un-shuffles word to match a word  
@@ -160,7 +160,7 @@ calculator.)
 **connectWords** - a Word Ladder solver. given two words it finds how they're connected by changing 1 letter at a time.
 each step also being a word
 
-## String.Codes.py
+### String.Codes
 
 **binary** & **unbinary**- changes letters to 8bitBinary  
 **eggnog** - it sorta reverses the string in a special way  
