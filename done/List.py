@@ -62,6 +62,22 @@ def batch(seq, n=2):
         yield seq[i:i + n]
 
 
+def tupleSum(tuple1, tuple2):
+    return tuple(map(sum, zip(tuple1, tuple2)))
+
+
+def line(start: tuple, incr: tuple, length: int):
+    """start+incr is first, start+incr+incr is 2nd, etc"""
+    return [(start := tupleSum(start, incr)) for _ in range(length)]
+
+
+def diagonals(N, M):
+    for i in range(N):
+        yield line((i + 1, -1), (-1, 1), min(i + 1, M))
+    for j in range(1, M):
+        yield line((N, j - 1), (-1, 1), min(M - j, N))
+
+
 def interleave(*iterables):
     iterables = list(iterables)
     for ind, _i in enumerate(iterables):
@@ -80,6 +96,7 @@ def interleave(*iterables):
 
 
 def product(iterable):
+    """basically sum but its product instead"""
     return reduce(mul, iterable, 1)
 
 

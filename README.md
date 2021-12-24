@@ -11,6 +11,7 @@
 **is_iterable** - determines if object is iterable  
 **window** - gives sliding window iterator  
 **batch** - gives a batch (const size chunks) iterator  
+**diagonals** - used to get the list of diagonals (list of tuples) of 2D array  
 **interleave** - gives a way to merge iterators, roundrobin style  
 **product** - similar to the buiiltin sum but takes product instead   
 **gcd** - finds the greatest common factor of many numbers  
