@@ -1,5 +1,5 @@
-import itertools
 import decimal
+import itertools
 from decimal import localcontext, Decimal, Context
 from fractions import Fraction
 from typing import Union
@@ -182,6 +182,9 @@ class SigFig:
         return self
 
     def __str__(self):
+        if self.decimal_places == SigFig._Inf:
+            return f"{self.value}"
+
         try:
             return f"{round(self.value, self.decimal_places)}"
         except decimal.InvalidOperation:
