@@ -1,6 +1,8 @@
 import itertools
+import decimal
 from decimal import localcontext, Decimal, Context
 from fractions import Fraction
+from typing import Union
 
 
 def radToFrac(D):
@@ -130,3 +132,119 @@ def PI(decimals_wanted=10):
     a, b = pi_df(4 * decimals_wanted)
     with localcontext(Context(prec=decimals_wanted)):
         return Decimal(a) / Decimal(b)
+
+
+class SigFig:
+    """
+    Follows the rules of significant figures
+    1. All non zero numbers are significant
+    2. Zeros located between non-zero digits are significant
+    3. Trailing zeros are significant only if the number contains a decimal
+    4. Zeros to left of the first nonzero digit are insignificant
+
+    Exact Numbers:
+    exact counts don't affect sigfigs in calculations
+    and are said to have an infinite number of significant figures
+
+    """
+    _Inf = float("inf")
+
+    def __new__(cls, value: Union[str, int, 'SigFig', Decimal], exact=False, precision=None, decimalplaces=None):
+        self = object.__new__(cls)
+
+        try:
+            self.value = Decimal(value)
+        except TypeError:
+            if hasattr(value, "value"):
+                self.value = Decimal(value.value)
+            else:
+                raise TypeError(f"cant convert from {value!r} to SigFig")
+
+        if decimalplaces is None and precision is None:
+            if '.' not in str(value):
+                # no decimal . remove trailing zeroes
+                self.value = self.value.normalize()
+        else:
+            if precision is not None:
+                # if u are given a precision compute the best one given precision
+                dp = precision - self.value.adjusted() - 1
+                decimalplaces = dp if decimalplaces is None else min(dp, decimalplaces)
+
+            self.value = self.value.__round__(decimalplaces)
+
+        if exact:
+            self.precision = SigFig._Inf
+            self.decimal_places = SigFig._Inf
+        else:
+            self.precision = len(self.value.as_tuple().digits)
+            self.decimal_places = self.precision - self.value.adjusted() - 1
+
+        return self
+
+    def __str__(self):
+        try:
+            return f"{round(self.value, self.decimal_places)}"
+        except decimal.InvalidOperation:
+            return f"{self.value}"
+
+    def __repr__(self):
+        if self.precision == SigFig._Inf:
+            return f"SigFig({str(self)!r},exact=True)"
+        else:
+            return f"SigFig({str(self)!r})"
+
+    def __add__(self, other):
+        """addition keeps the number of least precise decimal"""
+        if not isinstance(other, self.__class__):
+            other = self.__class__(other)
+        return SigFig(self.value + other.value, decimalplaces=min(self.decimal_places, other.decimal_places))
+
+    __radd__ = __add__
+
+    def __sub__(self, other):
+        """subtraction keeps the number of least precise decimal"""
+        if not isinstance(other, self.__class__):
+            other = self.__class__(other)
+        return SigFig(self.value - other.value, decimalplaces=min(self.decimal_places, other.decimal_places))
+
+    def __rsub__(self, other):
+        if not isinstance(other, self.__class__):
+            other = self.__class__(other)
+        return other - self
+
+    def __mul__(self, other):
+        """multiplication keeps the precision of number with the least amount of sigfigs"""
+        if not isinstance(other, self.__class__):
+            other = self.__class__(other)
+        return SigFig(self.value * other.value, precision=min(self.precision, other.precision))
+
+    __rmul__ = __mul__
+
+    def __truediv__(self, other):
+        """division keeps the precision of number with the least amount of sigfigs"""
+        if not isinstance(other, self.__class__):
+            other = self.__class__(other)
+        return SigFig(self.value / other.value, precision=min(self.precision, other.precision))
+
+    def __rtruediv__(self, other):
+        if not isinstance(other, self.__class__):
+            other = self.__class__(other)
+        return other / self
+
+    def __neg__(self):
+        return SigFig(-self.value, decimalplaces=self.decimalplaces, precision=self.precision)
+
+    def __eq__(self, other):
+        if hasattr(other, "value"):
+            return self.value == other.value
+        return self.value == Decimal(other)
+
+    def __lt__(self, other):
+        if hasattr(other, "value"):
+            return self.value < other.value
+        return self.value < Decimal(other)
+
+    def __le__(self, other):
+        if hasattr(other, "value"):
+            return self.value <= other.value
+        return self.value <= Decimal(other)

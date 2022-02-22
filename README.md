@@ -123,6 +123,7 @@ calculator.)
 **convergentSqrt** - yield numerator and denominator of closer approximations to the sqrt  
 **convergentsE** - yield numerator and denominator of closer approximations to the number e  
 **PI** - given a decimal precision will return pi to that precision
+**SigFig** - does the math and rounding as defined by sigfig in school  
 
 ## String.py
 

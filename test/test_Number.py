@@ -1,5 +1,6 @@
 import pytest
 
+from done.Number.accuracy import SigFig
 from done.Number.primes import PrimalNatural
 
 
@@ -152,3 +153,68 @@ def test_primalNat_properties():
 
     # divisors of P*P will always be [1, P, P*P]
     assert PrimalNatural(10037 * 10037).divisor_count == 3
+
+
+def test_SigFig_precision():
+    # All non zero numbers are significant
+    assert SigFig("613").precision == 3
+    assert SigFig("6.13").precision == 3
+    assert SigFig("123456").precision == 6
+    assert SigFig("123.456").precision == 6
+    # Zeros located between non-zero digits are significant
+    assert SigFig("5004").precision == 4
+    assert SigFig("602").precision == 3
+    # Trailing zeros are significant only if the number contains a decimal
+    assert SigFig("5.640").precision == 4
+    assert SigFig("120000.0").precision == 7
+    assert SigFig("120000.").precision == 6
+    assert SigFig("120000").precision == 2
+    assert SigFig("1.20e5").precision == 3
+    assert SigFig("1.2e5").precision == 2
+    # Zeros to left of the first nonzero digit are insignificant
+    assert SigFig("0.000456").precision == 3
+    assert SigFig("0.052").precision == 2
+    assert SigFig("0.0000000000052").precision == 2
+
+
+def test_SigFig_decimalplaces():
+    assert SigFig("613").decimal_places == 0
+    assert SigFig("123456").decimal_places == 0
+    assert SigFig("5004").decimal_places == 0
+    assert SigFig("602").decimal_places == 0
+
+    assert SigFig("6.13").decimal_places == 2
+    assert SigFig("123.456").decimal_places == 3
+    assert SigFig("5.640").decimal_places == 3
+
+    assert SigFig("0.000456").decimal_places == 6
+    assert SigFig("0.052").decimal_places == 3
+    assert SigFig("0.0520").decimal_places == 4
+    assert SigFig("0.0000000000052").decimal_places == 13
+
+    assert SigFig("120000.").decimal_places == 0
+    assert SigFig("120000.0").decimal_places == 1
+    assert SigFig("120000").decimal_places == -4
+    assert SigFig("1.2e5").decimal_places == -4
+    assert SigFig("1.20e5").decimal_places == -3
+
+
+def test_SigFig_constructorparams():
+    assert SigFig(4, decimalplaces=5).decimal_places == 5
+    assert SigFig(400, decimalplaces=5).decimal_places == 5
+
+    assert SigFig(4, precision=10).decimal_places == 9
+    assert SigFig(400, precision=10).decimal_places == 7
+
+    # decimalplaces is more specific than the precision
+    assert SigFig(4, decimalplaces=5, precision=10).decimal_places == 5
+
+    # precision restricts the decimal places
+    assert SigFig(400, decimalplaces=5, precision=5).decimal_places == 2
+
+
+def test_SigFig_math():
+    assert SigFig("7.939") + "6.26" + "11.1" == "25.3"  # 25.299
+    assert SigFig("27.2") * "15.63" / "1.846" == "230"  # 230.3011918
+    assert (SigFig("27") + 3) / SigFig("10.0") == "3.0"
+    assert (27 + SigFig(3)) / SigFig("10.0") == "3.0"
