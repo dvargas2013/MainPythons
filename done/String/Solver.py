@@ -1,5 +1,6 @@
 """Solvers that take in a text-like input or require the use of a word-based dictionary"""
 
+from collections import Counter
 from functools import partial
 from itertools import product
 from random import choice
@@ -199,3 +200,25 @@ def connectWords(word1, word2):
         else:
             for neigh in getNeighbors(word, remove=1):
                 heappush(queue, (dist + 1, neigh, rest + [word]))
+
+
+def createWordsViaDeletion(bigword, dictionary=None):
+    if dictionary is None:
+        dictionary = sorted(map(str.lower, masterDictionary), reverse=True, key=len)
+
+    bigword = "".join(i for i in bigword.lower() if i.isalpha())
+    bigwordset = set(bigword)
+    bigwordcounter = Counter(bigword)
+
+    def checkword():
+        if not bigwordset.issuperset(word): return False
+        c = Counter(word)
+        if any(c[k] > i for k, i in bigwordcounter.items()): return False
+        i = 0
+        for L in word:
+            i = bigword.find(L, i)
+            if i == -1: return False
+        return True
+
+    for word in dictionary:
+        if checkword(): yield word
