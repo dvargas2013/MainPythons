@@ -88,13 +88,15 @@ Time(hour, minute, second, microsecond, pm=False)
         return Time.fromTimedelta(self.innertime + new.innertime)
 
     def __sub__(self, new: 'Time'):
-        return Time.fromTimedelta(self.innertime + new.innertime)
+        return Time.fromTimedelta(self.innertime - new.innertime)
 
     def __mod__(self, new: 'Time'):
         return Time.fromTimedelta(self.innertime % new.innertime)
 
     def __mul__(self, new: float):
         return Time.fromTimedelta(self.innertime * new)
+
+    __rmul__ = __mul__
 
     def __truediv__(self, new: Union['Time', float]):
         if hasattr(new, "innertime"):

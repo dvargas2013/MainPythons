@@ -15,6 +15,7 @@ def test_TimeClass_specialConstructors():
     for i in range(1, 11):
         assert TimeClass(i, pm=True).hr == i + 12
 
+    assert TimeClass(minute=8) == TimeClass.fromString("0:08")
 
 def test_TimeClass_comparisons():
     assert TimeClass(16, 8, 8) == TimeClass(8, 8, 8) + TimeClass(8)
@@ -26,6 +27,14 @@ def test_TimeClass_comparisons():
     assert oneamNextDay > oneam
     assert (oneam > oneam) is False
 
+def test_TimeClass_math():
+    m40 = TimeClass(minute=40)
+    pm810 = TimeClass.fromString("8:10pm")
+
+    counter = pm810
+    for i in range(35):
+        assert pm810 - i*m40 == pm810 - m40*i == counter
+        counter -= m40
 
 def test_dayofweek():
     assert Time.DayOfTheWeek(6, 7, 1700) == "Monday"
