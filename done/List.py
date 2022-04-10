@@ -6,14 +6,20 @@ from functools import wraps, reduce
 from inspect import isgeneratorfunction
 from itertools import zip_longest
 from operator import mul
-from typing import Union, List, Tuple
+from typing import Collection
 
 from done.Number import parse_number
 
 if hasattr(math, "lcm"):
+    product = math.prod
     lcm = math.lcm
     gcd = math.gcd
 else:
+    def product(iterable):
+        """basically sum but its product instead"""
+        return reduce(mul, iterable, 1)
+
+
     def gcd(*lis):
         """Calculate the greatest common divisor of list given"""
         a = lis[0]
@@ -95,11 +101,6 @@ def interleave(*iterables):
             iterables.pop(i)
 
 
-def product(iterable):
-    """basically sum but its product instead"""
-    return reduce(mul, iterable, 1)
-
-
 def cross(*lists, sum_func=None):
     """returns a list such that every element in every sublist is paired together
     by default will return a list of tuples. each tuple of size len(lists)
@@ -177,7 +178,7 @@ class Polynomial:
     and the coefficient of x squared via data[2]
     """
 
-    def __init__(self, data: Union[List[int], Tuple[int]] = tuple()):
+    def __init__(self, data: Collection[int] = tuple()):
         if type(data) == str and 'x' in data:
             from warnings import warn
             warn(f"It seems you might want Polynomial.fromString: Polynomial({data})")
@@ -222,7 +223,12 @@ class Polynomial:
         return len(self) == len(other) and all(i == j for i, j in zip(self, other))
 
     def __add__(self, l2):
+        if isinstance(l2, (int, float)):
+            l2 = Polynomial([l2])
+
         return Polynomial([a + b for a, b in zip_longest(self.data, l2, fillvalue=0)])
+
+    __radd__ = __add__
 
     def __neg__(self):
         return Polynomial([-i for i in self.data])
@@ -245,6 +251,9 @@ class Polynomial:
                                                             parse_number(i.step) or 1)]
 
     def __mul__(self, l2):
+        if isinstance(l2, (int, float)):
+            l2 = Polynomial([l2])
+
         l3 = [0] * (len(self) + len(l2) - 1)
         for p1, c1 in enumerate(self.data):
             if c1 == 0: continue  # this one is worth checking cause it skips a whole loop
@@ -252,10 +261,15 @@ class Polynomial:
                 l3[p1 + p2] += c1 * c2
         return Polynomial(l3)
 
+    __rmul__ = __mul__
+
     def __truediv__(self, s2):
         return str(self // s2) + '+(' + str(self % s2) + ')'
 
     def _truediv(self, l2):
+        if isinstance(l2, (int, float)):
+            l2 = Polynomial([l2])
+
         num = list(self.data)
         den = list(l2.data)
 
@@ -291,6 +305,21 @@ class Polynomial:
         return '+'.join(f"{'' if coef == 1 and power else coef}x{'' if power == 1 else power}"
                         for power, coef in reversed(list(enumerate(self.data)))
                         if coef).replace('x0', '').replace('+-', '-')
+
+
+def LagrangeInterpolation(xs: Collection[int], ys: Collection[int]):
+    """find a polynomial where all(f(x)==y for x,y in zip(xs,ys))"""
+    xset = set(xs)
+
+    def Li(x, y):
+        """polynomial where f(x)=y for given x,y and f(x)=0 for all x in zeroxs"""
+        zeroxs = xset - {x}
+        # y = (x - a) / (x1 - a)
+        # == 1 when x == x1
+        # == 0 when x == a
+        return y * product(Polynomial([-a, 1]) // (x - a) for a in zeroxs)
+
+    return sum(Li(x, y) for x, y in zip(xs, ys))
 
 
 class BitString:
