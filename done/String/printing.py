@@ -19,10 +19,10 @@ def wrapPrint(str_, num=79):
         elif len(line) == 0:
             line = word
         elif len(line) + len(word) < num:
-            line += ' ' + word
+            line += f' {word}'
         else:
             print('\n' + line, end="")
-            line = ' ' + word
+            line = f' {word}'
     print()
 
 
@@ -46,7 +46,7 @@ and will delete before and after the window instead
                 if len(s) - i < 2 * size: s += ' ... '
                 print(s + str_[-size:])
                 return
-        print(str_[:size] + ' ... ' + str_[-size:])
+        print(f'{str_[:size]} ... {str_[-size:]}')
     else:
         print(str_)
 
@@ -74,10 +74,8 @@ NodeParent
 
     def __build_string(self, ln=0):
         """recursive call to display the tree"""
-        if ln > 0:
-            pre = '+   ' * (ln - 1) + '+---' + self.name
-        else:
-            pre = self.name
+        pre = '+   ' * (ln - 1) + '+---' if ln > 0 else ''
+        pre += self.name
 
         if len(self.children):
             return pre + ''.join("\n" + i.__build_string(ln + 1) for i in self.children)

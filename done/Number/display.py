@@ -7,12 +7,12 @@ def simplifyRadical(index, radicand):
     while test != int(test):
         loop -= 1
         test = radicand / loop ** index
-    return str(loop) + '*√(' + str(int(test)) + ')'
+    return f'{loop}*√({int(test)})'
 
 
 def theFactorsOf(integer):
     """_(15) = ['1+15=16', '3+5=8']"""
-    return ['%s+%s=%s' % (j, k, j + k) for j, k in primes.factorsOf(integer)]
+    return [f'{j}+{k}={j + k}' for j, k in primes.factorsOf(integer)]
 
 
 def primeFactorize(i):

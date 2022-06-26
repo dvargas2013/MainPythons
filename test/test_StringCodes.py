@@ -5,7 +5,7 @@ from done.String import Codes
 
 
 def makeCases(howmany=100, string_pool="1234 567890 qwertyuio pasdfghjklz xcvbnm QWERTYU IOPASD FGHJKLZX CVBNM"):
-    for i in range(howmany):
+    for _ in range(howmany):
         # the splitting and joining is to replace /\s+/g to " "
         yield ' '.join(''.join(sample(string_pool, len(string_pool) // 2)).split())
 

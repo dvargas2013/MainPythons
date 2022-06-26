@@ -37,10 +37,7 @@ usage:
     if len(string_mapping) == 52:
         sm = string_mapping[::-1]
         al = ascii_letters[::-1]
-        if inverse:
-            return str.maketrans(sm, al)
-        else:
-            return str.maketrans(al, sm)
+        return str.maketrans(sm, al) if inverse else str.maketrans(al, sm)
 
 
 def yield_all_characters(code_point=0):
@@ -78,7 +75,7 @@ def score(str1, str2):
     str2_flags = [0] * str2_len
 
     w_size = max(str1_len, str2_len) // 2 - 1
-    if w_size < 0: w_size = 0
+    w_size = max(w_size, 0)
 
     common = 0
     for i, str1_char in enumerate(str1):  # for every char in str1
@@ -106,7 +103,7 @@ class Markov:
     """Create a Markov Chain of words linked in triplets"""
 
     def __init__(self, words):
-        self.cache = dict()
+        self.cache = {}
         for w1, w2, w3 in window(words.strip().split(), 3):
             key = (w1, w2)
             if key in self.cache:
@@ -150,10 +147,10 @@ def SequenceAlignment(s1, s2, DownSigma=0, RightSigma=0, Match=1, MisMatch=0):
     while direction:
         if direction == 1:  # Down
             ss1 = s1[i - 1] + ss1
-            ss2 = "-" + ss2
+            ss2 = f"-{ss2}"
             i -= 1
         elif direction == 2:  # Rite
-            ss1 = "-" + ss1
+            ss1 = f"-{ss1}"
             ss2 = s2[j - 1] + ss2
             j -= 1
         elif direction == 3:  # Diag

@@ -12,14 +12,11 @@ def factorsOf(i):
 def isPrime(n):
     """returns true if n is a prime"""
     if int(n) != n: return False
-    if n == 2 or n == 3: return True
-    if n < 2 or n % 2 == 0: return False
-    if n < 9: return True
-    if n % 3 == 0: return False
+    if n in {2, 3, 5, 7}: return True
+    if n < 2 or n % 2 == 0 or n % 3 == 0: return False
+
     e = int(n ** .5) + 6
-    for f in range(5, e, 6):
-        if n % f == 0 or n % (f + 2) == 0: return False
-    return True
+    return all(n % f != 0 and n % (f + 2) != 0 for f in range(5, e, 6))
 
 
 def nextPrime(i):
@@ -148,11 +145,11 @@ class PrimalNatural:
     def __str__(self):
         def K(k, v):
             if v == 1:
-                return "%s" % k
+                return f"{k}"
             elif v == 2:
-                return "%s*%s" % (k, k)
+                return f"{k}*{k}"
             else:
-                return "%s**%s" % (k, v)
+                return f"{k}**{v}"
 
         return " * ".join(K(k, self.pf[k]) for k in sorted(self.pf))
 

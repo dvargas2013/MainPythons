@@ -88,7 +88,7 @@ def interleave(*iterables):
     iterables = list(iterables)
     for ind, _i in enumerate(iterables):
         if not is_iterable(_i):
-            raise Exception(f"doesn't seem to be iterable: {_i!s}")
+            raise IndexError(f"doesn't seem to be iterable: {_i!s}")
         if not hasattr(_i, "__next__"):
             iterables[ind] = iter(_i)
 
@@ -200,16 +200,16 @@ class Polynomial:
     def fromString(in_str):
         to_parse = ''.join(i for i in str(in_str) if i.isalnum() or i in '.+-/*')
         sym = {i for i in to_parse if i.isalpha()}
-        if len(sym) == 0: return [parse_number(to_parse)]
+        if not sym: return [parse_number(to_parse)]
         if len(sym) != 1: return []
         sym = sym.pop()
-        to_parse = to_parse.replace('-', '+-').replace('-' + sym, '-1' + sym)
+        to_parse = to_parse.replace('-', '+-').replace(f'-{sym}', f'-1{sym}')
         n, p = [], []
-        if to_parse[0] == '+': to_parse = '0' + to_parse
+        if to_parse[0] == '+': to_parse = f'0{to_parse}'
         for string in to_parse.rsplit('+'):
             if string[-1] == sym: string += '1'
-            if string[0] == sym: string = '1' + string
-            if string.find(sym) == -1: string += sym + '0'
+            if string[0] == sym: string = f'1{string}'
+            if string.find(sym) == -1: string += f'{sym}0'
             n += [parse_number(string.rsplit(sym)[0])]
             p += [parse_number(string.rsplit(sym)[1])]
         dic = [0] * int(max(p) + 1)
@@ -264,7 +264,7 @@ class Polynomial:
     __rmul__ = __mul__
 
     def __truediv__(self, s2):
-        return str(self // s2) + '+(' + str(self % s2) + ')'
+        return f'{self // s2}+({self % s2})'
 
     def _truediv(self, l2):
         if isinstance(l2, (int, float)):
@@ -282,7 +282,7 @@ class Polynomial:
 
         quot = []
         divisor = den[-1]
-        for i in range(shiftlen + 1):
+        for _ in range(shiftlen + 1):
             quot.append(mult := num[-1] / divisor)
 
             # num - mult * den, but don't bother if mult == 0
@@ -360,7 +360,7 @@ class BitString:
         return '.'.join(format(i, '02d') for i in self)
 
     def __repr__(self):
-        return "BitString(0x%s)" % format(self.data, 'x')
+        return f"BitString(0x{format(self.data, 'x')})"
 
 
 class CollisionDict(defaultdict):

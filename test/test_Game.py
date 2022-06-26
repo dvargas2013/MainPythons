@@ -19,7 +19,7 @@ def sendInput(in_put):
     elif ti is list:
         Input.data.extend(in_put)
     else:
-        raise Exception("test made bad input")
+        raise RuntimeError("test made bad input")
 
 
 # noinspection PyUnusedLocal

@@ -270,7 +270,7 @@ def function_time(func_or_str, times=3, initn=10_000, **kwargs):
 def stopwatch(n=10):
     """Give time SINCE call for {n} Enter Key presses."""
     a = datetime.now()
-    for i in range(n):
+    for _ in range(n):
         input()
         print(datetime.now() - a)
 
@@ -280,7 +280,7 @@ countUp = stopwatch
 
 def countBetween(n=10):
     """Give time BETWEEN key presses for {n*2} Enter Key presses."""
-    for i in range(n):
+    for _ in range(n):
         input("[Start]")
         a = datetime.now()
         input("Counting...")

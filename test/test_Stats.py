@@ -3,9 +3,9 @@ from done import Stats
 
 def test_median():
     from random import randint
-    for j in range(50):
+    for _ in range(50):
         lis = [randint(-100, 100)]
-        for i in range(9):
+        for _ in range(9):
             lis.append(randint(-100, 100))
             lis.append(2 * lis[0] - lis[-1])
         assert lis[0] == Stats.median(lis)

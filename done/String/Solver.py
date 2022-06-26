@@ -35,9 +35,7 @@ def chemistry(text="Hello World", showall=False):
 
     def perfLvl(gem, aim):
         if len(gem) == 1: return 2
-        for _i in range(len(gem), 0, -1):
-            if gem[:_i].lower() == aim[:_i].lower(): return 2 * _i - 1
-        return 0
+        return next((2 * x - 1 for x in range(len(gem), 0, -1) if gem[:x].lower() == aim[:x].lower()), 0)
 
     Gems = ['j*', 'q*', 'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl',
             'Ar', 'K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br',
@@ -52,24 +50,24 @@ def chemistry(text="Hello World", showall=False):
         first, last = splitTarget(target, w2)
         tLetter = last[:1]
         if not tLetter: return
-        save = dict((w2 + _i, perfLvl(_i, last)) for _i in UseGems[tLetter])
+        save = {w2 + _i: perfLvl(_i, last) for _i in UseGems[tLetter]}
         M = 1 if 2 in save.values() else 0
         return [_i for _i in save if save[_i] > M]
 
     def yieldMaximums(words, target, M=.5, show=0):
-        returnable = dict()
+        returnable = {}
         for w in list(words):  # For every word in that list
             if show: print("\t" * (show - 1) + "LOOP " + repr(w))
             words = expandWord(w, target)  # Add symbols if you can
             if show and words: print("\t" * (show - 1) + str(words))
             if words:  # If words have been added go deeper
-                words, M = yieldMaximums(words, target, M, 0 if not show else show + 1)
-                returnable.update(dict((w2, words[w2]) for w2 in words if words[w2] >= M))
+                words, M = yieldMaximums(words, target, M, show + 1 if show else 0)
+                returnable.update({w2: words[w2] for w2 in words if words[w2] >= M})
             else:
                 s = score(target, w)
                 if s >= M:
                     M = s
-                    returnable.update({w: s})
+                    returnable[w] = s
                     if show: print("\t" * (show - 1) + str({w: s}))
         for w in list(returnable.keys()):
             if returnable[w] != M: returnable.pop(w)

@@ -28,7 +28,7 @@ Example:
     eggnog('lo oc sileinad') -> 'daniel is cool'
     """
     s = text.split()
-    return ''.join(reversed(s[0] + ''.join('%s %s' % (word[:2], word[2:]) for word in s[1:]))).strip()
+    return ''.join(reversed(s[0] + ''.join(f'{word[:2]} {word[2:]}' for word in s[1:]))).strip()
 
 
 crosc_translation = createTranslationTable('yzxwuvtsorqpn')

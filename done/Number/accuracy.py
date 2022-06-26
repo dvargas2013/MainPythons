@@ -154,11 +154,11 @@ class SigFig:
 
         try:
             self.value = Decimal(value)
-        except TypeError:
+        except TypeError as e:
             if hasattr(value, "value"):
                 self.value = Decimal(value.value)
             else:
-                raise TypeError(f"cant convert from {value!r} to SigFig")
+                raise TypeError(f"cant convert from {value!r} to SigFig") from e
 
         if decimalplaces is None and precision is None:
             if '.' not in str(value):

@@ -26,7 +26,7 @@ def test_numRemainders():
         n = 1
         for i in lis: n *= i
 
-        for j in range(50):
+        for _ in range(50):
             giveup = randrange(10, n)
             li = [giveup % i for i in lis]
             assert giveup in Solver.numRemainders(lis, li)
@@ -54,5 +54,5 @@ def test_linearcomb():
         assert eval(s) == 50
     for s in Solver.linear_combination(50, [4, 7], tupled=True):
         for a, b in s:
-            assert b == 7 or b == 4
+            assert b in {4, 7}
         assert sum(a * b for a, b in s) == 50

@@ -114,14 +114,14 @@ class Sudoku:
     def __init__(self, string_grid="", blank_character="0"):
         """initializes possibilities (ignores anything thats not 1-9 or the specified blank character)"""
         # d: all 81 boxes matched with the numbers 1-9
-        self.values = dict((s, "123456789") for s in Sudoku.units)
+        self.values = {s: "123456789" for s in Sudoku.units}
 
         if string_grid:
             self._parse(string_grid, blank_character)
 
     def _parse(self, string_grid, blank_character):
         """parse out numbers given in string_grid and adjust data by using assign"""
-        accept_set = set("123456789" + blank_character)
+        accept_set = set(f"123456789{blank_character}")
 
         for s, d in zip(sorted(Sudoku.units), filter(accept_set.__contains__, string_grid)):
             if '1' <= d <= '9': self.assign(s, d)
@@ -149,7 +149,7 @@ class Sudoku:
 
         for unit in Sudoku.units[pos]:  # for all units, see if there's a number that only goes in 1 place
             d_places = [p for p in unit if digit in self.values[p]]
-            if len(d_places) == 0:
+            if not d_places:
                 raise Sudoku.EliminationError(f"No more digit {digit} in unit {unit[0]}-{unit[-1]}, @pos: {pos}")
             if len(d_places) == 1:  # if only 1 more place for d to go, then assign d.
                 self.assign(d_places[0], digit)
@@ -254,7 +254,7 @@ _(50, [4, 7]) yields '6*7+2*4', '2*7+9*4'"""
 def addOrSub(string, num):
     """Adds +, -, or nothing between every number and evaluates to num"""
     if not string.isnumeric():
-        raise Exception(f"invalid parameter: string {string} contains non-numerics")
+        raise ValueError(f"invalid parameter: string {string} contains non-numerics")
     num = abs(int(num))
 
     n = len(string)

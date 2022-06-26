@@ -13,36 +13,36 @@ def poisson(y, x, rounding=4):
 def Dev(lis, population=False):
     """Sample Standard Deviation"""
     xbar = sum(lis) / len(lis)
-    print('x%s = %s' % (chr(773), xbar))
-    sum_square_deviation = sum(x * x for x in lis) - sum(x for x in lis) ** 2 / len(lis)
-    print("(x-x%s)^2 = %s" % (chr(773), sum_square_deviation))
+    print(f'x\u0305 = {xbar}')
+    sum_square_deviation = sum(x * x for x in lis) - sum(lis) ** 2 / len(lis)
+    print(f"(x-x\u0305)^2 = {sum_square_deviation}")
     var = sum_square_deviation / (len(lis) - (not population))
-    print("Variance: %s" % var)
+    print(f"Variance: {var}")
     return var ** .5
 
 
 def freqDev(mid_freq):
     """Sample standard deviation with frequencies defined in a matrix form"""
     n = sum(mid_freq.values())
-    print("n = %s" % n)
+    print(f"n = {n}")
     x2 = sum(j * i * i for i, j in mid_freq.items())
-    print("f*x^2 = %s" % x2)
+    print(f"f*x^2 = {x2}")
     x = sum(j * i for i, j in mid_freq.items())
-    print("f*x = %s" % x)
+    print(f"f*x = {x}")
     x_2 = x * x
-    print("(f*x)^2 = %s" % x_2)
+    print(f"(f*x)^2 = {x_2}")
     var = (x2 - x_2 / n) / (n - 1)
-    print("Variance: %s" % var)
+    print(f"Variance: {var}")
     return var ** .5
 
 
 def probDev(x_px):
     """Sample standard deviation with probabilities defined in matrix form"""
     xbar = sum(i * j for i, j in x_px.items())
-    print('x%s = %s' % (chr(773), xbar))
+    print(f'x{chr(773)} = {xbar}')
     var = sum((i - xbar) ** 2 * j for i, j in
               x_px.items())  # sum(j*i*i for i,j in x_px.items())-sum(j*i for i,j in x_px.items())**2
-    print("Variance: %s" % var)
+    print(f"Variance: {var}")
     dev = var ** .5
     return dev
 

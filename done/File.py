@@ -79,12 +79,12 @@ def hideInMaze(file, maze_root, depth, size, name_length=7):
     """Hides a file inside {size} directories in each directory for {depth} levels"""
     from done.String.Generators import chain
     from random import choice
-    if input('are you sure you want to make ' + str(sum(size ** i for i in range(depth + 1))) + ' folders')[0] in 'Yy':
+    if input(f'are you sure you want to make {sum(size ** i for i in range(depth + 1))} folders')[0] in 'Yy':
         paths = [maze_root]
-        for d in range(depth):
+        for _ in range(depth):
             new_paths = []
             for base in paths:
-                for num in range(size):
+                for _ in range(size):
                     name_choice = join(base, chain(1, name_length))
                     while name_choice in new_paths: name_choice = join(base, chain(1, name_length))
                     new_paths.append(name_choice)
@@ -120,10 +120,10 @@ Sorry :c"""
     if exists(file):
         try:
             renames(file, out)
-            print('Delete: %s => %s' % (file, out))
+            print(f'Delete: {file} => {out}')
         except OSError:
             remove(file)
-            print('HardRemove: %s => the pit' % file)
+            print(f'HardRemove: {file} => the pit')
 
 
 def Copy(src_file, dst_file, trash_root=Desktop, copyfile=copyfile_normal):
@@ -134,7 +134,7 @@ def Copy(src_file, dst_file, trash_root=Desktop, copyfile=copyfile_normal):
 
     Delete(trash_root, dst_file)
     copyfile(src_file, dst_file)
-    print('Copy: %s => %s' % (src_file, dst_file))
+    print(f'Copy: {src_file} => {dst_file}')
 
 
 def smartBackup(source, destination, hardlink=False):
@@ -177,11 +177,11 @@ When copying with hardlink active, it will hardlink the files together
 
 
 def rename_file(file_iterable, change,
-                success=lambda f, n: print("Renamed: " + f + '\n\t' + n + '\n'),
-                error=lambda f, n, e: print(("Renaming Error %s: " % e) + f + '\n\t' + n + '\n'),
-                already_exists=lambda f, n: print("Existence Error: " + n + ' already exists'),
-                does_not_exist=lambda f, n: print("Existence Error: " + f + ' does not exist'),
-                no_change=lambda f, n: print("Change function did not change: " + f)):
+                success=lambda f, n: print(f"Renamed: {f}\n\t{n}\n"),
+                error=lambda f, n, e: print(f"Renaming Error {e}: {f}\n\t{n}\n"),
+                already_exists=lambda f, n: print(f"Existence Error: {n} already exists"),
+                does_not_exist=lambda f, n: print(f"Existence Error: {f} does not exist"),
+                no_change=lambda f, n: print("Change function did not change: {f}")):
     """changes file strings in {files} using the {change} function
     
 for each of the files:
@@ -195,21 +195,22 @@ for each of the files:
     if type(file_iterable) == str: file_iterable = [file_iterable]
     for f in file_iterable:
         n = change(f)  # apply change function
-        if not same(f, n):  # might point to same file
-            if exists(f):  # old name might not exist
-                if not exists(n):  # new name might exist
-                    try:
-                        renames(f, n)  # renames might fail
-                    except OSError as e:
-                        error(f, n, e)  # if failed to rename
-                    else:
-                        success(f, n)  # it succeeded the rename
-                else:
-                    already_exists(f, n)  # file n already existed
-            else:
-                does_not_exist(f, n)  # file f does not exist
+
+        if same(f, n):
+            return no_change(f, n)
+
+        if not exists(f):  # old name doesnt exist
+            return does_not_exist(f, n)
+
+        if exists(n):  # new name taken
+            return already_exists(f, n)
+
+        try:
+            renames(f, n)
+        except OSError as e:
+            error(f, n, e)
         else:
-            no_change(f, n)  # function change did not change f
+            success(f, n)
 
 
 renamer = rename_file
@@ -233,15 +234,15 @@ Moderately safer than directly going to a site"""
 
 def site_read(url, tries=17):
     """Read a url and return string contents"""
-    if not url.startswith('http'): url = 'http://' + url
-    for i in range(tries):
+    if not url.startswith('http'): url = f'http://{url}'
+    for _ in range(tries):
         try:
             return urlopen(url).read().decode()
         except Exception as e:
             print(e)
             from time import sleep
             sleep(1)
-            print('Retrying: ' + url)
+            print(f'Retrying: {url}')
 
 
 def read(file, tag='r', pickled=False):
@@ -249,11 +250,11 @@ def read(file, tag='r', pickled=False):
     if pickled and 'b' not in tag: tag += 'b'
     try:
         with open(file, tag) as f:
-            if pickled:
-                from pickle import load
-                return load(f)
-            else:
+            if not pickled:
                 return f.read()
+
+            from pickle import load
+            return load(f)
     except Exception as e:
         print(e)
     if "b" in tag:
@@ -268,15 +269,11 @@ def write_dict_to_tgf(dic: Dict[str, List[str]], file):
     nodes = sorted(set.union(*map(set, dic.values()), set(dic.keys())))
     node_to_tgf_index = {n: i for i, n in enumerate(nodes, start=1)}
 
-    f = []
-    for i, n in enumerate(nodes, start=1):
-        f.append(f"{i} {n}")
-    f.append("#")
+    f1 = [f"{i} {n}" for i, n in enumerate(nodes, start=1)]
+    f2 = []
     for i, js in dic.items():
-        for j in js:
-            f.append(f"{node_to_tgf_index[i]} {node_to_tgf_index[j]}")
-
-    return write("\n".join(f), file)
+        f2.extend(f"{node_to_tgf_index[i]} {node_to_tgf_index[j]}" for j in js)
+    return write("\n".join((*f1, "#", *f2)), file)
 
 
 def write(s, file, tag='w', encoding="utf",
@@ -285,15 +282,14 @@ def write(s, file, tag='w', encoding="utf",
     if pickled:
         from pickle import dumps
         s = dumps(s)
-    else:
-        if type(s) == dict:
-            s = "{\n\t%s\n}" % ',\n\t'.join("%s:\t%s" % (repr(i), repr(j)) for i, j in s.items())
-        elif type(s) == list:
-            s = "[\n\t%s\n]" % ',\n\t'.join(repr(i) for i in s)
-        elif type(s) == tuple:
-            s = "(\n\t%s\n)" % ',\n\t'.join(repr(i) for i in s)
-        elif type(s) == set:
-            s = "{\n\t%s\n}" % ',\n\t'.join(repr(i) for i in s)
+    elif type(s) == dict:
+        s = "{\n\t%s\n}" % ',\n\t'.join("%s:\t%s" % (repr(i), repr(j)) for i, j in s.items())
+    elif type(s) == list:
+        s = "[\n\t%s\n]" % ',\n\t'.join(repr(i) for i in s)
+    elif type(s) == tuple:
+        s = "(\n\t%s\n)" % ',\n\t'.join(repr(i) for i in s)
+    elif type(s) == set:
+        s = "{\n\t%s\n}" % ',\n\t'.join(repr(i) for i in s)
 
     if type(s) == str:
         try:
@@ -302,10 +298,7 @@ def write(s, file, tag='w', encoding="utf",
                 return True
         except Exception as e:
             print(e)
-            if encoding:
-                s = s.encode(encoding, onerror)
-            else:
-                s = s.encode('utf-8', onerror)
+            s = s.encode(encoding or "utf-8", onerror)
     if type(s) == bytes:
         if 'b' not in tag: tag += 'b'
         with open(file, tag) as f:
@@ -410,14 +403,15 @@ def ZipGui():
             except Exception as e:
                 return self.wm_title(e)
             self.aim = abspath(join(document, os.pardir))
-            self.files = set('./' + i for i in self.zipfile.namelist())
+            self.files = {f'./{i}' for i in self.zipfile.namelist()}
             self.popDownTo(0)
             self.wm_title(document)
             FileList(self)
 
         def popDownTo(self, to):
             """repeatedly call .pop until you have a specific amount of files in the list"""
-            for i in range(len(self.lists) - to - 1): self.pop()
+            for _ in range(len(self.lists) - to - 1):
+                self.pop()
 
         def pop(self):
             """pop and destroy the last item in the file list"""
@@ -436,8 +430,8 @@ def ZipGui():
             self.master = master
             self.pwd = place
             master.lists.append(self)
-            for i in sorted(show(place, master.files), key=lambda z: '!' + z if z.endswith('/') else z): self.insert(
-                "end", i)
+            for i in sorted(show(place, master.files), key=lambda z: f'!{z}' if z.endswith('/') else z):
+                self.insert("end", i)
             self.bind("<Button-1>", lambda e: self.click())
             self.bind("<Button-2>", lambda e: self.master.menu.post(e.x_root, e.y_root))
 
@@ -466,10 +460,10 @@ def unzip(file, aim='', file_iterable=None):
         extract = file_iterable.pop()
         if not exists(join(aim, extract)):
             try:
-                print('Doing: %s' % extract)
+                print(f'Doing: {extract}')
                 zip_file.extract(extract, aim)
             except Exception as e:
                 failed.add(extract)
-                print('Failed: %s' % extract)
+                print(f'Failed: {extract}')
                 print(e)
     return failed
