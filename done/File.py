@@ -5,7 +5,7 @@ from contextlib import contextmanager
 from os import renames, remove, walk, makedirs, environ, link as copyfile_hardlink
 from os.path import exists, join, splitext, split, relpath, abspath
 from shutil import copy2 as copyfile_normal  # preserves metadata
-from typing import Dict, List
+from typing import Dict, Iterable
 from urllib.request import urlopen
 
 
@@ -265,15 +265,53 @@ def read(file, tag='r', pickled=False):
             return f.read()
 
 
-def write_dict_to_tgf(dic: Dict[str, List[str]], file):
-    nodes = sorted(set.union(*map(set, dic.values()), set(dic.keys())))
-    node_to_tgf_index = {n: i for i, n in enumerate(nodes, start=1)}
+class TGF:
+    def __init__(self, dic: Dict[str, Iterable[str]]):
+        # sorted set of all names used (whether in keys or values)
+        self.nodes = sorted(set.union(*map(set, dic.values()), set(dic.keys())))
 
-    f1 = [f"{i} {n}" for i, n in enumerate(nodes, start=1)]
-    f2 = []
-    for i, js in dic.items():
-        f2.extend(f"{node_to_tgf_index[i]} {node_to_tgf_index[j]}" for j in js)
-    return write("\n".join((*f1, "#", *f2)), file)
+        # index in the sorted list
+        self.node_to_tgf_index = {n: i for i, n in enumerate(self.nodes)}
+
+        # tuples of the mapping in the dictionary using the indeces rather than the names
+        self.ordered_nodes = []
+
+        for i, js in dic.items():
+            x = self.node_to_tgf_index[i]
+            self.ordered_nodes.extend((x, self.node_to_tgf_index[j])
+                                      for j in js)
+
+    def __str__(self):
+        # the string format has 1-based indexing
+        return "\n".join((
+            *(f"{i} {n}" for i, n in enumerate(self.nodes, start=1)),
+            "#",
+            *(f"{i + 1} {j + 1}" for i, j in self.ordered_nodes)))
+
+    @property
+    def ordered_nodemapping(self):
+        return iter((self.nodes[i], self.nodes[j]) for i, j in self.ordered_nodes)
+
+    def to_dict(self):
+        from done.List import CollisionDictOfSets
+        return dict(CollisionDictOfSets(self.ordered_nodemapping))
+
+
+def write_dict_to_tgf(dic: Dict[str, Iterable[str]], file):
+    return write(str(TGF(dic)), file)
+
+
+def prettystring(s):
+    if type(s) == dict:
+        s = "{\n\t%s\n}" % ',\n\t'.join("%s:\t%s" % (repr(i), repr(j)) for i, j in s.items())
+    elif type(s) == list:
+        s = "[\n\t%s\n]" % ',\n\t'.join(repr(i) for i in s)
+    elif type(s) == tuple:
+        s = "(\n\t%s\n)" % ',\n\t'.join(repr(i) for i in s)
+    elif type(s) == set:
+        s = "{\n\t%s\n}" % ',\n\t'.join(repr(i) for i in s)
+
+    return s
 
 
 def write(s, file, tag='w', encoding="utf",
@@ -282,14 +320,8 @@ def write(s, file, tag='w', encoding="utf",
     if pickled:
         from pickle import dumps
         s = dumps(s)
-    elif type(s) == dict:
-        s = "{\n\t%s\n}" % ',\n\t'.join("%s:\t%s" % (repr(i), repr(j)) for i, j in s.items())
-    elif type(s) == list:
-        s = "[\n\t%s\n]" % ',\n\t'.join(repr(i) for i in s)
-    elif type(s) == tuple:
-        s = "(\n\t%s\n)" % ',\n\t'.join(repr(i) for i in s)
-    elif type(s) == set:
-        s = "{\n\t%s\n}" % ',\n\t'.join(repr(i) for i in s)
+    else:
+        s = prettystring(s)
 
     if type(s) == str:
         try:
