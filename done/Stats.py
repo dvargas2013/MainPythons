@@ -39,12 +39,11 @@ def freqDev(mid_freq):
 def probDev(x_px):
     """Sample standard deviation with probabilities defined in matrix form"""
     xbar = sum(i * j for i, j in x_px.items())
-    print(f'x{chr(773)} = {xbar}')
+    print(f'x\u0305 = {xbar}')
     var = sum((i - xbar) ** 2 * j for i, j in
               x_px.items())  # sum(j*i*i for i,j in x_px.items())-sum(j*i for i,j in x_px.items())**2
     print(f"Variance: {var}")
-    dev = var ** .5
-    return dev
+    return var ** .5
 
 
 def hypergeometric(start, total, runs, success):
