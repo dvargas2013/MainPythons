@@ -219,6 +219,10 @@ class Polynomial:
     def __call__(self, num):
         return sum(coef * num ** power for power, coef in enumerate(self.data))
 
+    def iterCall(self, iterable):
+        for i in iterable:
+            yield self(i)
+
     def __eq__(self, other):
         return len(self) == len(other) and all(i == j for i, j in zip(self, other))
 
