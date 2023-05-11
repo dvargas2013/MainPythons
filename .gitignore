@@ -4,6 +4,7 @@
 __pycache__/
 *.py[ocd]
 *.egg-info
+venv/
 
 #pycharm
 .idea/

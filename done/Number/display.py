@@ -30,7 +30,7 @@ class BaseChanger(int):
         """return a list representing the number"""
         if self in {0, 1}: return [int(self)]
         it = list(self.__baseHelper(base))
-        it.reverse()  # reverses list in place so you save 1 (one) list creation
+        it.reverse()  # reverses list in place, so you save 1 (one) list creation
         return it
 
     @staticmethod
@@ -104,3 +104,59 @@ class NumToStr:
             s = (cls.huns(n) + t + s).strip()
 
         return s
+
+
+class DivModChain:
+    def __init__(self, *args):
+        strings = tuple(i for i in args if isinstance(i, str))
+        self.mod_chain = tuple([i for i in args if isinstance(i, int)][::-1])
+        lmc1 = len(self.mod_chain) + 1
+        if len(strings) < lmc1:
+            self.strings = [chr(i) for i in range(65, 65+lmc1)]
+            if strings:
+                self.strings[-len(strings):] = strings
+        else:
+            self.strings = strings
+
+    @staticmethod
+    def apply(r, chain):
+        for i, c in enumerate(chain):
+            p, r[i] = divmod(r[i], c)
+            r[i + 1] += p
+        return tuple(r[::-1])
+
+    def _normalize(self, units: list[int], shift: int):
+        """For when you want to call normalize, but you don't need the error checking"""
+        r = [0] * len(self.strings)
+        if shift == 0:
+            r[-len(units):] = units
+        else:
+            r[-len(units) - shift:-shift] = units
+        return DivModChain.apply(r[::-1], self.mod_chain)
+
+    def units(self, units: int | list[int], unit=None):
+        if unit is None:
+            unit = self.strings[-1]
+        elif unit not in self.strings:
+            raise Exception(f"unit not found in strings: {unit!r}")
+
+        if not hasattr(units, "__len__"):
+            units = [units]
+
+        shift = len(self.strings) - 1 - self.strings.index(unit)  # if it's the last one, shift is 0
+        expected_len = len(self.strings) - shift  # if we need to shift we cant use the last ones
+        if len(units) > expected_len:
+            raise Exception(f"too many units given ({len(units)}) expecting at most {expected_len}")
+
+        return units, shift
+
+    def normalize(self, units: int | list[int], unit=None):
+        units, shift = self.units(units, unit)
+        return self._normalize(units, shift)
+
+    def stringify(self, normal):
+        return " ".join(f"{n} {s}{'' if n == 1 else 's'}" for n, s in zip(normal, self.strings) if n != 0)
+
+
+YDHMS = DivModChain("year", 365, "day", 24, "hour", 60, "minute", 60, "second")
+WDHMS = DivModChain("week", 7, "day", 24, "hour", 60, "minute", 60, "second")

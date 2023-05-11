@@ -196,6 +196,8 @@ class Polynomial:
     def __copy__(self):
         return Polynomial(self.data)
 
+    # TODO : implement derivative
+    
     @staticmethod
     def fromString(in_str):
         to_parse = ''.join(i for i in str(in_str) if i.isalnum() or i in '.+-/*')

@@ -2,6 +2,7 @@ import pytest
 
 from done.Number.accuracy import SigFig
 from done.Number.primes import PrimalNatural
+from done.Number.display import DivModChain
 
 
 def test_parsenum():
@@ -218,3 +219,30 @@ def test_SigFig_math():
     assert SigFig("27.2") * "15.63" / "1.846" == "230"  # 230.3011918
     assert (SigFig("27") + 3) / SigFig("10.0") == "3.0"
     assert (27 + SigFig(3)) / SigFig("10.0") == "3.0"
+
+
+def test_normalization():
+    HMS = DivModChain("hour", "minute", "second")
+    assert HMS.normalize(5) == (0, 0, 5)
+    assert HMS.normalize([5]) == (0, 0, 5)
+    assert HMS.normalize([0, 5]) == (0, 0, 5)
+    assert HMS.normalize([0, 0, 5]) == (0, 0, 5)
+
+    assert HMS.normalize([5, 0]) == (0, 5, 0)
+
+    assert HMS.normalize([5, 0, 0]) == (5, 0, 0)
+
+    assert HMS.normalize(5, "second") == (0, 0, 5)
+    assert HMS.normalize([5], "second") == (0, 0, 5)
+    assert HMS.normalize([0, 5], "second") == (0, 0, 5)
+    assert HMS.normalize([0, 0, 5], "second") == (0, 0, 5)
+
+    assert HMS.normalize(5, "minute") == (0, 5, 0)
+    assert HMS.normalize([5], "minute") == (0, 5, 0)
+    assert HMS.normalize([0, 5], "minute") == (0, 5, 0)
+
+    assert HMS.normalize([5, 0], "minute") == (5, 0, 0)
+    assert HMS.normalize(5, "hour") == (5, 0, 0)
+    assert HMS.normalize([5], "hour") == (5, 0, 0)
+
+    assert DivModChain(24, 60, 60).normalize(13056738) == (151, 2, 52, 18)
