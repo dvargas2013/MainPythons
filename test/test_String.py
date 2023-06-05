@@ -39,7 +39,6 @@ def test_oneLetterFromEach():
 
 
 def test_connectwords(monkeypatch):
-    monkeypatch.setattr(StringSolver, "masterDictionary", {'hello', 'helly', 'belly', 'bells'})
-    L = list(StringSolver.connectWords("hello", "bells"))
+    L = list(StringSolver.connectWords("hello", "bells", dictionary_set={'hello', 'helly', 'belly', 'bells'}))
     assert len(L) == 1
     assert len(L[0]) == 4

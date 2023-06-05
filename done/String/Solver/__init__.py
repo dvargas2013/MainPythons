@@ -3,14 +3,13 @@
 from collections import Counter
 from functools import partial
 from itertools import product
-from random import choice
 from re import compile
 from string import ascii_lowercase
 
-from done.String import score
+from done.String.Solver.chemistry import chemistry
+from done.String.Solver.connect import connectWords
 
 ascii_lowercase_set = set(ascii_lowercase)
-
 masterDictionary = set()
 
 
@@ -18,78 +17,6 @@ def loadDictionary(dictionary_file='/usr/share/dict/web2'):
     masterDictionary.clear()
     with open(dictionary_file) as f:
         masterDictionary.update(set(f.read().split()))
-
-
-def chemistry(text="Hello World", showall=False):
-    """Given a sentence will try to recreate string with chemistry symbols"""
-
-    # without j and q the algorithm would get stuck
-    def splitTarget(target, w2):
-        target, w2 = target.lower(), w2.lower()
-        grow = ''
-        for c in w2:
-            if target[:1] == c:
-                grow += target[:1]
-                target = target[1:]
-        return grow, target
-
-    def perfLvl(gem, aim):
-        if len(gem) == 1: return 2
-        return next((2 * x - 1 for x in range(len(gem), 0, -1) if gem[:x].lower() == aim[:x].lower()), 0)
-
-    Gems = ['j*', 'q*', 'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl',
-            'Ar', 'K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br',
-            'Kr', 'Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I',
-            'Xe', 'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu',
-            'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 'Ac',
-            'Th', 'Pa', 'U', 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr', 'Rf', 'Db', 'Sg', 'Bh',
-            'Hs', 'Mt', 'Ds', 'Rg', 'Cn', 'Uut', 'Fl', 'Uup', 'Lv', 'Uus', 'Uuo']
-    UseGems = dict()  # grab the gems that are possible to use
-
-    def expandWord(w2, target):
-        first, last = splitTarget(target, w2)
-        tLetter = last[:1]
-        if not tLetter: return
-        save = {w2 + _i: perfLvl(_i, last) for _i in UseGems[tLetter]}
-        M = 1 if 2 in save.values() else 0
-        return [_i for _i in save if save[_i] > M]
-
-    def yieldMaximums(words, target, M=.5, show=0):
-        returnable = {}
-        for w in list(words):  # For every word in that list
-            if show: print("\t" * (show - 1) + "LOOP " + repr(w))
-            words = expandWord(w, target)  # Add symbols if you can
-            if show and words: print("\t" * (show - 1) + str(words))
-            if words:  # If words have been added go deeper
-                words, M = yieldMaximums(words, target, M, show + 1 if show else 0)
-                returnable.update({w2: words[w2] for w2 in words if words[w2] >= M})
-            else:
-                s = score(target, w)
-                if s >= M:
-                    M = s
-                    returnable[w] = s
-                    if show: print("\t" * (show - 1) + str({w: s}))
-        for w in list(returnable.keys()):
-            if returnable[w] != M: returnable.pop(w)
-        if show and returnable: print("\t" * (show - 1) + "RETURN " + str(returnable))
-        return returnable, M
-
-    def chems(target, debug=0):
-        save = yieldMaximums([''], target, show=debug)
-        return list(save[0]), save[-1]
-
-    for i in range(ord('a'), ord('z') + 1):
-        i = chr(i)
-        lis = UseGems.get(i, list())
-        if not lis: UseGems[i] = [g for g in Gems if i in g[:1].lower()]
-    string = ''
-    for word in text.lower().split():
-        word = ''.join(c for c in word if c.isalpha())
-        chem, num = chems(word)
-        if showall: print(num, chem)
-        chem = choice(chem)
-        string += chem + ' '
-    return string
 
 
 def anagram(jumbled_word, dictionary_set=None):
@@ -100,8 +27,7 @@ def anagram(jumbled_word, dictionary_set=None):
         dictionary_set = set(map(str.lower, masterDictionary))
 
     # letters that are not allowed
-    unallowed_regex = "[%s]" % ''.join(ascii_lowercase_set.difference(letters))
-    hbl = compile(unallowed_regex)
+    hbl = compile("[%s]" % ''.join(ascii_lowercase_set.difference(letters)))
 
     # count the letters that are allowed
     count = dict((i, jumbled_word.count(i)) for i in letters)
@@ -156,65 +82,21 @@ Usage:
         yield from anagram("".join(p), dictionary_set=dictionary_set)
 
 
-def offByOne(word1, word2):
-    """Measure how many letters off the strings are
-returns true if you could change a single symbol to get the other one
-or if you could add or remove a symbol to get the other one"""
-    n = abs(len(word1) - len(word2))
-    if n > 1: return False
-    for w1, w2 in zip(word1, word2):
-        if n > 1: return False
-        if w1 != w2: n += 1
-    return n == 1
-
-
-def connectWords(word1, word2):
-    """changes 1 letter at a time until word1 becomes word2"""
-    if len(word1) != len(word2): return
-    length = len(word1)
-    word1 = word1.lower()
-    word2 = word2.lower()
-    from heapq import heappop, heappush
-
-    unvisited = set(map(str.lower, filter((lambda i: len(i) == length), masterDictionary)))
-
-    def getNeighbors(w2, remove=0):
-        """finds words in the unvisited list as long as they're off by 1 letter"""
-        for w in list(unvisited):
-            if offByOne(w, w2):
-                if remove: unvisited.remove(w)
-                yield w
-
-    queue = [(1, w, [word1]) for w in getNeighbors(word1, remove=1)]
-    goals = set(getNeighbors(word2))
-    m = len(unvisited)
-    if not len(queue) or not len(goals): return
-    while len(unvisited) != 0 and len(queue) != 0:
-        dist, word, rest = heappop(queue)
-        if dist > m: continue
-        if word in goals:
-            yield rest + [word, word2]
-            m = dist
-        else:
-            for neigh in getNeighbors(word, remove=1):
-                heappush(queue, (dist + 1, neigh, rest + [word]))
-
-
-def createWordsViaDeletion(bigword, dictionary=None):
+def createWordsViaDeletion(big_word, dictionary=None):
     if dictionary is None:
         dictionary = sorted(map(str.lower, masterDictionary), reverse=True, key=len)
 
-    bigword = "".join(i for i in bigword.lower() if i.isalpha())
-    bigwordset = set(bigword)
-    bigwordcounter = Counter(bigword)
+    big_word = "".join(i for i in big_word.lower() if i.isalpha())
+    big_word_set = set(big_word)
+    big_word_counter = Counter(big_word)
 
     def checkword():
-        if not bigwordset.issuperset(word): return False
+        if not big_word_set.issuperset(word): return False
         c = Counter(word)
-        if any(c[k] > i for k, i in bigwordcounter.items()): return False
+        if any(c[k] > i for k, i in big_word_counter.items()): return False
         i = 0
         for L in word:
-            i = bigword.find(L, i)
+            i = big_word.find(L, i)
             if i == -1: return False
         return True
 
