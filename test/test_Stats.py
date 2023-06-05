@@ -10,12 +10,14 @@ def test_median():
             lis.append(2 * lis[0] - lis[-1])
         assert lis[0] == Stats.median(lis)
 
+
 def test_onlineave():
     psum, pcount = Stats.online_average()
     assert psum == pcount == 0
     for i in range(1, 100):
         psum, pcount = Stats.online_average(1, psum, pcount)
         assert psum == pcount == i
+
 
 def test_poisson():
     # computer breaks an average of once a months

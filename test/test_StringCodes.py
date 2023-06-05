@@ -63,11 +63,13 @@ def test_morse():
                    invr=Codes.anti_morse,
                    eq=equal_ignore_capital)
 
+
 @pytest.mark.parametrize("d", [1, 2, 3, 5, 13, 24, 25])
 def test_cypher(d):
     for s in makeCases():
         inversable(lambda x: Codes.cypher(x, d), s,
                    lambda x: Codes.cypher(x, -d))
+
 
 def test_updown():
     for s in makeCases():

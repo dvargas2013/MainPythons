@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+
 @lru_cache
 def nth_remainder(a, b, n):
     """gives the nth remainder in the long division process of a/b"""

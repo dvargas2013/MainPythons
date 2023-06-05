@@ -19,7 +19,7 @@ def radToFrac(D):
 
     def _():
         yield f
-        if f * f == d: return  # length of period is 0 since its a square
+        if f * f == d: return  # length of period is 0 since it's a square
         Q = 1
         P = f
         while True:
@@ -68,7 +68,7 @@ Yield 1: b(0)
 Yield 2: b(0) + a(0)/b(1)
 Yield 3: b(0)+a(0)/(b(1) + a(1)/(b(2) ))
 
-Passing in a int will repeat that digit for the portion of the sequence
+Passing in an int will repeat that digit for the portion of the sequence
     _(1,2) becomes 2+1/(2+1/(2+1/(2 ...
 
 Passing a list will start the sequence with the 0th item and repeat the last n-1 items
@@ -137,7 +137,7 @@ def PI(decimals_wanted=10):
 class SigFig:
     """
     Follows the rules of significant figures
-    1. All non zero numbers are significant
+    1. All non-zero numbers are significant
     2. Zeros located between non-zero digits are significant
     3. Trailing zeros are significant only if the number contains a decimal
     4. Zeros to left of the first nonzero digit are insignificant
@@ -166,7 +166,7 @@ class SigFig:
                 self.value = self.value.normalize()
         else:
             if precision is not None:
-                # if u are given a precision compute the best one given precision
+                # if you are given a precision compute the best one given precision
                 dp = precision - self.value.adjusted() - 1
                 decimalplaces = dp if decimalplaces is None else min(dp, decimalplaces)
 
@@ -197,7 +197,7 @@ class SigFig:
             return f"SigFig({str(self)!r})"
 
     def __add__(self, other):
-        """addition keeps the number of least precise decimal"""
+        """addition keeps the number of the least precise decimal"""
         if not isinstance(other, self.__class__):
             other = self.__class__(other)
         return SigFig(self.value + other.value, decimalplaces=min(self.decimal_places, other.decimal_places))
@@ -205,7 +205,7 @@ class SigFig:
     __radd__ = __add__
 
     def __sub__(self, other):
-        """subtraction keeps the number of least precise decimal"""
+        """subtraction keeps the number of the least precise decimal"""
         if not isinstance(other, self.__class__):
             other = self.__class__(other)
         return SigFig(self.value - other.value, decimalplaces=min(self.decimal_places, other.decimal_places))

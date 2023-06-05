@@ -13,7 +13,7 @@
 **batch** - gives a batch (const size chunks) iterator  
 **diagonals** - used to get the list of diagonals (list of tuples) of 2D array  
 **interleave** - gives a way to merge iterators, roundrobin style  
-**product** - similar to the buiiltin sum but takes product instead   
+**product** - similar to the builtin sum but takes product instead   
 **gcd** - finds the greatest common factor of many numbers  
 **lcm** - finds the least common multiple of many numbers  
 **cross** - combines many lists (compressing nd to 1d)  
@@ -47,7 +47,7 @@
 **DayOfTheWeek** - will give you Monday,Tuesday, ... etc., according to month, day, year given  
 **MoonPhase** - will tell you how much percent starting from new moon  
 **timer** - context manager that will time how much the block runs  
-**maxtime_computation** - using an infinate generator and an online calculation method will return around maxtime
+**maxtime_computation** - using an infinite generator and an online calculation method will return around maxtime
 seconds  
 **function_time** - timeit.timeit wrapper. calculates iterations/second  
 **QuickThread** - starts a thread with the function you pass on.
@@ -55,24 +55,43 @@ seconds
 ## File.py
 
 **getHome** - returns the environment $HOME or $USERPROFILE   
-Desktop - path to Desktop = join(getHome(), 'Desktop')  
+**Desktop** - path to Desktop = join(getHome(), 'Desktop')  
 **same** - compares 2 file paths and returns if they lead to same descriptor  
 **cwd_as** - set the current working directory to specified location while within the context manager block  
 **files** - walks through place; yields relative path to files  
 **folders** - walks through place; yields relative path to folders  
+**rename_files** - using change function renames f in files  
+**read** - reads file and returns string  
+**write** - writes to a file return boolean saying is successful  
+**repeatUntilValid** - decorator that repeatedly executes wrapped function until the parameterized function returns True  
+
+### File.directory
+
 **listFormats** - walks through place; outputs extensions found  
 **hideInMaze** - hides file in a directory maze  
 **linkDirectory** - Copies directories, symlinks replace files  
 **smartBackup** - Update files in backup  
-**rename_file** - using change function renames f in files  
-**site_look** - Give url and will try to save and open html file  
-**site_read** - Give it a http, and you get a byte string.  
-**read** - reads file and returns string  
-**write** - writes to a file return boolean saying is successful  
-**repeatUntilValid** - decorator that repeatedly executes wrapped function until the parameterized function returns True  
+
+### File.module
+
 **reImport** - reimport a module for if you modify the module and don't want to close and reopen  
+**add_to_all** - manually add to __all__ via decorator  
+**submodules** - find names of the submodules. easy to __all__.extend  
+**filter_off_modules_and_dunder** - find names in global that aren't __ nor modules  
+
+### File.pretty
+
+**TGF** - file format for graph networks  
+**stringify** - prettyprint wannabe  
+
+### File.site
+
+**look** - Give url and will try to save and open html file  
+**read** - Give it a http, and you get a byte string.  
+
+### File.zip
 **ZipGui** - creates a GUI to explore a Zipfile  
-**unzip** - Unzips files 1 at a time. (used for when you need to unzip a corrupted zip file)
+**unzip** - Unzips files 1 at a time. (used for when you need to unzip a corrupted zip file)  
 
 ## Game.py
 

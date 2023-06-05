@@ -4,7 +4,7 @@ import random
 from itertools import cycle
 from string import ascii_lowercase, ascii_letters
 
-from done.File import submodules, filter_off_modules_and_dunder
+from done.File.module import submodules, filter_off_modules_and_dunder
 from done.List import window
 
 

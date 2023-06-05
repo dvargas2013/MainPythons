@@ -166,7 +166,7 @@ class Sudoku:
             yield self
             return
 
-        # choose a square s with least values
+        # choose a square s with the least values
         s = min((s for s in Sudoku.units if self.amntof_vals_at(s) > 1),
                 key=self.amntof_vals_at)
 

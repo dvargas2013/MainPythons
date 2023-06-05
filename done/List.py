@@ -282,7 +282,7 @@ class Polynomial:
         if len(num) < len(den):
             return [0, *num]
 
-        # Shift den towards right so it's the same degree as num
+        # Shift den towards right, so it's the same degree as num
         shiftlen = len(num) - len(den)
         den = [0] * shiftlen + den
 

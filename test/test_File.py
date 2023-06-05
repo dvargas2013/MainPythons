@@ -1,15 +1,16 @@
-import os
+import os.path
 
 from done import File
+from done.File import pretty
 
 
 def test_homeDirectory():
-    assert File.exists(File.getHome())
+    assert os.path.exists(File.getHome())
 
 
 def test_same():
     for file1, file2 in zip(
-            File.files(File.abspath('.'), relative=False),
+            File.files(os.path.abspath('.'), relative=False),
             File.files('.')):
         assert File.same(file1, file2)
 
@@ -24,13 +25,13 @@ def test_cwdas():
 def singleTGF_test(a, b):
     assert a.nodes == b.nodes
     assert sorted(a.ordered_nodes) == sorted(b.ordered_nodes)
-    assert sorted(a.ordered_nodemapping) == sorted(b.ordered_nodemapping)
+    assert sorted(a.ordered_node_mapping) == sorted(b.ordered_node_mapping)
     assert a.to_dict() == b.to_dict()
 
 
 def test_TGF():
-    a = File.TGF({"a": ["b", "c"]})
-    b = File.TGF({"a": {"b", "c"}})
+    a = pretty.TGF({"a": ["b", "c"]})
+    b = pretty.TGF({"a": {"b", "c"}})
     singleTGF_test(a, b)
 
     from string import ascii_lowercase
@@ -41,4 +42,4 @@ def test_TGF():
         network = {n: sample(ascii_lowercase, k=connections) for n in nodes}
         network_with_set = {n: set(j) for n, j in network.items()}
 
-        singleTGF_test(File.TGF(network), File.TGF(network_with_set))
+        singleTGF_test(pretty.TGF(network), pretty.TGF(network_with_set))

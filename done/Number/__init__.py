@@ -3,7 +3,7 @@
 import operator
 from math import atan2
 
-from done.File import filter_off_modules_and_dunder, submodules
+from done.File.module import filter_off_modules_and_dunder, submodules
 
 
 def angle(x1, y1, x2, y2):
