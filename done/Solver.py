@@ -2,7 +2,7 @@
 
 Basically if you are tempted to use a brute force algorithm for something it's probably in here.
 my pride and joys are the sudoku solver and the 24 game solver.
-there are others but they are really obscure problems and puzzles.
+there are others, but they are really obscure problems and puzzles.
 """
 
 from fractions import Fraction
@@ -112,7 +112,7 @@ class Sudoku:
                  for s0 in 'ABCDEFGHI' for s1 in '123456789')
 
     def __init__(self, string_grid="", blank_character="0"):
-        """initializes possibilities (ignores anything thats not 1-9 or the specified blank character)"""
+        """initializes possibilities (ignores anything that's not 1-9 or the specified blank character)"""
         # d: all 81 boxes matched with the numbers 1-9
         self.values = {s: "123456789" for s in Sudoku.units}
 
@@ -183,7 +183,7 @@ class Sudoku:
         return next(self.search())
 
     def all_solves(self):
-        """returns an iterator which if list(self.all_solves()) will give a list of Solved Sudoku objects"""
+        """returns an iterator which is list(self.all_solves()) will give a list of Solved Sudoku objects"""
         _it = self.search()
         while True:
             try:

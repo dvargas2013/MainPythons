@@ -62,7 +62,7 @@ s -> (s0,s1,...s[n-1]), (s1,s2,...,sn), ..."""
 
 
 def batch(seq, n=2):
-    """Cuts up a iterable into chunks os size n. the last one is whatever data is left"""
+    """Cuts up an iterable into chunks os size n. the last one is whatever data is left"""
     length = len(seq)
     for i in range(0, length, n):
         yield seq[i:i + n]
@@ -155,7 +155,7 @@ def apply(*x):
     """
 this is just applyToGenerator without the warning if you are applying it to something other than a generator
 
-for example you might want to call it to print output:
+for example, you might want to call it to print output:
 >>> @apply(print)
 ... def helloworld(): return "Hello, World!"
 ... helloworld()

@@ -4,6 +4,7 @@ import random
 from itertools import cycle
 from string import ascii_lowercase, ascii_letters
 
+from done.File import submodules, filter_off_modules_and_dunder
 from done.List import window
 
 
@@ -164,3 +165,7 @@ def SequenceAlignment(s1, s2, DownSigma=0, RightSigma=0, Match=1, MisMatch=0):
 
 def upper_and_lower(string, pattern):
     return "".join((s.upper() if u else s.lower()) for s, u in zip(string, cycle(pattern)))
+
+
+__all__ = filter_off_modules_and_dunder(dir(), globals()) if __name__ != "__main__" else []
+__all__.extend(submodules(__file__))

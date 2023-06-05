@@ -1,5 +1,2 @@
-"""
-These can be accessed using
->>> from done import *
-"""
-__all__ = ['File', 'Game', 'List', 'Number', 'Solver', 'String', 'Time']
+from done.File import submodules
+__all__ = submodules(__file__)

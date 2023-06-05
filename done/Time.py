@@ -157,7 +157,7 @@ _mdy_const = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
 
 
 def DayOfTheWeek(month, date, year):
-    """"Calculate the Day of the Week according to month, day, year given."""
+    """Calculate the Day of the Week according to month, day, year given."""
     if type(month) == str: month = months.index(month.lower()[:3]) + 1
     abs_year = year - int(month < 3)  # year if month < 3 else year-1
     leap = (1 if month < 3 else -1) + abs_year // 4 - abs_year // 100 + abs_year // 400
@@ -207,7 +207,7 @@ example:
         print(f"{msg!s}: {ba[0]:.02f}ms")
 
 
-def maxtime_computation(generator, online_calculation, maxtime=10, initn=10_000,
+def maxtime_computation(generator, online_calculation, maxtime=10, init_n=10_000,
                         unpack_generated=False, unpack_previous=False):
     """Given a max time in seconds will try to generate and compute within that alloted time
 
@@ -235,12 +235,12 @@ unpack_previous == True: online_calculation(i, *previous)
     # time how much time the calculation takes
     with timer() as time:
         p = online_calculation()
-        for i in islice(generator, initn):
+        for i in islice(generator, init_n):
             p = calc(i, p)
     time = time[0]
 
     # calculate how many iterations should be left
-    its_per_ms = initn / time
+    its_per_ms = init_n / time
     ms_left = maxtime * 1000 - time
     its_left = ceil(its_per_ms * ms_left)
 

@@ -3,9 +3,11 @@
 import operator
 from math import atan2
 
+from done.File import filter_off_modules_and_dunder, submodules
+
 
 def angle(x1, y1, x2, y2):
-    """Calculate the angle made by the two points according to x axis"""
+    """Calculate the angle made by the two points according to x-axis"""
     return atan2(y2 - y1, x2 - x1)
 
 
@@ -100,13 +102,13 @@ class RangedNumber:
             return numeric, numeric
 
     @staticmethod
-    def fourwaymath(op, alo, ahi, blo, bhi):
+    def four_way_math(op, alo, ahi, blo, bhi):
         if blo == bhi:
-            return RangedNumber.create_fromsort(op(alo, blo), op(ahi, blo))
-        return RangedNumber.create_fromsort(op(alo, blo), op(alo, bhi), op(ahi, blo), op(ahi, bhi))
+            return RangedNumber.from_sort(op(alo, blo), op(ahi, blo))
+        return RangedNumber.from_sort(op(alo, blo), op(alo, bhi), op(ahi, blo), op(ahi, bhi))
 
     @staticmethod
-    def create_fromsort(*args):
+    def from_sort(*args):
         if len(args) == 1:
             args = args[0]
 
@@ -123,13 +125,13 @@ class RangedNumber:
             lo, hi = RangedNumber.check_range(other)
             if lo <= 0 <= hi:
                 raise ZeroDivisionError()
-            return RangedNumber.fourwaymath(op, *RangedNumber.check_range(self), lo, hi)
+            return RangedNumber.four_way_math(op, *RangedNumber.check_range(self), lo, hi)
 
         def ff(self, other):
             lo, hi = RangedNumber.check_range(other)
             if lo <= 0 <= hi:
                 raise ZeroDivisionError()
-            return RangedNumber.fourwaymath(op, *RangedNumber.check_range(self), lo, hi)
+            return RangedNumber.four_way_math(op, *RangedNumber.check_range(self), lo, hi)
 
         fr.__doc__ = ff.__doc__ = doc
         ff.__name__ = f"__{op.__name__}__"
@@ -139,10 +141,10 @@ class RangedNumber:
     @staticmethod
     def generate_dyadic(op, doc=None):
         def fr(other, self):
-            return RangedNumber.fourwaymath(op, *RangedNumber.check_range(self), *RangedNumber.check_range(other))
+            return RangedNumber.four_way_math(op, *RangedNumber.check_range(self), *RangedNumber.check_range(other))
 
         def ff(self, other):
-            return RangedNumber.fourwaymath(op, *RangedNumber.check_range(self), *RangedNumber.check_range(other))
+            return RangedNumber.four_way_math(op, *RangedNumber.check_range(self), *RangedNumber.check_range(other))
 
         fr.__doc__ = ff.__doc__ = doc
         ff.__name__ = f"__{op.__name__}__"
@@ -156,3 +158,6 @@ RangedNumber.__add__, RangedNumber.__radd__ = RangedNumber.generate_dyadic(opera
 RangedNumber.__sub__, RangedNumber.__rsub__ = RangedNumber.generate_dyadic(operator.sub)
 RangedNumber.__mul__, RangedNumber.__rmul__ = RangedNumber.generate_dyadic(operator.mul)
 RangedNumber.__pow__, RangedNumber.__rpow__ = RangedNumber.generate_dyadic(operator.pow)
+
+__all__ = filter_off_modules_and_dunder(dir(), globals()) if __name__ != "__main__" else []
+__all__.extend(submodules(__file__))

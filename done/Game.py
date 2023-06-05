@@ -8,7 +8,7 @@ from done.List import lcm
 
 
 def Input(s):
-    """Used as a buffer between module and input() so it can be more easily monkeypatched during testing"""
+    """Used as a buffer between module and input() so it can be more easily monkey-patched during testing"""
     return input(s)
 
 
@@ -21,7 +21,7 @@ def multiplication(digits1=2, digits2=2):
     """Give will ask you to multiply number of digit
     
 Usage:
-    _(2,3) = 2 digit number * 3 digit number = ?
+    _(2,3) = 2-digit number * 3-digit number = ?
     """
     while True:
         x = randrange(10 ** (digits1 - 1), 10 ** digits1)
@@ -129,7 +129,7 @@ def thinker():
 
 
 def number_guesser1():
-    """find the row ur number is in twice. i will figure out the number"""
+    """find the row ur number is in twice. I will figure out the number"""
     print("Pick a number between 1-25 and pick row numbers.\nPrepare to have your 'mind' 'read'\n")
     print(
         'row1: 06 11 01 21 16\nrow2: 12 07 02 22 17\nrow3: 23 13 08 18 03\nrow4: 19 14 09 04 24\nrow5: 10 05 20 15 25')
@@ -142,7 +142,7 @@ def number_guesser1():
 
 
 def number_guesser2():
-    """i will generate 5 lists. just say whether ur number is in there or not"""
+    """I will generate 5 lists. just say whether ur number is in there or not"""
     print("Pick an integer between 1-32 and say yes or no if it's in the list.\nPrepare to have your 'mind' 'read'\n")
     a = 0
     for n in [1 << N for N in range(5)]:
@@ -408,7 +408,7 @@ In those cases, clues will be merged. Good luck separating them.\n''')
         search = inputs[search_type]  # parse out the search_type (aka the thing ur searching for clues)
 
         def answers_that_contain():
-            """given the thing we're looking at, give us all the things that happened with it"""
+            """given the thing we're looking at, give us all the things that happened to it"""
             type_of_search = get_type[search]
 
             for answer in answers:
@@ -418,7 +418,7 @@ In those cases, clues will be merged. Good luck separating them.\n''')
         possible_clues = list(answers_that_contain())
 
         if len(possible_clues) == 0:
-            if search_type == Murder.BODY:  # no body is clean ... this means that you already figure out what happened
+            if search_type == Murder.BODY:  # nobody is clean ... this means that you already figure out what happened
                 print(f'You already figured out what happened to {guess_victim}.')
             else:
                 _ = {Murder.WEAPON: "with it", Murder.ROOM: "here"}[search_type]
@@ -492,7 +492,7 @@ In those cases, clues will be merged. Good luck separating them.\n''')
 
         if len(possible_clues) == len(answers):
             it = (rooms if search_type == Murder.ROOM else weapons)
-            it.clear()  # i would use it = [search] but that shadows the variable and i cant use globals either
+            it.clear()  # I would use it = [search] but that shadows the variable and I cant use globals either
             it.append(search)
 
         if any(sc == 3 for sc in scores):

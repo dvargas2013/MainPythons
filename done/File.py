@@ -1,4 +1,4 @@
-"""If I made it and it has to do with files it is here"""
+"""If I made it, and it has to do with files it is here"""
 
 import os.path
 from contextlib import contextmanager
@@ -7,6 +7,9 @@ from os.path import exists, join, splitext, split, relpath, abspath
 from shutil import copy2 as copyfile_normal  # preserves metadata
 from typing import Dict, Iterable
 from urllib.request import urlopen
+from os.path import dirname
+from pkgutil import iter_modules
+from inspect import ismodule
 
 
 def same(file1, file2):
@@ -30,7 +33,7 @@ Desktop = join(getHome(), 'Desktop')
 def cwd_as(location):
     """set cwd as location and then set it back to what it was before
 
-    if location doesnt exist or isnt a directory, will make directories as needed
+    if location doesn't exist or isn't a directory, will make directories as needed
     the directories will not be deleted.
     (it is a context manager over the variable given by os.getcwd nothing else)
     """
@@ -199,7 +202,7 @@ for each of the files:
         if same(f, n):
             return no_change(f, n)
 
-        if not exists(f):  # old name doesnt exist
+        if not exists(f):  # old name doesn't exist
             return does_not_exist(f, n)
 
         if exists(n):  # new name taken
@@ -233,7 +236,7 @@ Moderately safer than directly going to a site"""
 
 
 def site_read(url, tries=17):
-    """Read a url and return string contents"""
+    """Read url and return string contents"""
     if not url.startswith('http'): url = f'http://{url}'
     for _ in range(tries):
         try:
@@ -273,7 +276,7 @@ class TGF:
         # index in the sorted list
         self.node_to_tgf_index = {n: i for i, n in enumerate(self.nodes)}
 
-        # tuples of the mapping in the dictionary using the indeces rather than the names
+        # tuples of the mapping in the dictionary using the indexes rather than the names
         self.ordered_nodes = []
 
         for i, js in dic.items():
@@ -479,7 +482,7 @@ def ZipGui():
 
 
 def unzip(file, aim='', file_iterable=None):
-    """unzip a file file by file. return a set of files that were unable to be extracted"""
+    """unzip a file: file by file. return a set of files that were unable to be extracted"""
     from zipfile import ZipFile
     from random import shuffle
     zip_file = ZipFile(file)
@@ -499,3 +502,23 @@ def unzip(file, aim='', file_iterable=None):
                 print(f'Failed: {extract}')
                 print(e)
     return failed
+
+
+def submodules(_file):
+    """given a __file__ will dirname and iter_modules to get .name s
+
+>>> __all__ = submodules(__file__)
+"""
+    return [module_info.name for module_info in iter_modules([dirname(_file)])]
+
+
+def filter_off_modules_and_dunder(_dir, _globals):
+    """given dir() will filter off any modules and __ names. needs globals()
+
+>>> __all__ = filter_off_modules_and_dunder(dir(),globals())
+"""
+
+    def _filter(s):
+        return not (s.startswith("__") or ismodule(_globals[s]))
+
+    return list(filter(_filter, _dir))
