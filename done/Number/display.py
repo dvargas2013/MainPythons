@@ -1,3 +1,5 @@
+from fractions import Fraction
+
 from done.Number import primes
 
 
@@ -112,7 +114,7 @@ class DivModChain:
         self.mod_chain = tuple([i for i in args if isinstance(i, int)][::-1])
         lmc1 = len(self.mod_chain) + 1
         if len(strings) < lmc1:
-            self.strings = [chr(i) for i in range(65, 65+lmc1)]
+            self.strings = [chr(i) for i in range(65, 65 + lmc1)]
             if strings:
                 self.strings[-len(strings):] = strings
         else:

@@ -4,6 +4,7 @@ from contextlib import contextmanager
 from os import walk, environ, renames
 from os.path import join, relpath, samefile, exists
 
+from done.File.module import submodules, filter_off_modules_and_dunder
 
 def same(file1, file2):
     """Checks if the 2 path names are representing the same location
@@ -174,3 +175,7 @@ will repeatedly execute input() until the input is lowercase"""
         return wrapper
 
     return decoratorWithParameter
+
+
+__all__ = filter_off_modules_and_dunder(dir(), globals()) if __name__ != "__main__" else []
+__all__.extend(submodules(__file__))

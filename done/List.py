@@ -66,7 +66,7 @@ def batch(seq, n=2):
     length = len(seq)
     for i in range(0, length, n):
         yield seq[i:i + n]
-
+chunk = batch
 
 def tupleSum(tuple1, tuple2):
     return tuple(map(sum, zip(tuple1, tuple2)))
@@ -179,9 +179,9 @@ class Polynomial:
     """
 
     def __init__(self, data: Collection[int] = tuple()):
-        if type(data) == str and 'x' in data:
+        if type(data) == str:
             from warnings import warn
-            warn(f"It seems you might want Polynomial.fromString: Polynomial({data})")
+            warn(f"You might be looking for Polynomial.fromString: Polynomial({data})")
 
         if len(data) == 0:
             self.data = (0,)
