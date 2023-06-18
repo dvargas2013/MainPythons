@@ -162,3 +162,35 @@ class DivModChain:
 
 YDHMS = DivModChain("year", 365, "day", 24, "hour", 60, "minute", 60, "second")
 WDHMS = DivModChain("week", 7, "day", 24, "hour", 60, "minute", 60, "second")
+
+
+class Temp:
+    def __init__(self, k):
+        self.k = k
+
+    @classmethod
+    def kelvin(cls, k):
+        return Temp(k)
+
+    def to_kelvin(self):
+        return float(self.k)
+
+    kc_b = 273 + Fraction(3, 20)  # 273.15
+
+    @classmethod
+    def celsius(cls, c):
+        return Temp(c + Temp.kc_b)
+
+    def to_celsius(self):
+        return float(self.k - Temp.kc_b)
+
+    fk_m = Fraction(5, 9)
+    kf_m = Fraction(9, 5)
+    fk_b = 255 + Fraction(67, 180)
+
+    @classmethod
+    def farenheit(cls, f):
+        return Temp(f * Temp.fk_m + Temp.fk_b)
+
+    def to_farenheit(self):
+        return float(Temp.kf_m * (self.k - Temp.fk_b))
