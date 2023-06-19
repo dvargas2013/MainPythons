@@ -3,7 +3,7 @@ import pytest
 from done.Number.accuracy import SigFig
 from done.Number.primes import PrimalNatural
 from done.Number.display import DivModChain
-
+from done.Number.division import count_decimal_places, rounds_to
 
 def test_parsenum():
     from done.Number import parse_number
@@ -246,3 +246,11 @@ def test_normalization():
     assert HMS.normalize([5], "hour") == (5, 0, 0)
 
     assert DivModChain(24, 60, 60).normalize(13056738) == (151, 2, 52, 18)
+
+def test_decimal_counter():
+    assert count_decimal_places("33.33") == 2
+
+def test_rounder():
+    assert rounds_to("33.33") == (100, 3)
+    assert rounds_to("66.67") == (200, 3)
+    assert rounds_to("59.46") == (773, 13)

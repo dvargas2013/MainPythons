@@ -127,6 +127,7 @@ calculator.)
 **nth_remainder** - the nth remainder in the process of long division  
 **decimal_length** - gives the location and length of the repeating portion of the decimal expansion  
 **get_repeat** - application of the previous two functions to get the repeating portion of the decimal expansion
+**rounds_to** - finds the fraction that outputs the given string/float   
 
 ### Number.primes
 

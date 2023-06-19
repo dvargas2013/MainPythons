@@ -36,3 +36,23 @@ def get_repeat(a, b):
     """finds the repeating decimal portion of the rational a/b"""
     p, q = decimal_length(a, b)
     return "".join(str(10 * nth_remainder(a, b, i) // b) for i in range(p, p + q))
+
+
+def count_decimal_places(s_num: str):
+    """number of characters after the final period (.)"""
+    dot_found = s_num.rfind(".")
+    if dot_found < 0:
+        return 0
+    return len(s_num) - dot_found - 1
+
+
+def rounds_to(s_num: str):
+    """rational approximation with the smallest denominator : given a rounded float as a string"""
+    f_num = float(s_num)
+    n_digits = count_decimal_places(s_num)
+    for deno in range(2, 10 ** (n_digits + 1)):
+        numerator = int(f_num * deno)
+        if f"{numerator / deno:.{n_digits}f}" == s_num:
+            return numerator, deno
+        if f"{(numerator + 1) / deno:.{n_digits}f}" == s_num:
+            return numerator + 1, deno
