@@ -170,7 +170,7 @@ class Temp:
 
     @classmethod
     def kelvin(cls, k):
-        return Temp(k)
+        return cls(k)
 
     def to_kelvin(self):
         return float(self.k)
@@ -179,7 +179,7 @@ class Temp:
 
     @classmethod
     def celsius(cls, c):
-        return Temp(c + Temp.kc_b)
+        return cls(c + Temp.kc_b)
 
     def to_celsius(self):
         return float(self.k - Temp.kc_b)
@@ -190,7 +190,24 @@ class Temp:
 
     @classmethod
     def farenheit(cls, f):
-        return Temp(f * Temp.fk_m + Temp.fk_b)
+        return cls(f * Temp.fk_m + Temp.fk_b)
 
     def to_farenheit(self):
         return float(Temp.kf_m * (self.k - Temp.fk_b))
+
+class Mass:
+    def __init__(self, g):
+        self.g = g
+
+    @classmethod
+    def grams(cls, g):
+        return cls(g)
+
+    def to_grams(self):
+        return float(self.g)
+
+    o_g = 28.34952
+    def ounces(self, o):
+        return cls(o * Mass.o_g)
+    def to_ounces(self):
+        return float(self.g / Mass.o_g)
