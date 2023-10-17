@@ -1,6 +1,7 @@
 """Deals with lists of information. Many probability things are found here."""
 
 import math
+import itertools
 from collections import deque, defaultdict
 from functools import wraps, reduce
 from inspect import isgeneratorfunction
@@ -37,6 +38,22 @@ else:
         return a
 
 
+def batch(seq, n=2):
+    """Cuts up an iterable into chunks os size n. the last one is whatever data is left
+
+DEPRECATION WARNING: unless you NEED the output to be the same type as the input. use `itertools.batched` instead
+    """
+    length = len(seq)
+    for i in range(0, length, n):
+        yield seq[i:i + n]
+
+
+if hasattr(itertools, "batched"):
+    chunk = itertools.batched
+else:
+    chunk = batch
+
+
 def is_iterable(potentially_iterable):
     """checks if something is iterable"""
     # try:
@@ -60,13 +77,6 @@ s -> (s0,s1,...s[n-1]), (s1,s2,...,sn), ..."""
         append(e)
         yield win
 
-
-def batch(seq, n=2):
-    """Cuts up an iterable into chunks os size n. the last one is whatever data is left"""
-    length = len(seq)
-    for i in range(0, length, n):
-        yield seq[i:i + n]
-chunk = batch
 
 def tupleSum(tuple1, tuple2):
     return tuple(map(sum, zip(tuple1, tuple2)))
@@ -197,7 +207,7 @@ class Polynomial:
         return Polynomial(self.data)
 
     # TODO : implement derivative
-    
+
     @staticmethod
     def fromString(in_str):
         to_parse = ''.join(i for i in str(in_str) if i.isalnum() or i in '.+-/*')
