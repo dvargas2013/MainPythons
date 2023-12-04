@@ -1,9 +1,9 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='done',
     version='0.0.0',
-    packages=['done'],
+    packages=find_packages(),
     extras_require={
         'test': ['pytest']
     }
