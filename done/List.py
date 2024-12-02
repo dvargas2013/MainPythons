@@ -324,7 +324,10 @@ class Polynomial:
 
 
 def LagrangeInterpolation(xs: Collection[int], ys: Collection[int]):
-    """find a polynomial where all(f(x)==y for x,y in zip(xs,ys))"""
+    """find a polynomial where all(f(x)==y for x,y in zip(xs,ys))
+
+    note: use scipy.interpolate.lagrange instead
+    """
     xset = set(xs)
 
     def Li(x, y):

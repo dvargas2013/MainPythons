@@ -15,13 +15,6 @@ Time(hour, minute, second, microsecond, pm=False)
 """
 
     def __init__(self, hour=0, minute=0, second=0, microsecond=0, pm=False):
-        if not any((hour, minute, second, microsecond)):
-            a = datetime.now()
-            hour = a.hour
-            minute = a.minute
-            second = a.second
-            microsecond = a.microsecond
-
         if pm:
             hour += 12
 
@@ -29,7 +22,7 @@ Time(hour, minute, second, microsecond, pm=False)
             hours=hour,
             minutes=minute,
             seconds=second,
-            microseconds=microsecond)  # has days, seconds, microseconds
+            microseconds=microsecond)
 
     @property
     def hr(self):
@@ -139,6 +132,13 @@ Time(hour, minute, second, microsecond, pm=False)
         r = Time(0)
         r.innertime = td
         return r
+
+    def now(self):
+        now = datetime.now()
+        return Time(hour=now.hour,
+                    minute=now.minute,
+                    second=now.second,
+                    microsecond=now.microsecond)
 
     def __str__(self):
         hr = self.hr
