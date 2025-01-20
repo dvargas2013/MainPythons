@@ -133,12 +133,13 @@ Time(hour, minute, second, microsecond, pm=False)
         r.innertime = td
         return r
 
-    def now(self):
+    @classmethod
+    def now(cls):
         now = datetime.now()
-        return Time(hour=now.hour,
-                    minute=now.minute,
-                    second=now.second,
-                    microsecond=now.microsecond)
+        return cls(hour=now.hour,
+                   minute=now.minute,
+                   second=now.second,
+                   microsecond=now.microsecond)
 
     def __str__(self):
         hr = self.hr
