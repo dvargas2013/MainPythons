@@ -56,13 +56,6 @@ else:
 
 def is_iterable(potentially_iterable):
     """checks if something is iterable"""
-    # try:
-    #     (*potentially_iterable,)
-    #     for _ in potentially_iterable:
-    #         break
-    # except TypeError:
-    #     return False
-    # return True
     return hasattr(potentially_iterable, "__iter__")
 
 
