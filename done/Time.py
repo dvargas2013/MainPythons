@@ -212,13 +212,16 @@ def maxtime_computation(generator, online_calculation, maxtime=10, init_n=10_000
                         unpack_generated=False, unpack_previous=False):
     """Given a max time in seconds will try to generate and compute within that alloted time
 
-generator and online_calculation should be of the form such that
+Assumption: first calculation takes about same time as any other
+
+generator and online_calculation should be of the form such that:
+
+>>>
 previous = online_calculation()
 for i in generator:
-   previous = online_calculation(i, previous)
-
-unpack_generated == True: online_calculation(*i, previous)
-unpack_previous == True: online_calculation(i, *previous)
+    previous = online_calculation(i, previous)
+# unpack_generated == True: online_calculation(*i, previous)
+# unpack_previous == True: online_calculation(i, *previous)
     """
     # set up the function to be called as the online calculation
     if unpack_previous and unpack_generated:
