@@ -2,6 +2,7 @@
 
 import operator
 from math import atan2
+from numbers import Number as ABCNum
 
 from done.File.module import filter_off_modules_and_dunder, submodules
 
@@ -16,6 +17,8 @@ def parse_number(input_string, onerror=0):
 if float has no fractional part, it prefers to return an int
 if float() throws a value error, it'll return the onerror value
 """
+    if isinstance(input_string, ABCNum) and not isinstance(input_string, float):
+        return input_string
     try:
         get = float(input_string)
         if get % 1: return get
