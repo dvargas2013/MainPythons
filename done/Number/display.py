@@ -164,50 +164,73 @@ YDHMS = DivModChain("year", 365, "day", 24, "hour", 60, "minute", 60, "second")
 WDHMS = DivModChain("week", 7, "day", 24, "hour", 60, "minute", 60, "second")
 
 
-class Temp:
-    def __init__(self, k):
-        self.k = k
+def ConversionClass(cls):
+    attrs = list(filter((lambda k: not k.startswith("_")), cls.__dict__.keys()))
+    assert attrs
+    from done.List import is_iterable, LagrangeInterpolation as Interpolate
 
-    @classmethod
-    def kelvin(cls, k):
-        return cls(k)
+    for i in attrs:
+        x = getattr(cls, i)
+        if not is_iterable(x): x = [x]
+        if len(x) < 2: x.append(0)
+        setattr(cls, i, [Fraction(j) if isinstance(j, int) else j for j in x])
 
-    def to_kelvin(self):
-        return float(self.k)
+    def __init__(self, amount, unit):
+        self.amount = amount
+        self.converter = self._converters[unit]
 
-    kc_b = 273 + Fraction(3, 20)  # 273.15
+    cls.__init__ = __init__
 
-    @classmethod
-    def celsius(cls, c):
-        return cls(c + Temp.kc_b)
+    def identity(_):
+        return _
 
-    def to_celsius(self):
-        return float(self.k - Temp.kc_b)
+    cls._converters = {i: {j: identity if i == j else Interpolate(getattr(cls, i), getattr(cls, j)) for j in attrs}
+                       for i in attrs}
 
-    fk_m = Fraction(5, 9)
-    kf_m = Fraction(9, 5)
-    fk_b = 255 + Fraction(67, 180)
+    def rounder(value, rounding=2):
+        if rounding is None:
+            return value
+        return round(float(value), rounding)
 
-    @classmethod
-    def farenheit(cls, f):
-        return cls(f * Temp.fk_m + Temp.fk_b)
+    closure = {"cls": cls, "rounder": rounder}
+    for i in attrs:
+        exec(f"""def {i}(_, *args, **kwargs):
+\tif not isinstance(_, cls): return cls(_, {i!r}, *args, **kwargs)
+\treturn rounder(_.converter[{i!r}](_.amount), *args, **kwargs)""",
+             closure)
+        closure[i].__doc__ = f"""this function can be used to:
+- initialize: {cls.__qualname__}.{i}([Number])
+- convert: {cls.__qualname__}([...]).{i}(rounding)"""
+        setattr(cls, i, closure[i])
+    return cls
 
-    def to_farenheit(self):
-        return float(Temp.kf_m * (self.k - Temp.fk_b))
 
+@ConversionClass
 class Mass:
-    def __init__(self, g):
-        self.g = g
+    kg = Fraction(1)
+    lbs = Fraction("2.204623") * kg  # a kg is 2ish lbs
+    oz = 16 * lbs
+    grams = 1000 * kg
+    grains = 7000 * lbs
+    carats = 5 * grams
+    ton = lbs / 2000
+    metric_ton = kg / 1000
 
-    @classmethod
-    def grams(cls, g):
-        return cls(g)
 
-    def to_grams(self):
-        return float(self.g)
+@ConversionClass
+class Temp:
+    celsius = [-40, 0]
+    fahrenheit = [-40, 32]
+    k = [_ + Fraction("273.15") for _ in celsius]
 
-    o_g = 28.34952
-    def ounces(self, o):
-        return cls(o * Mass.o_g)
-    def to_ounces(self):
-        return float(self.g / Mass.o_g)
+
+@ConversionClass
+class Distance:
+    miles = 1
+    km = Fraction("1.609344")
+    meters = 1000 * km
+    feet = 5280 * miles
+    yards = feet / 3
+    inches = 12 * feet
+    cm = 100 * meters
+    mm = 1000 * meters
