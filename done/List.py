@@ -44,8 +44,7 @@ def batch(seq, n=2):
 
 DEPRECATION WARNING: unless you NEED the output to be the same type as the input. use `itertools.batched` instead
     """
-    length = len(seq)
-    for i in range(0, length, n):
+    for i in range(0, len(seq), n):
         yield seq[i:i + n]
 
 

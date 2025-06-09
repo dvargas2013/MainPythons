@@ -204,7 +204,7 @@ The burger of doom makes you into a zombie, so {0} kills you thinking you are a 
 Miraculously the zombies are moving so fast that they run into the opposite wall
 The wall collapses and kills all the zombies""")
             else:  # Fail
-                return print("\nYou and %s fight bravely but you cannot simply kill zombies without a weapon")
+                return print("\nYou and %s fight bravely but you cannot simply kill zombies without a weapon" % name)
     # Scene 2:
     print("\nYou and %s killed all the zombies in sight" % name)
     if Input("What do you do now? (1-Find food)(2-Sleep): ")[0] in '1fF':  # Food

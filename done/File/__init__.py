@@ -114,7 +114,7 @@ def rename_files(file_iterable, change,
                  error=lambda f, n, e: print(f"Renaming Error {e}: {f}\n\t{n}\n"),
                  already_exists=lambda f, n: print(f"Existence Error: {n} already exists"),
                  does_not_exist=lambda f, n: print(f"Existence Error: {f} does not exist"),
-                 no_change=lambda f, n: print("Change function did not change: {f}")):
+                 no_change=lambda f, n: print(f"Change function did not change: {f}")):
     """changes file strings in {files} using the {change} function
 
 for each of the files:
