@@ -12,8 +12,12 @@ from done.String.Solver.connect import connectWords
 ascii_lowercase_set = set(ascii_lowercase)
 masterDictionary = set()
 
+@lambda _: _()
+def web2():
+    from os.path import dirname, join
+    return join(dirname(__file__), 'usrsharedictweb2')
 
-def loadDictionary(dictionary_file='/usr/share/dict/web2'):
+def loadDictionary(dictionary_file=web2):
     masterDictionary.clear()
     with open(dictionary_file) as f:
         masterDictionary.update(set(f.read().split()))
