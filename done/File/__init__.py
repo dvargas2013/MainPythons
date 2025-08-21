@@ -27,18 +27,22 @@ Desktop = join(getHome(), 'Desktop')
 def cwd_as(location):
     """set cwd as location and then set it back to what it was before
 
-    if location doesn't exist or isn't a directory, will make directories as needed
-    the directories will not be deleted.
-    (it is a context manager over the variable given by os.getcwd nothing else)
+    if location doesn't exist, make directories as needed
+    the directories will not be deleted afterwards, even if empty.
+
+    if the location isn't a directory, it will try dirname(location) 
     """
     import os
     previous = os.getcwd()
     try:
         os.chdir(location)
         yield
-    except (FileNotFoundError, NotADirectoryError):
+    except FileNotFoundError:
         os.makedirs(location)
         os.chdir(location)
+        yield
+    except NotADirectoryError:
+        os.chdir(os.path.dirname(location))
         yield
     finally:
         os.chdir(previous)
