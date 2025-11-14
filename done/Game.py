@@ -566,5 +566,5 @@ In those cases, clues will be merged. Good luck separating them.\n''')
     s = "" if loop == 1 else "s"
     print(f'It took you {loop} hint{s} to solve')
     print('=' * 17 + ' Murders are as follows ' + '=' * 17)
-    for victim, murderer, weapon, room in answers + saved:
+    for victim, weapon, room, murderer in answers + saved:
         print(f'{victim} was killed by {murderer} with {weapon} in {room}')
