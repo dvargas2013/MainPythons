@@ -1,9 +1,10 @@
 .DS_Store
+build/
 
 # python bins
 __pycache__/
 *.py[ocd]
-*.egg-info
+*.egg-info/
 venv/
 
 #pycharm
