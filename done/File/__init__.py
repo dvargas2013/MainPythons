@@ -3,8 +3,10 @@
 from contextlib import contextmanager
 from os import walk, environ, renames
 from os.path import join, relpath, samefile, exists
+from pathlib import Path
 
 from done.File.module import submodules, filter_off_modules_and_dunder
+
 
 def same(file1, file2):
     """Checks if the 2 path names are representing the same location
@@ -17,10 +19,10 @@ Defaults to False on error"""
 
 def getHome():
     """Get the HOME directory. (or USERPROFILE)"""
-    return environ.get('HOME', environ.get('USERPROFILE'))
+    return Path(environ.get('HOME', environ.get('USERPROFILE')))
 
 
-Desktop = join(getHome(), 'Desktop')
+Desktop = getHome() / 'Desktop'
 
 
 @contextmanager
