@@ -1,4 +1,5 @@
 from fractions import Fraction
+from string import digits, ascii_uppercase as uppercase, ascii_lowercase as lowercase
 
 from done.Number import primes
 
@@ -20,6 +21,29 @@ def theFactorsOf(integer):
 def primeFactorize(i):
     """_(15) = ['3^1', '5^1']"""
     return [f"{prime}^{power}" for prime, power in primes.primify(i)]
+
+
+B16 = digits + uppercase[:6]
+B16X = digits + "X" + uppercase[:5]
+B36 = digits + lowercase
+B36U = B36.upper()
+B62 = digits + uppercase + lowercase
+B64 = uppercase + lowercase + digits + "+/"
+B64URL = uppercase + lowercase + digits + "-_"
+
+
+def baseTranslate(alphabet, s=""):
+    """_('abc', 'cbabac') = [2,1,0,1,0,2]
+    but it is more effecient if you curry the parameters"""
+    alphabet = dict(zip(alphabet, range(len(alphabet))))
+
+    def _(x):
+        return list(map(alphabet.__getitem__, x))
+
+    if s:
+        return _(s)
+    else:
+        return _
 
 
 class BaseChanger(int):
