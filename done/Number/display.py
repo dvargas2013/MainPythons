@@ -1,5 +1,6 @@
 from fractions import Fraction
 from string import digits, ascii_uppercase as uppercase, ascii_lowercase as lowercase
+from warnings import warn
 
 from done.Number import primes
 
@@ -35,6 +36,9 @@ B64URL = uppercase + lowercase + digits + "-_"
 def baseTranslate(alphabet, s=""):
     """_('abc', 'cbabac') = [2,1,0,1,0,2]
     but it is more effecient if you curry the parameters"""
+    if len(alphabet) <= 36 and alphabet.lower() == B36[:len(alphabet)]:
+        warn("python has built-in support for bases between 2 and 36", RuntimeWarning, stacklevel=2)
+        
     alphabet = dict(zip(alphabet, range(len(alphabet))))
 
     def _(x):
